@@ -86,15 +86,17 @@ class QueryTests(unittest.TestCase):
                 def corrupt(native, operation, count, data, which=corrupt_call):
                     nonlocal calls
                     raw, scheme = original(native, operation, count, data)
-                    target_operation = 3 if which == 1 else 2
+                    compact = native.info["protocol"] >= 3
+                    target_operation = 3 if which == 1 and compact else 2
                     if operation == target_operation:
                         calls += 1
-                        if calls == 1:
+                        target_call = 1 if compact else which
+                        if calls == target_call:
                             if which == 1 and operation == 3:
                                 raw = bytes([255]) + raw[1:]
                             else:
                                 values = list(unpack_unsigned(raw))
-                                values[0] = 1
+                                values[0] = 256 if which == 1 else 1
                                 raw = pack_unsigned(values)
                     return raw, scheme
 

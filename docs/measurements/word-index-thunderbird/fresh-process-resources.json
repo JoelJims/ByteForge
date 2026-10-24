@@ -1,0 +1,27 @@
+{
+  "probe_python": "import json,sys,time,resource,os,hashlib,struct\nfrom pathlib import Path\nfrom byteforge.query import QuerySession\nfrom byteforge.word_index import IndexedQuerySession\nos.sched_setaffinity(0,{min(os.sched_getaffinity(0))})\nstart=time.perf_counter_ns()\noptions={'worker':Path('build/btrblocks-bytefast-release/byteforge_integer_worker'),'cache_bytes':0}\ncls=QuerySession\nif len(sys.argv)>2:\n cls=IndexedQuerySession; options['word_index']=Path(sys.argv[2])\nwith cls(Path(sys.argv[1]),**options) as s: result=s.filter('contains','warning')\nquery_ns=time.perf_counter_ns()-start\nsha=hashlib.sha256(b''.join(struct.pack('<Q',v) for v in result['row_ids'])).hexdigest()\nr=resource.getrusage(resource.RUSAGE_SELF)\nprint(json.dumps({'query_ns':query_ns,'user_cpu_s':r.ru_utime,'system_cpu_s':r.ru_stime,'peak_rss_bytes':r.ru_maxrss*1024,'result_sha256':sha,'count':result['count']}))\n",
+  "observations": [
+    {
+      "query_ns": 5533936916,
+      "user_cpu_s": 4.984523,
+      "system_cpu_s": 0.5065339999999999,
+      "peak_rss_bytes": 588320768,
+      "result_sha256": "d61f42ec91ad8c54ede2aa01a2b87814b4788c5ba63a60f20aa5bacfd5db894f",
+      "count": 636710,
+      "variant": "parquet-lz4",
+      "correctness": true,
+      "scope": "one fresh process; CPU/RSS include interpreter/imports, index/data verification, query and ID digest; query timer excludes imports before timer and digest; OS cache uncontrolled"
+    },
+    {
+      "query_ns": 510542565,
+      "user_cpu_s": 0.34137799999999996,
+      "system_cpu_s": 0.11655099999999999,
+      "peak_rss_bytes": 144961536,
+      "result_sha256": "d61f42ec91ad8c54ede2aa01a2b87814b4788c5ba63a60f20aa5bacfd5db894f",
+      "count": 636710,
+      "variant": "block-b-word",
+      "correctness": true,
+      "scope": "one fresh process; CPU/RSS include interpreter/imports, index/data verification, query and ID digest; query timer excludes imports before timer and digest; OS cache uncontrolled"
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "environment": {
+    "python": "3.14.8 (main, Oct  2 2026, 10:23:31) [GCC 16.2.1 20260810]",
+    "platform": "Linux-6.18.57-2-lts-x86_64-with-glibc2.44",
+    "packages": {
+      "pyarrow": "26.0.0",
+      "zstandard": "0.25.0",
+      "cmake": "3.31.10"
+    },
+    "cpu_count": 8,
+    "cpuinfo": "processor\t: 0\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 3799.976\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 0\ncpu cores\t: 6\napicid\t\t: 0\ninitial apicid\t: 0\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 1\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 3800.000\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 0\ncpu cores\t: 6\napicid\t\t: 1\ninitial apicid\t: 1\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 2\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 448.020\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 4\ncpu cores\t: 6\napicid\t\t: 8\ninitial apicid\t: 8\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 3\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 400.000\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 4\ncpu cores\t: 6\napicid\t\t: 9\ninitial apicid\t: 9\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 4\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 400.000\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 8\ncpu cores\t: 6\napicid\t\t: 16\ninitial apicid\t: 16\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 5\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 1955.827\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 9\ncpu cores\t: 6\napicid\t\t: 18\ninitial apicid\t: 18\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 6\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 506.385\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 10\ncpu cores\t: 6\napicid\t\t: 20\ninitial apicid\t: 20\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\nprocessor\t: 7\nvendor_id\t: GenuineIntel\ncpu family\t: 6\nmodel\t\t: 154\nmodel name\t: 12th Gen Intel(R) Core(TM) i3-1215U\nstepping\t: 4\nmicrocode\t: 0x43b\ncpu MHz\t\t: 400.000\ncache size\t: 10240 KB\nphysical id\t: 0\nsiblings\t: 8\ncore id\t\t: 11\ncpu cores\t: 6\napicid\t\t: 22\ninitial apicid\t: 22\nfpu\t\t: yes\nfpu_exception\t: yes\ncpuid level\t: 32\nwp\t\t: yes\nflags\t\t: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb intel_pt sha_ni xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk avx_vnni dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req hfi vnmi umip pku ospke waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize arch_lbr ibt flush_l1d arch_capabilities\nvmx flags\t: vnmi preemption_timer posted_intr invvpid ept_x_only ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid unrestricted_guest vapic_reg vid ple shadow_vmcs ept_violation_ve ept_mode_based_exec tsc_scaling usr_wait_pause\nbugs\t\t: spectre_v1 spectre_v2 spec_store_bypass swapgs eibrs_pbrsb rfds bhi spectre_v2_user vmscape\nbogomips\t: 4993.00\nclflush size\t: 64\ncache_alignment\t: 64\naddress sizes\t: 39 bits physical, 48 bits virtual\npower management:\n\n",
+    "meminfo": "MemTotal:        7842944 kB\nMemFree:          224512 kB\nMemAvailable:    1570676 kB\nBuffers:            8824 kB\nCached:          2890360 kB\nSwapCached:            0 kB\nActive:          2842956 kB\nInactive:        3730064 kB\nActive(anon):    2255760 kB\nInactive(anon):  2795728 kB\nActive(file):     587196 kB\nInactive(file):   934336 kB\nUnevictable:      574936 kB\nMlocked:               0 kB\nSwapTotal:             0 kB\nSwapFree:              0 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:              3324 kB\nWriteback:             0 kB\nAnonPages:       4248348 kB\nMapped:           380932 kB\nShmem:           1498960 kB\nKReclaimable:     105244 kB\nSlab:             236008 kB\nSReclaimable:     105244 kB\nSUnreclaim:       130764 kB\nKernelStack:       16048 kB\nPageTables:        54284 kB\nSecPageTables:      2056 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:     3921472 kB\nCommitted_AS:   12829648 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:       52152 kB\nVmallocChunk:          0 kB\nPercpu:             5504 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:    751616 kB\nShmemHugePages:   358400 kB\nShmemPmdMapped:        0 kB\nFileHugePages:     28672 kB\nFilePmdMapped:     28672 kB\nCmaTotal:              0 kB\nCmaFree:               0 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      244580 kB\nDirectMap2M:     3667968 kB\nDirectMap1G:     4194304 kB\n",
+    "affinity": [
+      0
+    ],
+    "git_revision": "8f489a062ce0ac604e12bf9c7072ad11f6a9c4a9",
+    "git_status": " M README.md\n M docs/hdfs_benchmark.md\n M docs/implementation_log.md\n M docs/log_query_performance.md\n M docs/word_index_query_results.md\n?? AGENTS.md\n?? docs/measurements/word-index-thunderbird/before-profile.txt\n?? docs/measurements/word-index-thunderbird/complete.json\n?? docs/measurements/word-index-thunderbird/fallback-queries.json\n?? docs/measurements/word-index-thunderbird/index_manifest.json\n?? docs/measurements/word-index-thunderbird/observations.jsonl.zst\n?? docs/measurements/word-index-thunderbird/observations_manifest.json\n?? docs/measurements/word-index-thunderbird/run.json\n?? docs/measurements/word-index-thunderbird/summary.json\n?? docs/measurements/word-index-thunderbird/tables.md\n?? docs/measurements/word-index-thunderbird/tests-release.txt\n?? research/\n?? scripts/summarize_word_queries.py\n",
+    "git_diff_sha256": "e6d2dc5874a220b50abae4665fc0991dcbcd87d10f8f76afe3ce11d6d1d6fd09",
+    "cache_policy": "os_cache_uncontrolled; fresh Python/native processes",
+    "thread_policy": "one CPU affinity per worker; Arrow/OMP/BLAS thread limits = 1",
+    "clock": "perf_counter_ns monotonic wall; process and child CPU via getrusage",
+    "memory_policy": "whole-tree peak unavailable; process peaks diagnostic only",
+    "disk_free_bytes": 410575683584,
+    "native_sampling": "upstream NumberStats uses random_device; no seed control; chosen schemes retained per leaf in archive index"
+  },
+  "source_sha256": "a276905e7517a7d2c1d658490a0f27919c666045c3454ba695a5e77f79e9cbfe",
+  "source_rows": 16601745,
+  "source_bytes": 2516177713,
+  "native": {
+    "backend": "btrblocks",
+    "revision": "c950c3c01c1fbf91007936b05781d431a29a60d3",
+    "protocol": 3,
+    "integer_bits": 32,
+    "endian": "little",
+    "pointer_bytes": 8,
+    "sanitized": 0,
+    "fsst_safety_v1": 1,
+    "compiler": "16.2.1 20260810",
+    "selection": "SAMPLE",
+    "sample_count": 10,
+    "sample_run_size": 64,
+    "max_depth": 3,
+    "cpu_limit_seconds": 3600,
+    "address_space_limit_bytes": 2147483648,
+    "executable_sha256": "d6a1578ac6d0bef3ece823d6c96fe196d496c507d42b24048842c4b8b9ea8448"
+  },
+  "archives": {
+    "parquet-lz4": {
+      "path": "/home/nishant/coding/ByteForge/results/thunderbird-full/parquet-lz4-dict",
+      "archive_total_bytes": 299019419,
+      "component_bytes": {
+        "data.parquet": 299016974,
+        "manifest.json": 2445
+      },
+      "payload_bytes": 2499575968,
+      "ratio": 8.35924294267992,
+      "saved_pct": 88.03719419501157
+    },
+    "block-b-4096-word": {
+      "path": "/home/nishant/coding/ByteForge/results/thunderbird-full/block-b-4096-widebloom",
+      "archive_total_bytes": 655699338,
+      "component_bytes": {
+        "vocabulary.bin": 2308,
+        "index.json.zst": 17143110,
+        "data.bin": 638550348,
+        "manifest.json": 3572
+      },
+      "payload_bytes": 2499575968,
+      "ratio": 3.8120763940743827,
+      "saved_pct": 73.76757712530544
+    }
+  },
+  "queries": [
+    {
+      "id": "sampled-timestamp",
+      "operation": "contains",
+      "value": "1131523501"
+    },
+    {
+      "id": "punctuation-sentinel",
+      "operation": "contains",
+      "value": "__BYTEFORGE_QUERY_SENTINEL_9f38d7__"
+    }
+  ],
+  "word_indexes": {
+    "block-b-4096-word": {
+      "path": "/home/nishant/coding/ByteForge/results/word-index-thunderbird/index",
+      "total_bytes": 184400115,
+      "manifest": {
+        "format": "byteforge-ascii-word-postings-v1",
+        "dataset": {
+          "version": 1,
+          "kind": "loghub_2_0_full_raw",
+          "provenance": {
+            "dataset": "LogHub-2.0 Thunderbird",
+            "release": "Zenodo record 8275861 v1",
+            "archive_url": "https://zenodo.org/records/8275861/files/Thunderbird.zip",
+            "archive_name": "Thunderbird.zip",
+            "archive_md5": "a8d365d003845c3bef61661375513910",
+            "raw_member": "Thunderbird/Thunderbird_full.log",
+            "raw_member_published_bytes": 2516177713,
+            "license_url": "https://github.com/logpai/Loghub-2.0/blob/main/LICENSE",
+            "citations": [
+              "Loghub (ISSRE 2023)",
+              "Loghub-2.0 (ISSTA 2024)"
+            ]
+          },
+          "contract": {
+            "version": "raw-lf-utf8-v1",
+            "schema": "value: non-null UTF-8 string",
+            "delimiter": "LF byte only; delimiter excluded from value; CR retained",
+            "blank_lines": "one empty string per LF-delimited blank record",
+            "final_newline": "terminal LF terminates the last record; no phantom extra row",
+            "preprocessing": "none; BOM, NUL, whitespace, Unicode forms and order preserved"
+          },
+          "source_path": "/home/nishant/coding/ByteForge/data/loghub-2.0/Thunderbird_full.log",
+          "source_sha256": "a276905e7517a7d2c1d658490a0f27919c666045c3454ba695a5e77f79e9cbfe",
+          "source_file_bytes": 2516177713,
+          "rows": 16601745,
+          "payload_bytes": 2499575968,
+          "matches_published_full_shape": null,
+          "final_lf": true,
+          "logical_sha256": "6865ffa1cc474699063996c826c5fb052158ef42464076433595f9e4ec0ad9d4",
+          "canonical_sha256": "19eb21df372ea06090ac92496ed5bb6c727df789a2f9306378b807d619cd2066",
+          "canonical_file_bytes": 2632389944,
+          "artifact_identity": "full raw Thunderbird log member extracted from the MD5-verified official Zenodo archive"
+        },
+        "semantics": "all maximal ASCII letter runs; case-sensitive substring; ordered row IDs",
+        "page_rows": 65536,
+        "terms": 40122,
+        "pages": 278398,
+        "postings": 228895575,
+        "codec": "delta-uint16le+zstd-1",
+        "sqlite_version": "3.54.0",
+        "zstandard_version": "0.25.0",
+        "files": {
+          "postings.sqlite": {
+            "bytes": 184397824,
+            "sha256": "2c3470e2ed730903d96cddd39171cb5d5b9372459fe2fdb4664f2c9045c1b2b0"
+          }
+        },
+        "build_ns": 108364393449,
+        "build_cpu_ns": 102059962046
+      }
+    }
+  },
+  "cache_budgets": [
+    0
+  ],
+  "cpu_scope": "parent process only; excludes native worker CPU",
+  "cache_policy": "bounded decoded Arrow blocks; LRU for archive v2; no result cache",
+  "warmups": 0,
+  "repetitions": 2,
+  "warm_repetitions_per_session": 1,
+  "repeated_warmups_per_session": 0,
+  "block_rows": {
+    "parquet-lz4": null,
+    "block-b-4096-word": 4096
+  },
+  "timing": "cold includes QuerySession open and first filter; warm times one filter",
+  "OS_cache": "uncontrolled; fresh QuerySession and native worker per trial",
+  "seed": 20261024,
+  "peak_memory": "native worker VmHWM per session; parent peak not isolated"
+}

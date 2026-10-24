@@ -1,0 +1,20 @@
+[
+  {
+    "action": "initial Ruff check",
+    "outcome": "two long-line findings; fixed by formatting before code commit"
+  },
+  {
+    "action": "early result summary",
+    "outcome": "refused missing complete.json while benchmark was running; rerun after successful completion"
+  },
+  {
+    "action": "initial sanitizer Python suite",
+    "outcome": "47 passed, one failed: existing corruption test only injected protocol-3 byte operation; sanitizer worker uses protocol 2",
+    "resolution": "test now injects invalid integer IDs/offsets using protocol-appropriate calls; both suites 48/48"
+  },
+  {
+    "action": "optional GNU time resource probe",
+    "outcome": "/usr/bin/time absent; no query launched",
+    "resolution": "used Python resource.getrusage in fresh subprocesses; no package installed"
+  }
+]

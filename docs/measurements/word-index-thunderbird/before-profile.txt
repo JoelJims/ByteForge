@@ -1,0 +1,36 @@
+         10714943 function calls (10709540 primitive calls) in 4.261 seconds
+
+   Ordered by: cumulative time
+   List reduced from 799 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.103    0.103    3.048    3.048 query.py:29(__init__)
+        1    0.005    0.005    2.590    2.590 pipelines.py:243(load_archive)
+        1    0.953    0.953    1.962    1.962 pipelines.py:149(validate_block_index)
+        1    0.000    0.000    1.212    1.212 query.py:165(filter)
+        1    0.058    0.058    1.212    1.212 query.py:314(_filter_blocks)
+   129702    0.174    0.000    0.607    0.000 query_index.py:40(decode_filter)
+    64851    0.222    0.000    0.576    0.000 query_index.py:72(may_contain_bits)
+      525    0.014    0.000    0.419    0.001 query.py:281(_block_array)
+        3    0.000    0.000    0.401    0.134 __init__.py:304(loads)
+      525    0.037    0.000    0.373    0.001 pipelines.py:691(_decode_block_buffers)
+        3    0.000    0.000    0.353    0.118 decoder.py:340(decode)
+        3    0.353    0.118    0.353    0.118 decoder.py:351(raw_decode)
+   129702    0.049    0.000    0.349    0.000 base64.py:62(b64decode)
+   939077    0.275    0.000    0.343    0.000 query_index.py:18(_positions)
+  4215315    0.302    0.000    0.302    0.000 pipelines.py:195(<genexpr>)
+  1758478    0.219    0.000    0.219    0.000 {method 'get' of 'dict' objects}
+   129702    0.207    0.000    0.207    0.000 {built-in method binascii.a2b_base64}
+     1050    0.008    0.000    0.176    0.000 pipelines.py:722(decode_leaves)
+  1037640    0.170    0.000    0.170    0.000 pipelines.py:82(bounded_integer)
+      526    0.167    0.000    0.167    0.000 {method 'decompress' of 'zstandard.backend_c.ZstdDecompressor' objects}
+     1050    0.011    0.000    0.166    0.000 native.py:83(transform)
+      658    0.151    0.000    0.151    0.000 {method 'read' of '_io.BufferedReader' objects}
+     2100    0.015    0.000    0.146    0.000 native.py:65(_read)
+     57/4    0.000    0.000    0.135    0.034 <frozen importlib._bootstrap>:1360(_find_and_load)
+     57/4    0.000    0.000    0.135    0.034 <frozen importlib._bootstrap>:1308(_find_and_load_unlocked)
+     53/4    0.000    0.000    0.135    0.034 <frozen importlib._bootstrap>:914(_load_unlocked)
+     34/4    0.000    0.000    0.134    0.034 <frozen importlib._bootstrap_external>:757(exec_module)
+    136/8    0.000    0.000    0.122    0.015 <frozen importlib._bootstrap>:483(_call_with_frames_removed)
+     39/4    0.002    0.000    0.122    0.031 {built-in method builtins.exec}
+     2100    0.118    0.000    0.118    0.000 {built-in method select.select}

@@ -1,0 +1,174 @@
+{
+  "latencies": {
+    "parquet-lz4-word/0/cold/rare-failure": {
+      "p50_ns": 139925964.5,
+      "p95_ns": 402365079.7,
+      "min_ns": 119626190,
+      "max_ns": 436878898,
+      "trials": 10
+    },
+    "parquet-lz4-word/0/warm/rare-failure": {
+      "p50_ns": 2476321.0,
+      "p95_ns": 9808775.05,
+      "min_ns": 2395676,
+      "max_ns": 10347502,
+      "trials": 10
+    },
+    "parquet-lz4-word/0/cold/absent-word": {
+      "p50_ns": 145632234.5,
+      "p95_ns": 365933855.8,
+      "min_ns": 129950833,
+      "max_ns": 397642024,
+      "trials": 10
+    },
+    "parquet-lz4-word/0/warm/absent-word": {
+      "p50_ns": 3907727.5,
+      "p95_ns": 8957206.45,
+      "min_ns": 1614100,
+      "max_ns": 10629037,
+      "trials": 10
+    },
+    "block-b-256/0/cold/common-warning": {
+      "p50_ns": 14518369296.5,
+      "p95_ns": 15911847759.55,
+      "min_ns": 13717007724,
+      "max_ns": 16203424405,
+      "trials": 10
+    },
+    "block-b-256/0/warm/common-warning": {
+      "p50_ns": 12808123188.0,
+      "p95_ns": 16883493057.2,
+      "min_ns": 12594181658,
+      "max_ns": 19760251727,
+      "trials": 10
+    },
+    "parquet-lz4/0/cold/absent-word": {
+      "p50_ns": 5280168905.0,
+      "p95_ns": 5815860477.6,
+      "min_ns": 5106194329,
+      "max_ns": 5847271761,
+      "trials": 10
+    },
+    "parquet-lz4/0/warm/absent-word": {
+      "p50_ns": 5051613338.0,
+      "p95_ns": 5261338896.0,
+      "min_ns": 4859565853,
+      "max_ns": 5286640245,
+      "trials": 10
+    },
+    "parquet-lz4-word/0/cold/common-warning": {
+      "p50_ns": 362134248.0,
+      "p95_ns": 550269614.55,
+      "min_ns": 269754331,
+      "max_ns": 555480210,
+      "trials": 10
+    },
+    "parquet-lz4-word/0/warm/common-warning": {
+      "p50_ns": 150587837.0,
+      "p95_ns": 165793233.2,
+      "min_ns": 143212153,
+      "max_ns": 172024205,
+      "trials": 10
+    },
+    "block-b-4096-word/0/cold/absent-word": {
+      "p50_ns": 135521206.5,
+      "p95_ns": 374352511.1,
+      "min_ns": 124547453,
+      "max_ns": 393591623,
+      "trials": 10
+    },
+    "block-b-4096-word/0/warm/absent-word": {
+      "p50_ns": 3876390.0,
+      "p95_ns": 8593571.85,
+      "min_ns": 1553828,
+      "max_ns": 8639358,
+      "trials": 10
+    },
+    "block-b-4096-word/0/cold/rare-failure": {
+      "p50_ns": 134883653.0,
+      "p95_ns": 376929697.6,
+      "min_ns": 123496462,
+      "max_ns": 457394068,
+      "trials": 10
+    },
+    "block-b-4096-word/0/warm/rare-failure": {
+      "p50_ns": 2626361.0,
+      "p95_ns": 7931195.85,
+      "min_ns": 2417045,
+      "max_ns": 8427675,
+      "trials": 10
+    },
+    "block-b-4096-word/0/cold/common-warning": {
+      "p50_ns": 380869958.5,
+      "p95_ns": 516968013.8,
+      "min_ns": 283459614,
+      "max_ns": 527401802,
+      "trials": 10
+    },
+    "block-b-4096-word/0/warm/common-warning": {
+      "p50_ns": 147838289.5,
+      "p95_ns": 158180347.4,
+      "min_ns": 142092837,
+      "max_ns": 159563525,
+      "trials": 10
+    },
+    "parquet-lz4/0/cold/common-warning": {
+      "p50_ns": 5389356922.0,
+      "p95_ns": 5975839644.4,
+      "min_ns": 5172197602,
+      "max_ns": 6134462182,
+      "trials": 10
+    },
+    "parquet-lz4/0/warm/common-warning": {
+      "p50_ns": 5034177592.0,
+      "p95_ns": 5587780105.15,
+      "min_ns": 4750299455,
+      "max_ns": 5643484549,
+      "trials": 10
+    },
+    "parquet-lz4/0/cold/rare-failure": {
+      "p50_ns": 5564793397.0,
+      "p95_ns": 6565880689.85,
+      "min_ns": 5337340780,
+      "max_ns": 6763334843,
+      "trials": 10
+    },
+    "parquet-lz4/0/warm/rare-failure": {
+      "p50_ns": 5433038236.5,
+      "p95_ns": 6535107939.45,
+      "min_ns": 5115626754,
+      "max_ns": 6884343786,
+      "trials": 10
+    },
+    "block-b-256/0/cold/rare-failure": {
+      "p50_ns": 1955427708.5,
+      "p95_ns": 2344088983.4,
+      "min_ns": 1827787985,
+      "max_ns": 2400088391,
+      "trials": 10
+    },
+    "block-b-256/0/warm/rare-failure": {
+      "p50_ns": 680174977.0,
+      "p95_ns": 904325581.45,
+      "min_ns": 669052250,
+      "max_ns": 984659428,
+      "trials": 10
+    },
+    "block-b-256/0/cold/absent-word": {
+      "p50_ns": 1286169922.0,
+      "p95_ns": 1565067440.25,
+      "min_ns": 1189546000,
+      "max_ns": 1688304699,
+      "trials": 10
+    },
+    "block-b-256/0/warm/absent-word": {
+      "p50_ns": 42872280.0,
+      "p95_ns": 52212002.75,
+      "min_ns": 34942150,
+      "max_ns": 54881657,
+      "trials": 10
+    }
+  },
+  "failures": [],
+  "observations_sha256": "b1af0549b9997881ad8134399817b61f60991f6871a262819826f7f478bf0a64"
+}

@@ -540,3 +540,49 @@ compileall, `pip check`, and native CTest (5/5) passed. See
 `docs/measurements/query-aware-thunderbird-lz4/`. The larger repeated-query
 matrix was interrupted for runtime cost; its partial output is excluded from
 reported measurements. No data files were added to Git.
+
+## Exact word-index query specialization — 2026-10-24
+
+Continued from `5e0e1f5` on `implementation/core`, canonical origin fetched;
+local history is ahead without divergence. Read AGENTS.md, current pipeline/query/
+index/native/CLI/test code, qualification and HDFS/query/SGTT reports, and relevant
+research algorithm, permissions, representation and benchmark sections. Untracked
+AGENTS.md/research and old datasets/observations remain untouched. Published SGTT
+and BtrBlocks PDFs and SGTT repository identity were checked; no restricted code
+or table was copied/executed. The existing SGTT permission blocker still applies.
+
+The selective Thunderbird profile showed JSON directory validation/parsing and
+per-block Bloom hashing as substantial overhead. Added prepared Bloom positions
+and an opt-in encoder-independent ASCII-letter substring postings index. Index
+queries defer log directory parsing, native initialization and payload decoding;
+other predicates retain fully validated fallback. `IndexedQuerySession` and CLI
+`build-word-index`/`query --word-index` expose the path. A matched indexed-Parquet
+control prevents attributing generic index gains to BtrBlocks/SGTT. Exact coverage,
+storage and limitations are documented in `docs/word_index_query_results.md`.
+
+Implementation commit: `8f489a0`. Release-worker unittest passed 48 tests,
+including fresh-process B lookup/fallback, Unicode/punctuation/empty fallback,
+duplicates, randomized substrings, cross-page postings, corruption/truncation,
+unsupported versions, dataset mismatch and immutable sessions. Ruff check/format,
+compileall, pip check and Release native CTest (5/5) passed.
+
+On the complete 16.6-million-row Thunderbird source, the 184.4 MB index built
+once and was applied to existing B4096 and LZ4 archives. The 10-trial exact
+word-query comparison had 288 observations and zero failures. For common
+`warning`, cold B4096+index p50/p95 was 381/517 ms versus 5,389/5,976 ms for
+plain LZ4; warm 148/158 versus 5,034/5,588 ms. A matched LZ4+same-index control
+was 362/550 cold and 151/166 warm, so the query-speed win is from the index,
+not BtrBlocks. Complete storage is 840.1 MB indexed B versus 483.4 MB indexed
+LZ4 and 299.0 MB plain LZ4. Numeric fallback was slower on B4096 than LZ4
+(12.5 s versus 6.3 s, two-trial screen). Fresh-process warning RSS was 145 MB
+indexed B versus 589 MB plain LZ4 in one probe. Full results and compressed raw
+observations are in `docs/word_index_query_results.md` and
+`docs/measurements/word-index-thunderbird/`. The index is an optional search
+sidecar, not a compression or SGTT result. No data or previous observations
+changed; nothing was pushed.
+
+The first sanitizer run surfaced an existing corruption-test assumption that
+only worked with native protocol 3. Its injection now targets the correct byte
+or integer operation by protocol; sanitizer-worker and Release-worker suites
+both passed 48/48. Native CTest passed 5/5 in both builds. The sanitizer worker
+was never used for timing.

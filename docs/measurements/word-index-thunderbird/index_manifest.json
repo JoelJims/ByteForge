@@ -1,0 +1,56 @@
+{
+  "format": "byteforge-ascii-word-postings-v1",
+  "dataset": {
+    "version": 1,
+    "kind": "loghub_2_0_full_raw",
+    "provenance": {
+      "dataset": "LogHub-2.0 Thunderbird",
+      "release": "Zenodo record 8275861 v1",
+      "archive_url": "https://zenodo.org/records/8275861/files/Thunderbird.zip",
+      "archive_name": "Thunderbird.zip",
+      "archive_md5": "a8d365d003845c3bef61661375513910",
+      "raw_member": "Thunderbird/Thunderbird_full.log",
+      "raw_member_published_bytes": 2516177713,
+      "license_url": "https://github.com/logpai/Loghub-2.0/blob/main/LICENSE",
+      "citations": [
+        "Loghub (ISSRE 2023)",
+        "Loghub-2.0 (ISSTA 2024)"
+      ]
+    },
+    "contract": {
+      "version": "raw-lf-utf8-v1",
+      "schema": "value: non-null UTF-8 string",
+      "delimiter": "LF byte only; delimiter excluded from value; CR retained",
+      "blank_lines": "one empty string per LF-delimited blank record",
+      "final_newline": "terminal LF terminates the last record; no phantom extra row",
+      "preprocessing": "none; BOM, NUL, whitespace, Unicode forms and order preserved"
+    },
+    "source_path": "/home/nishant/coding/ByteForge/data/loghub-2.0/Thunderbird_full.log",
+    "source_sha256": "a276905e7517a7d2c1d658490a0f27919c666045c3454ba695a5e77f79e9cbfe",
+    "source_file_bytes": 2516177713,
+    "rows": 16601745,
+    "payload_bytes": 2499575968,
+    "matches_published_full_shape": null,
+    "final_lf": true,
+    "logical_sha256": "6865ffa1cc474699063996c826c5fb052158ef42464076433595f9e4ec0ad9d4",
+    "canonical_sha256": "19eb21df372ea06090ac92496ed5bb6c727df789a2f9306378b807d619cd2066",
+    "canonical_file_bytes": 2632389944,
+    "artifact_identity": "full raw Thunderbird log member extracted from the MD5-verified official Zenodo archive"
+  },
+  "semantics": "all maximal ASCII letter runs; case-sensitive substring; ordered row IDs",
+  "page_rows": 65536,
+  "terms": 40122,
+  "pages": 278398,
+  "postings": 228895575,
+  "codec": "delta-uint16le+zstd-1",
+  "sqlite_version": "3.54.0",
+  "zstandard_version": "0.25.0",
+  "files": {
+    "postings.sqlite": {
+      "bytes": 184397824,
+      "sha256": "2c3470e2ed730903d96cddd39171cb5d5b9372459fe2fdb4664f2c9045c1b2b0"
+    }
+  },
+  "build_ns": 108364393449,
+  "build_cpu_ns": 102059962046
+}

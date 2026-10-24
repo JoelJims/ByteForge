@@ -1,5 +1,11 @@
 # Log-query and decompression latency
 
+The [word-index follow-up](word_index_query_results.md) adds an optional exact
+postings path for ASCII-letter substrings and removes repeated Bloom hashing
+from ordinary block scans. It includes a matched indexed-Parquet control to
+separate indexing benefits from the underlying storage codec. Existing timings
+below remain historical observations.
+
 ## What was slow
 
 The previous B result was the explicitly diagnostic `test-only-byte-symbols-v1`,

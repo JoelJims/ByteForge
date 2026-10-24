@@ -1,0 +1,62 @@
+{
+  "latencies": {
+    "block-b-4096-word/0/cold/punctuation-sentinel": {
+      "p50_ns": 574580249.0,
+      "p95_ns": 628650321.2,
+      "min_ns": 514502391,
+      "max_ns": 634658107,
+      "trials": 2
+    },
+    "block-b-4096-word/0/warm/punctuation-sentinel": {
+      "p50_ns": 69260353.5,
+      "p95_ns": 70973300.55,
+      "min_ns": 67357079,
+      "max_ns": 71163628,
+      "trials": 2
+    },
+    "parquet-lz4/0/cold/sampled-timestamp": {
+      "p50_ns": 6309896359.0,
+      "p95_ns": 6387821491.9,
+      "min_ns": 6223312878,
+      "max_ns": 6396479840,
+      "trials": 2
+    },
+    "parquet-lz4/0/warm/sampled-timestamp": {
+      "p50_ns": 6003083800.0,
+      "p95_ns": 6039836398.9,
+      "min_ns": 5962247579,
+      "max_ns": 6043920021,
+      "trials": 2
+    },
+    "block-b-4096-word/0/cold/sampled-timestamp": {
+      "p50_ns": 12514134665.0,
+      "p95_ns": 12531626657.3,
+      "min_ns": 12494699118,
+      "max_ns": 12533570212,
+      "trials": 2
+    },
+    "block-b-4096-word/0/warm/sampled-timestamp": {
+      "p50_ns": 12171636969.0,
+      "p95_ns": 12254947334.7,
+      "min_ns": 12079069896,
+      "max_ns": 12264204042,
+      "trials": 2
+    },
+    "parquet-lz4/0/cold/punctuation-sentinel": {
+      "p50_ns": 5591919197.0,
+      "p95_ns": 5655253436.3,
+      "min_ns": 5521547820,
+      "max_ns": 5662290574,
+      "trials": 2
+    },
+    "parquet-lz4/0/warm/punctuation-sentinel": {
+      "p50_ns": 5356342857.0,
+      "p95_ns": 5359548351.9,
+      "min_ns": 5352781196,
+      "max_ns": 5359904518,
+      "trials": 2
+    }
+  },
+  "failures": [],
+  "observations_sha256": "f395a3ce97381da9d9613dbe4cd23ab55d79c9a6974c7755b120fe8ff2780154"
+}

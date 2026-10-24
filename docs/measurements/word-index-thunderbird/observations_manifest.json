@@ -1,0 +1,7 @@
+{
+  "uncompressed_bytes": 274125,
+  "sha256": "b1af0549b9997881ad8134399817b61f60991f6871a262819826f7f478bf0a64",
+  "records": 288,
+  "index_bytes": 184400115,
+  "observations": "observations.jsonl.zst"
+}

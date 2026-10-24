@@ -1,0 +1,12 @@
+[
+  {
+    "id": "sampled-timestamp",
+    "operation": "contains",
+    "value": "1131523501"
+  },
+  {
+    "id": "punctuation-sentinel",
+    "operation": "contains",
+    "value": "__BYTEFORGE_QUERY_SENTINEL_9f38d7__"
+  }
+]

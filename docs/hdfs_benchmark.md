@@ -1,5 +1,12 @@
 # Raw HDFS benchmark
 
+An optional [exact word-postings index](word_index_query_results.md) now supports
+ASCII-letter `contains` queries without payload decoding. Build it with
+`python -m byteforge build-word-index --prepared PATH --output NEW_PATH`, then
+pass `--word-index NEW_PATH` to `query`. It is separate from the encoder, adds
+storage/build cost, and works with both Parquet and diagnostic B. Noncovered
+queries retain exact payload scanning; it is not SGTT.
+
 The implemented experiment has two paths: **A**, genuine PyArrow Parquet+Zstd;
 and **B**, row token IDs/offsets compressed by the actual pinned BtrBlocks integer
 backend. Production B is blocked by SGTT code/table reuse rights. An explicit
