@@ -1,0 +1,590 @@
+{
+  "round-000-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-001-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-002-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-003-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-004-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-005-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-006-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-007-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-008-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-009-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-010-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  },
+  "round-011-B-test-only": {
+    "version": 1,
+    "windows": [
+      {
+        "rows": 2000,
+        "tokens": 283848,
+        "ids": [
+          {
+            "offset": 0,
+            "bytes": 51061,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 51061,
+            "bytes": 50933,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 101994,
+            "bytes": 50889,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 152883,
+            "bytes": 51125,
+            "elements": 65536,
+            "scheme": 2
+          },
+          {
+            "offset": 204008,
+            "bytes": 17069,
+            "elements": 21704,
+            "scheme": 2
+          }
+        ],
+        "offsets": [
+          {
+            "offset": 221077,
+            "bytes": 4468,
+            "elements": 2001,
+            "scheme": 5
+          }
+        ]
+      }
+    ]
+  }
+}

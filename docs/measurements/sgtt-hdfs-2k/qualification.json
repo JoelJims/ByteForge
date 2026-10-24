@@ -1,0 +1,77 @@
+{
+  "checked_at_utc": "2026-10-24T11:47:32.618671+00:00",
+  "source_repository": "https://github.com/umbra-db/token-vldb2026",
+  "source_revision": "e202e36e2b33a4768d1122f96880b64416234175",
+  "remote_head": "e202e36e2b33a4768d1122f96880b64416234175\tHEAD",
+  "paper": {
+    "title": "Accelerating String-Heavy Queries with LLM Token Tables",
+    "authors": [
+      "Tobias Schmidt",
+      "Nicolas Schmitt",
+      "Thomas Neumann",
+      "Andreas Kipf"
+    ],
+    "publication": "PVLDB 19(11):3635\u20133648, 2026",
+    "doi": "10.14778/3836663.3836714",
+    "url": "https://www.vldb.org/pvldb/vol19/p3635-schmidt.pdf",
+    "sha256": "4e3a31620e55daf775ce6b9dd719e2898eefe16304e80f3061a20c79c68329f5",
+    "paper_license": "CC BY-NC-ND 4.0; does not establish artifact code/table permission",
+    "artifact_link_verified": "PDF page 1"
+  },
+  "license_http_checks": {
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/umbra-db/token-vldb2026/e202e36e2b33a4768d1122f96880b64416234175/LICENSE",
+      "http_status": 404,
+      "sha256": null
+    },
+    "COPYING": {
+      "url": "https://raw.githubusercontent.com/umbra-db/token-vldb2026/e202e36e2b33a4768d1122f96880b64416234175/COPYING",
+      "http_status": 404,
+      "sha256": null
+    },
+    "README.md": {
+      "url": "https://raw.githubusercontent.com/umbra-db/token-vldb2026/e202e36e2b33a4768d1122f96880b64416234175/README.md",
+      "http_status": 200,
+      "sha256": "899109731784ccf0a8b36b9a16d844b8b9f6793355095edb569dae4efef49772"
+    },
+    "data/dbtext/LICENSE": {
+      "url": "https://raw.githubusercontent.com/umbra-db/token-vldb2026/e202e36e2b33a4768d1122f96880b64416234175/data/dbtext/LICENSE",
+      "http_status": 200,
+      "sha256": "20e9c14ff437a73a6e2b105f1b5aaf9ef24a84d962741c0ab01d04b4910294ab"
+    },
+    "thirdparty/onpair/LICENSE": {
+      "url": "https://raw.githubusercontent.com/umbra-db/token-vldb2026/e202e36e2b33a4768d1122f96880b64416234175/thirdparty/onpair/LICENSE",
+      "http_status": 200,
+      "sha256": "653ff3ee1d04c46c6cc9a294842dd74fa8ef4ff8734bf6103fb1f151ade9f29d"
+    }
+  },
+  "tracked_license_paths": [
+    "data/dbtext/LICENSE",
+    "thirdparty/onpair/LICENSE"
+  ],
+  "inspected_source_sha256": {
+    "extract_tokens.py": "4f79cc3fcd5b5997ac516bb949cab16b9e9ada941b788cbf78df709d04456b79",
+    "extract_tokens.sh": "849f06cb7746942189a4dfbfab07b168539b76c96a6c8fc12c7a5fdae26e7c8b",
+    "CMakeLists.txt": "c75cf325994a7082137f2f50ebd4990191dbe430c2641f0dd3d09dda8ffdb098",
+    "requirements.txt": "aef12dee64c23a2b99dee0ae3faf9f77eb61ffd733f0619c89d1b9be623b47ff",
+    "src/tokenizer/Tokenizer.hpp": "e88085c3dc3df98fe4c24cf1e8496494bf701c5c4b4c5d5bb5260a05e05ef79d",
+    "src/tokenizer/Tokenizer.cpp": "1e4de72aff7cecb4eb54f71648ce6d038fd10f481d4a53573b1e9b421780f2b4",
+    "src/tokenizer/Encoder.hpp": "61ceac85bcc019de9a9b73e14c28d121b1890cf2a9645b3f56ac8bf3ae123125",
+    "src/tokenizer/Decoder.cpp": "8582e070a6ca6a87981230cab052b4ed06f0fe3729f22bf4f3079f91bdcbda44",
+    "src/tokenizer/OpenAI100kPatchedTokenizer.cpp": "43271d3e90fb34f1f9fd52676f1d1d07d11b22e8347b8f15b31ed5bd4bfc148f",
+    "src/tokenizer/encoder/StandardEncoder.hpp": "edcf085050b48770a282c7026589822b7ac932854a105a5dcdf493b37e312668",
+    "src/compressor/SGTTCompressor.cpp": "bd11e6b1021da2ea060ba393862d3636639a7dd67ef10977da81637312a63f8a",
+    "tools/sgtt.cpp": "f595231d5b00a55c44f4adef12299a81cf9da98210adb6ecefc5ab1d0cb9a507",
+    "test/TokenizerTest.cpp": "7c9c5dc3ecbff9f222e06ae5fabbf77a94a7130b254a1e6ff679dac01328fd29",
+    "benchmarks/stacked/sgtt_general.json": "9df7252113deb86295fcb0836e7c3e03a3d73bd55058857cfd843f4c77f45aa8"
+  },
+  "source_code_permission": "not established; copyright notices, no root grant identified",
+  "patched_table_permission": "not established independently of source and base vocabulary",
+  "base_vocabulary_permission": "not established for bundled cl100k.tiktoken and derived patched tables",
+  "model_checkpoint": "not required by fixed-table algorithm; no checkpoint used",
+  "transitive_dependency_permission": "dbtext/OnPair MIT grants are scoped to their assets; remaining SGTT dependency audit incomplete",
+  "restricted_material_executed": false,
+  "restricted_material_bundled": false,
+  "author_contacted": false,
+  "actual_sgtt_qualified": false
+}

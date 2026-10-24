@@ -202,3 +202,32 @@ space. Runner timeout terminates the worker process group. Checksums detect
 accidental corruption, not maliciously re-signed native bodies; native archives
 remain a trusted-input format. Large real runs retain all trial archives and
 need a declared disk/time budget before execution.
+
+## Actual SGTT qualification and release controls
+
+See [SGTT/HDFS_2k report](sgtt_hdfs_2k_results.md) and the new independent
+`docs/measurements/sgtt-hdfs-2k/` records. The published paper explicitly identifies
+`umbra-db/token-vldb2026`; revision
+`e202e36e2b33a4768d1122f96880b64416234175` still lacks an established grant covering
+its source and patched tables. No SGTT code/table was executed or bundled.
+
+```sh
+.venv/bin/python -m byteforge sgtt-status
+# Fails explicitly; never substitutes test byte symbols:
+.venv/bin/python -m byteforge run --path data/hdfs/HDFS_2k.log \
+  --output results/new-actual-sgtt-run --encoder sgtt
+```
+
+`--encoder test-byte` explicitly selects the existing diagnostic, equivalently to
+`--test-encoder`. It never makes a production SGTT result. The saved release
+control run used `build/sgtt-controls-release/byteforge_integer_worker` with
+sanitizers OFF and `fsst-safety-v1` ON, two warmups and ten measured repetitions.
+The original sanitizer executable and old measurements remain unchanged. Both
+actual SGTT+BtrBlocks and SGTT+Zstd are recorded as unsupported with null metrics.
+The report includes the separate build recipe and storage/timing breakdown.
+
+Archive readers now preflight complete index bounds and dataset metadata and
+verify the diagnostic vocabulary identity before native decompression. Checksums
+are not authenticity guarantees; trusted native archives are still required.
+Fresh-process timings include separate startup/import/setup measurements. Warmups
+are not a persistent warm-service benchmark; that metric remains unavailable.

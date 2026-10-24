@@ -293,3 +293,35 @@ reported no broken requirements. CTest in the separate non-sanitized release
 build passed **5/5** probes. An initial Ruff check found import ordering and one
 long line; both were fixed before committing. These are infrastructure/control
 tests, not actual SGTT reference or reconstruction tests.
+
+### Release controls and saved evidence
+
+At implementation revision `560c1cc`, ran the unchanged, official-byte-matched
+`data/hdfs/HDFS_2k.log` through A and explicitly selected diagnostic byte symbols.
+The separate Release build reports sanitized=0 and has no ASan dynamic runtime;
+original worker hash remains unchanged. No new dependencies installed. Build
+configure and compilation succeeded; recipe, flags and hashes are in the report.
+
+Command: `.venv/bin/python -m byteforge run --path data/hdfs/HDFS_2k.log
+--output results/sgtt-hdfs-2k-release-controls --encoder test-byte
+--worker build/sgtt-controls-release/byteforge_integer_worker --warmups 2
+--repetitions 10`. Outcome: **24/24 exact canonical and physical reconstructions**,
+zero failed trials. Actual SGTT+BtrBlocks and SGTT+Zstd were not run. Complete A
+archive: 64,278 B, median encode/reconstruction 7.410/15.541 ms; diagnostic archive:
+233,320 B, medians 106.476/83.485 ms. Variability and timing boundaries are recorded;
+these measurements make no SGTT performance claim.
+
+Saved raw JSONL, environment/configuration, summaries, table/source permission
+HTTP evidence, dataset validation, representative manifests and native directories
+under `docs/measurements/sgtt-hdfs-2k/`. Source dataset was re-compared with the
+pinned official sample and is unchanged. Added `scripts/summarize_controls.py`;
+its output exactly matches the saved phase summary. Final default ASan-worker
+Python suite passed **26 tests**, as did the Release-worker suite. Ruff and
+`pip check` passed. Actual SGTT tests/profiling, asset accounting and warm-service
+measurements remain blocked/unavailable, not simulated. No query claim is made.
+
+Next requirement: obtain an applicable source and exact table/vocabulary grant,
+complete transitive dependency audit, then qualify public Encoder/Decoder APIs,
+reference IDs, empty rows, byte fallback, 2,000-row exact reconstruction and a
+versioned asset-aware production archive. Author contact requires authorization.
+Existing research documents and AGENTS.md were neither modified nor staged.

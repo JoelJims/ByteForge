@@ -1,0 +1,206 @@
+{
+  "A": {
+    "encode": {
+      "encode_total_ns": {
+        "median": 7410177.0,
+        "min": 6210684,
+        "max": 30356394
+      },
+      "parquet_conversion_write_close_ns": {
+        "median": 5813139.5,
+        "min": 5064613,
+        "max": 28936407
+      },
+      "operation_wall_ns": {
+        "median": 16622113.5,
+        "min": 13243082,
+        "max": 38392006
+      },
+      "process_cpu_ns": {
+        "median": 100543500.0,
+        "min": 88089000,
+        "max": 134195000
+      },
+      "native_children_cpu_ns": {
+        "median": 0.0,
+        "min": 0,
+        "max": 0
+      },
+      "fresh_process_wall_ns": {
+        "median": 165306830.5,
+        "min": 114419073,
+        "max": 215601885
+      }
+    },
+    "restore": {
+      "restore_total_ns": {
+        "median": 15540578.0,
+        "min": 13422970,
+        "max": 35477212
+      },
+      "archive_validation_ns": {
+        "median": 359530.0,
+        "min": 297160,
+        "max": 757833
+      },
+      "archive_to_canonical_ns": {
+        "median": 13912657.5,
+        "min": 11784666,
+        "max": 33883775
+      },
+      "physical_raw_export_ns": {
+        "median": 1491966.5,
+        "min": 1385675,
+        "max": 1683936
+      },
+      "operation_wall_ns": {
+        "median": 15550034.5,
+        "min": 13429775,
+        "max": 35484614
+      },
+      "process_cpu_ns": {
+        "median": 95510999.5,
+        "min": 84908000,
+        "max": 147025000
+      },
+      "native_children_cpu_ns": {
+        "median": 0.0,
+        "min": 0,
+        "max": 0
+      },
+      "fresh_process_wall_ns": {
+        "median": 115598308.5,
+        "min": 114315427,
+        "max": 215235956
+      }
+    },
+    "two_fresh_process_wall_ns": {
+      "median": 305726651.0,
+      "min": 228734500,
+      "max": 430837841
+    },
+    "components_bytes": {
+      "data.parquet": 60508,
+      "manifest.json": 3770
+    },
+    "codec_compressed_bytes": null,
+    "warm_service_ns": null,
+    "actual_sgtt_initialization_ns": null,
+    "actual_sgtt_asset_bytes": null
+  },
+  "B-test-only": {
+    "encode": {
+      "encode_total_ns": {
+        "median": 106475765.0,
+        "min": 100413027,
+        "max": 146687674
+      },
+      "tokenization_and_local_validation_ns": {
+        "median": 57096322.5,
+        "min": 53781924,
+        "max": 78219226
+      },
+      "integer_serialization_ns": {
+        "median": 14599676.0,
+        "min": 14170700,
+        "max": 21692120
+      },
+      "native_encode_ipc_ns": {
+        "median": 15206396.5,
+        "min": 14204998,
+        "max": 19834821
+      },
+      "operation_wall_ns": {
+        "median": 106868515.5,
+        "min": 100825187,
+        "max": 147143255
+      },
+      "process_cpu_ns": {
+        "median": 170772999.5,
+        "min": 152688000,
+        "max": 216565999
+      },
+      "native_children_cpu_ns": {
+        "median": 16957000.0,
+        "min": 15837000,
+        "max": 22633999
+      },
+      "fresh_process_wall_ns": {
+        "median": 215202723.5,
+        "min": 214494245,
+        "max": 315164758
+      }
+    },
+    "restore": {
+      "detokenization_validation_ns": {
+        "median": 57059410.0,
+        "min": 54517143,
+        "max": 64425814
+      },
+      "native_decompression_ipc_ns": {
+        "median": 3253478.5,
+        "min": 2576619,
+        "max": 4512775
+      },
+      "restore_total_ns": {
+        "median": 83484608.0,
+        "min": 77392646,
+        "max": 95273488
+      },
+      "archive_validation_ns": {
+        "median": 624255.5,
+        "min": 549467,
+        "max": 950515
+      },
+      "archive_to_canonical_ns": {
+        "median": 81832289.5,
+        "min": 75960355,
+        "max": 93532498
+      },
+      "physical_raw_export_ns": {
+        "median": 1560475.0,
+        "min": 1387052,
+        "max": 1839572
+      },
+      "operation_wall_ns": {
+        "median": 83491405.5,
+        "min": 77399259,
+        "max": 95286313
+      },
+      "process_cpu_ns": {
+        "median": 157119499.5,
+        "min": 144357000,
+        "max": 181917000
+      },
+      "native_children_cpu_ns": {
+        "median": 3869499.5,
+        "min": 3132000,
+        "max": 4672000
+      },
+      "fresh_process_wall_ns": {
+        "median": 214876771.0,
+        "min": 214630552,
+        "max": 215811807
+      }
+    },
+    "two_fresh_process_wall_ns": {
+      "median": 430256853.0,
+      "min": 429554940,
+      "max": 529988956
+    },
+    "components_bytes": {
+      "vocabulary.bin": 2308,
+      "index.json": 892,
+      "data.bin": 225545,
+      "manifest.json": 4575
+    },
+    "codec_compressed_bytes": {
+      "median": 225353.0,
+      "min": 225353,
+      "max": 225353
+    },
+    "warm_service_ns": null,
+    "actual_sgtt_initialization_ns": null,
+    "actual_sgtt_asset_bytes": null
+  }
+}

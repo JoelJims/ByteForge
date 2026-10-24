@@ -1,0 +1,54 @@
+{
+  "pipelines": {
+    "A": {
+      "valid_measured_trials": 10,
+      "dataset_kind": "hdfs_2k_sample",
+      "performance_claim": null,
+      "encode_total_ns": {
+        "median": 7410177.0,
+        "min": 6210684,
+        "max": 30356394
+      },
+      "restore_total_ns": {
+        "median": 15540578.0,
+        "min": 13422970,
+        "max": 35477212
+      },
+      "archive_total_bytes": {
+        "median": 64278.0,
+        "min": 64278,
+        "max": 64278
+      }
+    },
+    "B-test-only": {
+      "valid_measured_trials": 10,
+      "dataset_kind": "hdfs_2k_sample",
+      "performance_claim": null,
+      "encode_total_ns": {
+        "median": 106475765.0,
+        "min": 100413027,
+        "max": 146687674
+      },
+      "restore_total_ns": {
+        "median": 83484608.0,
+        "min": 77392646,
+        "max": 95273488
+      },
+      "archive_total_bytes": {
+        "median": 233320.0,
+        "min": 233320,
+        "max": 233320
+      }
+    }
+  },
+  "production_B": {
+    "encoder": "actual-sgtt",
+    "available": false,
+    "adapter_implemented": false,
+    "status": "unsupported",
+    "source_revision": "e202e36e2b33a4768d1122f96880b64416234175",
+    "paper_doi": "10.14778/3836663.3836714",
+    "reason": "Actual SGTT is unavailable: permissions for token-vldb2026 source and patched token-table assets are not established; no authorized adapter is integrated. No test-only encoder substitution is permitted. See docs/sgtt_hdfs_2k_results.md"
+  },
+  "note": "Warmups/failures excluded from summaries, retained in raw JSONL. No winner or SGTT inference; test-only timings are diagnostics."
+}

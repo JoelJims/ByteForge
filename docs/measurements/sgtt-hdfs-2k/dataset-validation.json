@@ -1,0 +1,16 @@
+{
+  "path": "data/hdfs/HDFS_2k.log",
+  "source_bytes": 285848,
+  "sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+  "utf8_validated": true,
+  "ascii_only": true,
+  "lf_count": 2000,
+  "cr_count": 0,
+  "final_lf": true,
+  "logical_rows": 2000,
+  "payload_bytes": 283848,
+  "blank_records": 0,
+  "official_pinned_url": "https://raw.githubusercontent.com/logpai/loghub-2.0/ac4aad2ea86f561e5a0acbc6587fa28b487259f9/2k_dataset/HDFS/HDFS_2k.log",
+  "byte_identical_to_official": true,
+  "preprocessing": "none; LF framing excluded from logical values, recorded for exact physical export"
+}

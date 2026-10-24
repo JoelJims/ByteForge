@@ -1,0 +1,92 @@
+{
+  "format": "byteforge-hdfs-archive-v1",
+  "pipeline": "B",
+  "dataset": {
+    "version": 1,
+    "kind": "hdfs_2k_sample",
+    "provenance": {
+      "dataset": "LogHub-2.0/HDFS_2k",
+      "release": "GitHub 2k sample at ac4aad2ea86f561e5a0acbc6587fa28b487259f9",
+      "official_repository": "https://github.com/logpai/loghub-2.0",
+      "artifact_name": "HDFS_2k.log",
+      "artifact_url": "https://raw.githubusercontent.com/logpai/loghub-2.0/ac4aad2ea86f561e5a0acbc6587fa28b487259f9/2k_dataset/HDFS/HDFS_2k.log",
+      "documentation_url": "https://github.com/logpai/loghub-2.0/blob/main/2k_dataset/HDFS/HDFS_2k.log",
+      "official_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+      "official_file_bytes": 285848,
+      "official_rows": 2000,
+      "license_url": "https://github.com/logpai/loghub-2.0/blob/main/LICENSE",
+      "license_notice": "LICENSE OF LOGHUB-2.0\n\nThe datasets are freely available for research or academic work, subject to\nthe following condition: For any usage or distribution of the loghub-2.0 datasets,\nplease refer to the loghub repository URL (https://github.com/logpai/loghub-2.0)\nand cite the following loghub papers where applicable.\n\n+ Zhihan Jiang, Jinyang Liu, Junjie Huang, Yichen Li, Yintong Huo, Jiazhen Gu,\n   Zhuangbin Chen, Jieming Zhu, Michael R. Lyu. A Large-scale Evaluation for\n   Log Parsing Techniques: How Far are We? In ISSTA, 2024.\n+ Jieming Zhu, Shilin He, Pinjia He, Jinyang Liu, Michael R. Lyu. Loghub: A Large\n   Collection of System Log Datasets for AI-driven Log Analytics. In ISSRE, 2023.\n\nThe above license notice shall be included in all copies of the datasets.\n",
+      "rights": "Research/academic use; retain repository license notice, URL and citations.",
+      "citations": [
+        "Jiang et al., A Large-scale Evaluation for Log Parsing Techniques: How Far are We?, ISSTA 2024",
+        "Zhu et al., Loghub: A Large Collection of System Log Datasets for AI-driven Log Analytics, ISSRE 2023"
+      ],
+      "scope": "Real 2k sample, distinct from the Zenodo full HDFS corpus"
+    },
+    "contract": {
+      "version": "raw-lf-utf8-v1",
+      "schema": "value: non-null UTF-8 string",
+      "delimiter": "LF byte only; delimiter excluded from value; CR retained",
+      "blank_lines": "one empty string per LF-delimited blank record",
+      "final_newline": "terminal LF terminates the last record; no phantom extra row",
+      "preprocessing": "none; BOM, NUL, whitespace, Unicode forms and order preserved"
+    },
+    "source_path": "/home/nishant/coding/ByteForge/data/hdfs/HDFS_2k.log",
+    "source_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+    "source_file_bytes": 285848,
+    "rows": 2000,
+    "payload_bytes": 283848,
+    "matches_published_full_shape": null,
+    "final_lf": true,
+    "logical_sha256": "7ca3199136281f5fcbe9c53d011aa7658c577d917a95fce8c23751945036b860",
+    "canonical_sha256": "cab203dd59d057619cfd67f6c4c6b4741420477a3102653ccc49bd2335ab0160",
+    "canonical_file_bytes": 299864,
+    "artifact_identity": "byte-identical to pinned official HDFS_2k.log"
+  },
+  "tokenizer": {
+    "identity": "test-only-byte-symbols-v1",
+    "test_only": true,
+    "validation_scope": "archive infrastructure only; not SGTT",
+    "configuration": {},
+    "decode_assets": "complete ID-to-byte vocabulary.bin"
+  },
+  "native": {
+    "backend": "btrblocks",
+    "revision": "c950c3c01c1fbf91007936b05781d431a29a60d3",
+    "protocol": 2,
+    "integer_bits": 32,
+    "endian": "little",
+    "pointer_bytes": 8,
+    "sanitized": 0,
+    "fsst_safety_v1": 1,
+    "compiler": "16.2.1 20260810",
+    "selection": "SAMPLE",
+    "sample_count": 10,
+    "sample_run_size": 64,
+    "max_depth": 3,
+    "cpu_limit_seconds": 3600,
+    "address_space_limit_bytes": 2147483648,
+    "executable_sha256": "851564d7b582763ba450e81fc7db7f2039b4b909cf5876dfa67fe5a223f227b9"
+  },
+  "representation": "separate nonnegative int32 ID/offset leaves; little endian",
+  "settings": {
+    "leaf_elements": 65536,
+    "max_rows_per_window": 65536,
+    "max_payload_per_window": 67108864,
+    "selection": "upstream defaults"
+  },
+  "files": {
+    "data.bin": {
+      "bytes": 225545,
+      "sha256": "f8d581a2f710df95174ebf8dc499f9c62386145f3429a6db6f6faefd9de9275a"
+    },
+    "index.json": {
+      "bytes": 892,
+      "sha256": "bc1ed771a6a1b615bd8cf2ff24887924dda59685391ae4fcc029c6c7563c2593"
+    },
+    "vocabulary.bin": {
+      "bytes": 2308,
+      "sha256": "7310b03ffa367fc8d92de69ab0298387019de6ab9fb6d762ed1f6bc5adeb8953"
+    }
+  }
+}
