@@ -2,10 +2,17 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from byteforge.dataset import prepare, reconstruct_raw, row_windows
+from byteforge.dataset import HDFS_2K, identify_input, prepare, reconstruct_raw, row_windows
 
 
 class DatasetTests(unittest.TestCase):
+    def test_sample_identity_requires_checksum_and_dimensions(self):
+        identity = identify_input(Path("renamed.log"), HDFS_2K["official_sha256"], 2000, 285848)
+        self.assertEqual(identity[0], "hdfs_2k_sample")
+        for digest, count in (("0" * 64, 2000), (HDFS_2K["official_sha256"], 1999)):
+            result = identify_input(Path("HDFS_2k.log"), digest, count, 285848)
+            self.assertEqual(result[0], "hdfs_2k_candidate")
+
     def test_physical_and_logical_roundtrips(self):
         for data, expected in (
             (b"", ()),

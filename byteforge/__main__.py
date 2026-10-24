@@ -6,7 +6,15 @@ import sys
 import time
 from pathlib import Path
 
-from byteforge.dataset import HDFS, dump_json, hdfs_path, prepare, reconstruct_raw, require_raw
+from byteforge.dataset import (
+    HDFS,
+    HDFS_2K,
+    dump_json,
+    hdfs_path,
+    prepare,
+    reconstruct_raw,
+    require_raw,
+)
 from byteforge.native import worker_path
 
 
@@ -23,7 +31,11 @@ def main() -> int:
     bench.add_argument("--path", type=Path)
     bench.add_argument("--output", type=Path, required=True)
     bench.add_argument("--synthetic", action="store_true")
-    bench.add_argument("--test-encoder", action="store_true")
+    bench.add_argument(
+        "--test-encoder",
+        action="store_true",
+        help="explicitly run test-only byte symbols on the supplied input; not SGTT",
+    )
     bench.add_argument("--worker", type=Path, default=worker_path())
     bench.add_argument("--warmups", type=int, default=2)
     bench.add_argument("--repetitions", type=int, default=10)
@@ -48,7 +60,7 @@ def main() -> int:
                 "path": str(path),
                 "bytes": path.stat().st_size,
                 "content_validated": False,
-                "expected_artifact": HDFS,
+                "expected_artifact": HDFS_2K if path.name == "HDFS_2k.log" else HDFS,
             }
         elif args.command == "prepare":
             result = prepare(hdfs_path(args.path), args.output, synthetic=args.synthetic)

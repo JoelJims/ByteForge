@@ -177,11 +177,18 @@ def _read_vocabulary(path: Path) -> tuple[bytes, ...]:
     return tuple(entries)
 
 
-def build_hybrid(prepared: Path, output: Path, tokenizer: Tokenizer, worker: Path) -> dict:
+def build_hybrid(
+    prepared: Path,
+    output: Path,
+    tokenizer: Tokenizer,
+    worker: Path,
+    *,
+    allow_test_encoder_on_real: bool = False,
+) -> dict:
     start = time.perf_counter_ns()
     dataset = prepared_manifest(prepared)
     test_only = bool(getattr(tokenizer, "test_only", False))
-    if test_only and dataset["kind"] != "synthetic":
+    if test_only and dataset["kind"] != "synthetic" and not allow_test_encoder_on_real:
         raise ValueError("Test-only encoder is restricted to explicitly synthetic inputs")
     output.mkdir(parents=True, exist_ok=False)
     vocabulary = _vocabulary_bytes(tokenizer.vocabulary)
@@ -220,6 +227,9 @@ def build_hybrid(prepared: Path, output: Path, tokenizer: Tokenizer, worker: Pat
             "tokenizer": {
                 "identity": tokenizer.identity,
                 "test_only": test_only,
+                "validation_scope": "archive infrastructure only; not SGTT"
+                if test_only
+                else "caller-provided tokenizer; inspect its configuration and rights",
                 "configuration": getattr(tokenizer, "configuration", {}),
                 "decode_assets": "complete ID-to-byte vocabulary.bin",
             },

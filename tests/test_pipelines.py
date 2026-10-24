@@ -19,6 +19,23 @@ FIXTURE = Path(__file__).parent / "fixtures/hdfs-synthetic.log"
 
 @unittest.skipUnless(HAS_ARROW, "PyArrow benchmark extra not installed")
 class ParquetArchiveTests(unittest.TestCase):
+    def test_test_encoder_does_not_relabel_input_as_synthetic(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            run(
+                FIXTURE,
+                root / "run",
+                synthetic=False,
+                test_encoder=True,
+                worker=root / "missing",
+                repetitions=1,
+                warmups=0,
+            )
+            config = json.loads((root / "run/run.json").read_text())
+            self.assertEqual(config["dataset"]["kind"], "hdfs_raw_candidate")
+            self.assertEqual(config["kind"], "real_data_infrastructure_validation")
+            self.assertEqual(config["sgtt"]["status"], "unsupported")
+
     def test_complete_archive_and_empty_inputs(self):
         for data in (FIXTURE.read_bytes(), b"", b"\n\n", b"x\r\n\r\nlast", b"x" * 100000):
             with tempfile.TemporaryDirectory() as tmp:
@@ -138,6 +155,26 @@ class HybridArchiveTests(unittest.TestCase):
             prepare(FIXTURE, root / "input", synthetic=False)
             with self.assertRaisesRegex(ValueError, "synthetic"):
                 build_hybrid(root / "input", root / "archive", TestByteEncoder(), worker_path())
+
+    def test_explicit_test_encoder_preserves_input_provenance(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            prepare(FIXTURE, root / "input", synthetic=False)
+            build_hybrid(
+                root / "input",
+                root / "archive",
+                TestByteEncoder(),
+                worker_path(),
+                allow_test_encoder_on_real=True,
+            )
+            manifest = json.loads((root / "archive/manifest.json").read_text())
+            self.assertEqual(manifest["dataset"]["kind"], "hdfs_raw_candidate")
+            self.assertTrue(manifest["tokenizer"]["test_only"])
+            self.assertIn("not SGTT", manifest["tokenizer"]["validation_scope"])
+            restore(root / "archive", root / "decoded.bin", worker=worker_path())
+            self.assertEqual(
+                (root / "input/rows.bin").read_bytes(), (root / "decoded.bin").read_bytes()
+            )
 
 
 class DatasetCommandTests(unittest.TestCase):

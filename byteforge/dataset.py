@@ -47,6 +47,36 @@ CONTRACT = {
     "final_newline": "terminal LF terminates the last record; no phantom extra row",
     "preprocessing": "none; BOM, NUL, whitespace, Unicode forms and order preserved",
 }
+HDFS_2K = {
+    "dataset": "LogHub-2.0/HDFS_2k",
+    "release": "GitHub 2k sample at ac4aad2ea86f561e5a0acbc6587fa28b487259f9",
+    "official_repository": HDFS["official_repository"],
+    "artifact_name": "HDFS_2k.log",
+    "artifact_url": "https://raw.githubusercontent.com/logpai/loghub-2.0/"
+    "ac4aad2ea86f561e5a0acbc6587fa28b487259f9/2k_dataset/HDFS/HDFS_2k.log",
+    "documentation_url": "https://github.com/logpai/loghub-2.0/blob/main/"
+    "2k_dataset/HDFS/HDFS_2k.log",
+    "official_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+    "official_file_bytes": 285848,
+    "official_rows": 2000,
+    "license_url": HDFS["license_url"],
+    "license_notice": HDFS["license_notice"],
+    "rights": "Research/academic use; retain repository license notice, URL and citations.",
+    "citations": HDFS["citations"],
+    "scope": "Real 2k sample, distinct from the Zenodo full HDFS corpus",
+}
+
+
+def identify_input(path: Path, sha256: str, rows: int, size: int) -> tuple[str, dict, str]:
+    if (sha256, rows, size) == (
+        HDFS_2K["official_sha256"],
+        HDFS_2K["official_rows"],
+        HDFS_2K["official_file_bytes"],
+    ):
+        return "hdfs_2k_sample", HDFS_2K, "byte-identical to pinned official HDFS_2k.log"
+    if path.name == "HDFS_2k.log":
+        return "hdfs_2k_candidate", HDFS_2K, "does not match pinned official sample bytes"
+    return "hdfs_raw_candidate", HDFS, "user-supplied raw file; archive provenance not verified"
 
 
 def dump_json(path: Path, value: dict) -> None:
@@ -150,10 +180,15 @@ def prepare(path: Path, output: Path, *, synthetic: bool = False) -> dict:
                 offset += len(physical)
             canonical.seek(8)
             canonical.write(U64.pack(count))
+        kind, provenance, identity = (
+            ("synthetic", {"synthetic": True}, "synthetic")
+            if synthetic
+            else identify_input(path, source_hash.hexdigest(), count, offset)
+        )
         manifest = {
             "version": 1,
-            "kind": "synthetic" if synthetic else "hdfs_raw_candidate",
-            "provenance": {"synthetic": True} if synthetic else HDFS,
+            "kind": kind,
+            "provenance": provenance,
             "contract": CONTRACT,
             "source_path": str(path.resolve()),
             "source_sha256": source_hash.hexdigest(),
@@ -161,15 +196,13 @@ def prepare(path: Path, output: Path, *, synthetic: bool = False) -> dict:
             "rows": count,
             "payload_bytes": payload,
             "matches_published_full_shape": None
-            if synthetic
+            if synthetic or kind.startswith("hdfs_2k")
             else count == HDFS["published_rows"] and offset == HDFS["zip_directory_raw_bytes"],
             "final_lf": last_lf,
             "logical_sha256": logical_hash.hexdigest(),
             "canonical_sha256": checksum(output / "rows.bin"),
             "canonical_file_bytes": (output / "rows.bin").stat().st_size,
-            "artifact_identity": "synthetic"
-            if synthetic
-            else "user-supplied raw file; archive checksum/provenance not independently verified",
+            "artifact_identity": identity,
         }
         dump_json(output / "dataset.json", manifest)
         return manifest

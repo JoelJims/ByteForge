@@ -87,7 +87,9 @@ def work(spec: dict) -> dict:
         result = (
             build_parquet(prepared, archive)
             if spec["pipeline"] == "A"
-            else build_hybrid(prepared, archive, TestByteEncoder(), native)
+            else build_hybrid(
+                prepared, archive, TestByteEncoder(), native, allow_test_encoder_on_real=True
+            )
         )
     else:
         result = restore(archive, Path(spec["restored"]), worker=native)
@@ -169,8 +171,6 @@ def run(
 ) -> dict:
     if warmups < 0 or repetitions < 1 or timeout <= 0:
         raise ValueError("Invalid trial counts/timeout")
-    if test_encoder and not synthetic:
-        raise ValueError("Test encoder requires --synthetic; it cannot stand in for SGTT")
     output.mkdir(parents=True, exist_ok=False)
     prestart = time.perf_counter_ns()
     dataset = prepare(path, output / "input", synthetic=synthetic)
@@ -182,8 +182,16 @@ def run(
             native_info = worker_info(worker)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             native_failure = str(error)
+    if synthetic:
+        run_kind = "synthetic_development"
+    elif test_encoder:
+        run_kind = "real_data_infrastructure_validation"
+    elif dataset["kind"].startswith("hdfs_2k"):
+        run_kind = "hdfs_2k_validation"
+    else:
+        run_kind = "hdfs_primary"
     config = {
-        "kind": "synthetic_development" if synthetic else "hdfs_primary",
+        "kind": run_kind,
         "track": "full_pipeline_archive_to_raw_reconstruction",
         "warmups": warmups,
         "repetitions": repetitions,
@@ -194,7 +202,8 @@ def run(
         "source_preparation_ns": preparation_ns,
         "environment": environment(),
         "timestamp_utc": datetime.now(UTC).isoformat(),
-        "timer_batching": "none; short synthetic timings are diagnostics only",
+        "timer_batching": "none; small-input/test-only timings are validation diagnostics",
+        "tokenizer_scope": "B-test-only uses byte symbols, never the SGTT implementation",
         "sgtt": {"status": "unsupported", "reason": "SGTT code/table reuse rights unresolved"},
     }
     dump_json(output / "run.json", config)
@@ -216,6 +225,7 @@ def run(
                     "pipeline": pipeline,
                     "warmup": round_id < warmups,
                     "dataset_kind": dataset["kind"],
+                    "encoder_kind": "none" if pipeline == "A" else "test_only",
                     "measurement_origin": "measured_now",
                     "status": "incomplete",
                     "track": config["track"],
