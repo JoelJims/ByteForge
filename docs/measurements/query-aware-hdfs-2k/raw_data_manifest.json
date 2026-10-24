@@ -1,0 +1,10 @@
+{
+  "observations_file": "observations.jsonl.zst",
+  "observations_uncompressed_bytes": 9910014,
+  "observations_sha256": "ffb549e431ce3313d1d8158515bf8cc261d388481e81ed86dd9deb73dc076aaa",
+  "observations_compressed_bytes": 166150,
+  "compression": "Zstandard level 9, checksum and content size enabled",
+  "source_run": "results/query-aware-query-final2 (local ignored results)",
+  "dataset_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+  "note": "Raw observations are line-delimited JSON; decompress to recover the exact stream."
+}

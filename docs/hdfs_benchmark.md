@@ -245,8 +245,22 @@ selects Zstd level 1 without dictionary encoding; the standard profile is unchan
 ```
 
 Use `byteforge.query.QuerySession` for retained handles and repeated queries;
-`cache_bytes=16 << 20` allows a bounded Arrow-value cache equally for A/B.
-The default zero budget re-decompresses on every scan. Cache-backed queries are
-not decompression benchmarks. Immutable session archives, explicit profile/cache
-configuration and ordered-result reference checks are required. No actual SGTT,
-SQL engine or large-corpus performance claim follows from these measurements.
+its Python API defaults to a bounded 16 MiB decoded-value/block cache (set
+`cache_bytes=0` to disable it). CLI single-shot queries do not reuse that cache.
+Cache-backed queries are not decompression benchmarks. Immutable session
+archives, explicit profile/cache configuration and ordered-result reference
+checks are required. No actual SGTT, SQL engine or large-corpus performance
+claim follows from these measurements.
+
+## Query-aware HDFS_2k archive
+
+The `build-query-archive` command creates versioned v2 archives with independent
+256-row BtrBlocks blocks and a compressed trigram Bloom index. Queries skip
+blocks only when the index proves a substring cannot occur; short terms and
+potential false positives are scanned. The existing v1 full-column format
+remains supported. This implementation uses the explicitly identified test-only
+byte encoder and is not SGTT. See the [query-aware results](query_aware_storage_results.md)
+for complete archive size, checksum, exactness, query timings, raw records and
+reproduction commands. On HDFS_2k, absent long-term searches benefit sharply;
+cold common-term searches remain slower than Parquet, while the block index adds
+storage overhead versus full-column B.

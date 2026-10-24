@@ -49,6 +49,18 @@ def main() -> int:
     bench.add_argument("--repetitions", type=int, default=10)
     bench.add_argument("--seed", type=int, default=20261023)
     bench.add_argument("--timeout", type=float, default=3600)
+    block_build = commands.add_parser(
+        "build-query-archive", help="build independent BtrBlocks row blocks for selective queries"
+    )
+    block_build.add_argument("--path", type=Path)
+    block_build.add_argument("--output", type=Path, required=True)
+    block_build.add_argument("--worker", type=Path, default=worker_path())
+    block_build.add_argument("--block-rows", type=int, default=256)
+    block_build.add_argument(
+        "--test-encoder",
+        action="store_true",
+        help="explicitly use the diagnostic byte-symbol encoder; never SGTT",
+    )
     decode = commands.add_parser("restore")
     decode.add_argument("archive", type=Path)
     decode.add_argument("--output", type=Path, required=True)
@@ -58,10 +70,12 @@ def main() -> int:
         "query", help="literal filters without exporting reconstructed logs"
     )
     query.add_argument("archive", type=Path)
-    query.add_argument("--operation", choices=("equals", "contains"), required=True)
+    query.add_argument("--operation", choices=("equals", "contains", "prefix"), required=True)
     query.add_argument("--value", required=True)
     query.add_argument("--worker", type=Path, default=worker_path())
     query.add_argument("--cache-bytes", type=int, default=0)
+    query.add_argument("--row-start", type=int)
+    query.add_argument("--row-stop", type=int)
     private = commands.add_parser("_work", help="internal isolated measurement worker")
     private.add_argument("spec", type=Path)
     args = parser.parse_args()
@@ -104,14 +118,39 @@ def main() -> int:
                 parquet_profile=args.parquet_profile,
                 b_outer_codec=args.b_outer_codec,
             )
+        elif args.command == "build-query-archive":
+            if not args.test_encoder:
+                from byteforge.sgtt import require_sgtt
+
+                require_sgtt()
+            import tempfile
+
+            from byteforge.pipelines import TestByteEncoder, build_hybrid_blocked
+
+            with tempfile.TemporaryDirectory(prefix="byteforge-query-build-") as temp:
+                prepared = Path(temp) / "prepared"
+                dataset = prepare(hdfs_path(args.path), prepared)
+                result = build_hybrid_blocked(
+                    prepared,
+                    args.output,
+                    TestByteEncoder(),
+                    args.worker,
+                    allow_test_encoder_on_real=args.test_encoder,
+                    block_rows=args.block_rows,
+                )
+            result["dataset"] = dataset
+            result["archive"] = str(args.output)
         elif args.command == "query":
             from byteforge.query import QuerySession
 
+            if (args.row_start is None) != (args.row_stop is None):
+                raise ValueError("--row-start and --row-stop must be provided together")
+            row_range = (args.row_start, args.row_stop) if args.row_start is not None else None
             start = time.perf_counter_ns()
             with QuerySession(
                 args.archive, worker=args.worker, cache_bytes=args.cache_bytes
             ) as session:
-                result = session.filter(args.operation, args.value)
+                result = session.filter(args.operation, args.value, row_range=row_range)
                 result["archive_open_ns"] = session.open_ns
             result["request_ns"] = time.perf_counter_ns() - start
         elif args.command == "_work":

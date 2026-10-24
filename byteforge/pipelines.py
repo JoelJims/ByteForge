@@ -18,11 +18,16 @@ from byteforge.dataset import (
     row_windows,
 )
 from byteforge.native import NativeIntegers
+from byteforge.query_index import build_filter, decode_filter
 from byteforge.representation import leaf_blocks, pack_unsigned, unpack_unsigned
 from byteforge.sgtt import require_sgtt
 from byteforge.tokenizers import Tokenizer, encode_rows
 
 FORMAT = "byteforge-hdfs-archive-v1"
+BLOCK_FORMAT = "byteforge-hdfs-block-archive-v2"
+BLOCK_ROWS = 256
+MAX_BLOCK_NATIVE_BYTES = 321 << 20
+MAX_BLOCK_FRAME_BYTES = MAX_BLOCK_NATIVE_BYTES + (1 << 20)
 PARQUET_SETTINGS = {
     "compression": "zstd",
     "compression_level": 3,
@@ -140,10 +145,107 @@ def validate_index(index: dict, data_bytes: int, dataset_rows: int) -> None:
         raise ValueError("Index row/data length mismatch")
 
 
+def validate_block_index(index: dict, data_bytes: int, dataset: dict) -> None:
+    """Validate v2 row ranges and block-local native offsets before decoding."""
+    if type(index.get("version")) is not int or index["version"] != 2:
+        raise ValueError("Unsupported block index version")
+    blocks = index.get("blocks")
+    block_rows = index.get("block_rows")
+    if (
+        not isinstance(blocks, list)
+        or type(index.get("rows")) is not int
+        or index["rows"] != dataset["rows"]
+        or type(block_rows) is not int
+        or not 1 <= block_rows <= BLOCK_ROWS
+        or type(data_bytes) is not int
+        or data_bytes < 0
+    ):
+        raise ValueError("Invalid block directory")
+    if index.get("pruning") != {"kind": "byte-trigram-bloom", "version": 1}:
+        raise ValueError("Unsupported block pruning metadata")
+    row_start = file_position = payload_total = 0
+    for block in blocks:
+        if not isinstance(block, dict):
+            raise ValueError("Invalid block metadata")
+        rows = bounded_integer(block.get("rows"), "block rows", BLOCK_ROWS)
+        start = bounded_integer(block.get("row_start"), "block row start")
+        tokens = bounded_integer(block.get("tokens"), "block token count", MAX_PAYLOAD)
+        payload = bounded_integer(block.get("payload_bytes"), "block payload", MAX_PAYLOAD)
+        empty_rows = bounded_integer(block.get("empty_rows"), "empty row count", rows)
+        empty_ids = block.get("empty_row_ids")
+        frame_offset = bounded_integer(block.get("data_offset"), "block data offset")
+        frame_bytes = bounded_integer(
+            block.get("frame_bytes"), "block frame bytes", MAX_BLOCK_FRAME_BYTES
+        )
+        native_bytes = bounded_integer(
+            block.get("native_bytes"), "block native bytes", MAX_BLOCK_NATIVE_BYTES
+        )
+        digest = block.get("frame_sha256")
+        if (
+            not rows
+            or start != row_start
+            or frame_offset != file_position
+            or not frame_bytes
+            or not native_bytes
+            or not isinstance(empty_ids, list)
+            or len(empty_ids) != empty_rows
+            or not isinstance(digest, str)
+            or len(digest) != 64
+            or any(c not in "0123456789abcdef" for c in digest)
+        ):
+            raise ValueError("Invalid block bounds or checksum")
+        if any(
+            type(row_id) is not int
+            or not 0 <= row_id < rows
+            or (pos > 0 and row_id <= empty_ids[pos - 1])
+            for pos, row_id in enumerate(empty_ids)
+        ):
+            raise ValueError("Invalid empty-row index")
+        leaves_position = 0
+        for name, element_count in (("ids", tokens), ("offsets", rows + 1)):
+            leaves = block.get(name)
+            if not isinstance(leaves, list):
+                raise ValueError("Invalid block leaf list")
+            elements = 0
+            for leaf in leaves:
+                if not isinstance(leaf, dict):
+                    raise ValueError("Invalid block leaf")
+                count = bounded_integer(leaf.get("elements"), "leaf elements", 65536)
+                size = bounded_integer(leaf.get("bytes"), "leaf bytes", 4 << 20)
+                offset = bounded_integer(leaf.get("offset"), "leaf offset")
+                bounded_integer(leaf.get("scheme"), "scheme", 5)
+                if not count or size < 32 or offset != leaves_position:
+                    raise ValueError("Invalid block leaf bounds")
+                elements += count
+                leaves_position += size
+                if elements > element_count or leaves_position > native_bytes:
+                    raise ValueError("Block leaf stream exceeds declared length")
+            if elements != element_count:
+                raise ValueError("Block leaf element count mismatch")
+        if leaves_position != native_bytes:
+            raise ValueError("Block native length mismatch")
+        decode_filter(block.get("trigram_bloom"))
+        row_start += rows
+        file_position += frame_bytes
+        payload_total += payload
+        if row_start > dataset["rows"] or file_position > data_bytes:
+            raise ValueError("Block directory exceeds archive bounds")
+    if (
+        row_start != dataset["rows"]
+        or file_position != data_bytes
+        or payload_total != dataset["payload_bytes"]
+        or (dataset["rows"] == 0) != (len(blocks) == 0)
+    ):
+        raise ValueError("Block directory does not cover dataset")
+
+
 def load_archive(archive: Path) -> dict:
     manifest = read_json(archive / "manifest.json")
-    if manifest.get("format") != FORMAT or manifest.get("pipeline") not in ("A", "B"):
+    archive_format = manifest.get("format")
+    if archive_format not in (FORMAT, BLOCK_FORMAT) or manifest.get("pipeline") not in ("A", "B"):
         raise ValueError("Unsupported archive format/pipeline")
+    if archive_format == BLOCK_FORMAT and manifest.get("pipeline") != "B":
+        raise ValueError("Block archive format is valid only for pipeline B")
     validate_dataset(manifest.get("dataset"))
     if manifest["pipeline"] == "B":
         tokenizer = manifest.get("tokenizer")
@@ -153,6 +255,20 @@ def load_archive(archive: Path) -> dict:
             raise ValueError("Unsupported test-only encoder identity")
     if manifest["pipeline"] == "A":
         expected = {"data.parquet"}
+    elif archive_format == BLOCK_FORMAT:
+        if manifest.get("outer_codec") != {
+            "name": "zstd-per-block",
+            "level": 1,
+            "checksum": True,
+            "content_size": True,
+        } or manifest.get("index_codec") != {
+            "name": "zstd",
+            "level": 1,
+            "checksum": True,
+            "content_size": True,
+        }:
+            raise ValueError("Unsupported block archive codec")
+        expected = {"data.bin", "index.json.zst", "vocabulary.bin"}
     else:
         outer = manifest.get("outer_codec", {}).get("name", "none")
         if outer == "none":
@@ -176,12 +292,35 @@ def load_archive(archive: Path) -> dict:
     for name, entry in manifest["files"].items():
         path = archive / name
         if (
-            path.is_symlink()
+            not isinstance(entry, dict)
+            or type(entry.get("bytes")) is not int
+            or entry["bytes"] < 0
+            or path.is_symlink()
             or not path.is_file()
             or path.stat().st_size != entry["bytes"]
-            or checksum(path) != entry["sha256"]
+            or (
+                not (archive_format == BLOCK_FORMAT and name == "data.bin")
+                and checksum(path) != entry["sha256"]
+            )
         ):
             raise ValueError(f"Archive checksum/size mismatch: {name}")
+    if archive_format == BLOCK_FORMAT:
+        index_path = archive / "index.json.zst"
+        if index_path.stat().st_size > 64 << 20:
+            raise ValueError("Compressed block index exceeds limit")
+        import zstandard as zstd
+
+        try:
+            index_raw = zstd.ZstdDecompressor().decompress(
+                index_path.read_bytes(), max_output_size=256 << 20
+            )
+            index = json.loads(index_raw)
+        except (zstd.ZstdError, json.JSONDecodeError, UnicodeDecodeError) as error:
+            raise ValueError("Invalid compressed block index") from error
+        if not isinstance(index, dict):
+            raise ValueError("Expected block index object")
+        validate_block_index(index, (archive / "data.bin").stat().st_size, manifest["dataset"])
+        manifest["_validated_block_index"] = index
     return manifest
 
 
@@ -395,6 +534,232 @@ def build_hybrid(
     }
 
 
+def build_hybrid_blocked(
+    prepared: Path,
+    output: Path,
+    tokenizer: Tokenizer,
+    worker: Path,
+    *,
+    allow_test_encoder_on_real: bool = False,
+    block_rows: int = BLOCK_ROWS,
+) -> dict:
+    """Create independently compressed row blocks plus safe trigram filters."""
+    if type(block_rows) is not int or not 1 <= block_rows <= BLOCK_ROWS:
+        raise ValueError(f"block_rows must be in 1..{BLOCK_ROWS}")
+    dataset = prepared_manifest(prepared)
+    test_only = bool(getattr(tokenizer, "test_only", False))
+    if not test_only:
+        require_sgtt()
+    if (
+        tokenizer.identity != TestByteEncoder.identity
+        or tokenizer.vocabulary != TestByteEncoder.vocabulary
+    ):
+        raise ValueError("Unsupported test-only encoder identity/table")
+    if test_only and dataset["kind"] != "synthetic" and not allow_test_encoder_on_real:
+        raise ValueError("Test-only encoder is restricted to explicitly synthetic inputs")
+    import zstandard as zstd
+
+    started = time.perf_counter_ns()
+    output.mkdir(parents=True, exist_ok=False)
+    (output / "vocabulary.bin").write_bytes(_vocabulary_bytes(tokenizer.vocabulary))
+    compressor = zstd.ZstdCompressor(level=1, write_checksum=True, write_content_size=True)
+    blocks, token_ns, serialization_ns = [], 0, 0
+    source_row = frame_position = native_total = frame_total = 0
+    with NativeIntegers(worker) as native, (output / "data.bin").open("xb") as data_stream:
+        for rows in row_windows(prepared / "rows.bin", max_rows=block_rows):
+            token_start = time.perf_counter_ns()
+            encoded = encode_rows(rows, tokenizer)
+            token_ns += time.perf_counter_ns() - token_start
+            native_payload = bytearray()
+            leaf_directories = {"ids": [], "offsets": []}
+            for name, values in (("ids", encoded.ids), ("offsets", encoded.offsets)):
+                for leaf in leaf_blocks(values):
+                    serial_start = time.perf_counter_ns()
+                    raw = pack_unsigned(leaf, native_int32=True)
+                    serialization_ns += time.perf_counter_ns() - serial_start
+                    compressed, scheme = native.transform(1, len(leaf), raw)
+                    leaf_directories[name].append(
+                        {
+                            "offset": len(native_payload),
+                            "bytes": len(compressed),
+                            "elements": len(leaf),
+                            "scheme": scheme,
+                        }
+                    )
+                    native_payload.extend(compressed)
+            if not native_payload:
+                raise ValueError("A nonempty row block must contain its row-offset leaf")
+            frame = compressor.compress(native_payload)
+            row_bytes = [row.encode("utf-8", errors="strict") for row in rows]
+            block_grams = {gram for data in row_bytes for gram in _row_trigrams(data)}
+            block = {
+                "row_start": source_row,
+                "rows": len(rows),
+                "tokens": len(encoded.ids),
+                "payload_bytes": sum(map(len, row_bytes)),
+                "empty_rows": sum(row == "" for row in rows),
+                "empty_row_ids": [i for i, row in enumerate(rows) if row == ""],
+                "data_offset": frame_position,
+                "frame_bytes": len(frame),
+                "frame_sha256": hashlib.sha256(frame).hexdigest(),
+                "native_bytes": len(native_payload),
+                **leaf_directories,
+                "trigram_bloom": build_filter(block_grams),
+            }
+            data_stream.write(frame)
+            blocks.append(block)
+            source_row += len(rows)
+            frame_position += len(frame)
+            native_total += len(native_payload)
+            frame_total += len(frame)
+    index = {
+        "version": 2,
+        "rows": dataset["rows"],
+        "block_rows": block_rows,
+        "pruning": {"kind": "byte-trigram-bloom", "version": 1},
+        "blocks": blocks,
+    }
+    index_raw = json.dumps(index, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    index_compressor = zstd.ZstdCompressor(level=1, write_checksum=True, write_content_size=True)
+    with (output / "index.json.zst").open("xb") as index_stream:
+        index_stream.write(index_compressor.compress(index_raw))
+    manifest = finish(
+        output,
+        {
+            "format": BLOCK_FORMAT,
+            "archive_version": 2,
+            "pipeline": "B",
+            "dataset": dataset,
+            "tokenizer": {
+                "identity": tokenizer.identity,
+                "test_only": test_only,
+                "validation_scope": "archive infrastructure only; not SGTT",
+                "configuration": getattr(tokenizer, "configuration", {}),
+                "decode_assets": "complete ID-to-byte vocabulary.bin",
+            },
+            "native": native.info,
+            "outer_codec": {
+                "name": "zstd-per-block",
+                "level": 1,
+                "checksum": True,
+                "content_size": True,
+            },
+            "index_codec": {
+                "name": "zstd",
+                "level": 1,
+                "checksum": True,
+                "content_size": True,
+            },
+            "representation": "per-row token IDs and token offsets; int32 little-endian leaves",
+            "settings": {
+                "block_rows": block_rows,
+                "leaf_elements": 65536,
+                "max_payload_per_block": MAX_PAYLOAD,
+                "selection": "upstream defaults",
+                "query_pruning": "byte trigram Bloom; false-positive only",
+            },
+        },
+    )
+    return {
+        "encode_total_ns": time.perf_counter_ns() - started,
+        "tokenization_ns": token_ns,
+        "integer_serialization_ns": serialization_ns,
+        "native_encode_ipc_ns": native.phase_ns,
+        "block_count": len(blocks),
+        "native_payload_bytes": native_total,
+        "frame_bytes": frame_total,
+        "index_bytes": manifest["files"]["index.json.zst"]["bytes"],
+        "archive_total_bytes": sum(entry["bytes"] for entry in manifest["files"].values())
+        + (output / "manifest.json").stat().st_size,
+    }
+
+
+def _row_trigrams(data: bytes):
+    for pos in range(max(0, len(data) - 2)):
+        yield data[pos : pos + 3]
+
+
+def _decode_block_buffers(
+    stream,
+    block: dict,
+    native: NativeIntegers,
+    vocabulary: tuple[bytes, ...],
+) -> tuple[bytes, tuple[int, ...], dict]:
+    """Read, authenticate and decode exactly one independently compressed block."""
+    import zstandard as zstd
+
+    stream.seek(block["data_offset"])
+    frame = stream.read(block["frame_bytes"])
+    if (
+        len(frame) != block["frame_bytes"]
+        or hashlib.sha256(frame).hexdigest() != block["frame_sha256"]
+    ):
+        raise ValueError("Block frame is truncated or corrupt")
+    try:
+        native_payload = zstd.ZstdDecompressor().decompress(
+            frame, max_output_size=block["native_bytes"]
+        )
+    except zstd.ZstdError as error:
+        raise ValueError("Invalid compressed block frame") from error
+    if len(native_payload) != block["native_bytes"]:
+        raise ValueError("Block native payload length mismatch")
+    stats = {
+        "compressed_bytes_read": len(frame),
+        "native_bytes_decompressed": len(native_payload),
+        "integer_bytes_decoded": 0,
+        "decoded_payload_bytes": 0,
+    }
+
+    def decode_leaves(name: str, *, compact_bytes: bool = False):
+        output = bytearray()
+        expected_elements = block["tokens"] if name == "ids" else block["rows"] + 1
+        elements = 0
+        for leaf in block[name]:
+            start = leaf["offset"]
+            compressed = native_payload[start : start + leaf["bytes"]]
+            if len(compressed) != leaf["bytes"]:
+                raise ValueError("Truncated native leaf")
+            raw, scheme = native.transform(3 if compact_bytes else 2, leaf["elements"], compressed)
+            if scheme != leaf["scheme"]:
+                raise ValueError("Native block scheme mismatch")
+            output.extend(raw)
+            elements += leaf["elements"]
+            stats["integer_bytes_decoded"] += leaf["elements"] * 4
+        if elements != expected_elements:
+            raise ValueError("Decoded block element count mismatch")
+        return bytes(output)
+
+    compact = native.info["protocol"] >= 3 and vocabulary == TestByteEncoder.vocabulary
+    ids_raw = decode_leaves("ids", compact_bytes=compact)
+    offsets_raw = decode_leaves("offsets")
+    token_offsets = unpack_unsigned(offsets_raw)
+    if (
+        len(token_offsets) != block["rows"] + 1
+        or token_offsets[0] != 0
+        or token_offsets[-1] != block["tokens"]
+        or any(a > b for a, b in zip(token_offsets, token_offsets[1:], strict=False))
+    ):
+        raise ValueError("Invalid block row offsets")
+    payload = bytearray()
+    if compact:
+        payload.extend(ids_raw)
+        byte_offsets = tuple(token_offsets)
+    else:
+        token_ids = unpack_unsigned(ids_raw)
+        byte_offsets = [0]
+        for row_start, row_end in zip(token_offsets, token_offsets[1:], strict=False):
+            for token_id in token_ids[row_start:row_end]:
+                if token_id >= len(vocabulary):
+                    raise ValueError("Token ID outside archived vocabulary")
+                payload.extend(vocabulary[token_id])
+            byte_offsets.append(len(payload))
+        byte_offsets = tuple(byte_offsets)
+    if len(payload) != block["payload_bytes"]:
+        raise ValueError("Decoded block payload size mismatch")
+    stats["decoded_payload_bytes"] = len(payload)
+    return bytes(payload), byte_offsets, stats
+
+
 def _hybrid_rows(
     archive: Path,
     manifest: dict,
@@ -407,6 +772,37 @@ def _hybrid_rows(
     vocabulary = _read_vocabulary(archive / "vocabulary.bin")
     if vocabulary != TestByteEncoder.vocabulary:
         raise ValueError("Test-only vocabulary identity mismatch")
+    if manifest["format"] == BLOCK_FORMAT:
+        index = manifest["_validated_block_index"]
+        with ExitStack() as stack:
+            native = native_session or stack.enter_context(
+                NativeIntegers(worker, expected=manifest["native"])
+            )
+            stream = stack.enter_context((archive / "data.bin").open("rb"))
+            initial_native_ns = native.phase_ns
+            try:
+                for block in index["blocks"]:
+                    payload, offsets, stats = _decode_block_buffers(
+                        stream, block, native, vocabulary
+                    )
+                    for key, value in stats.items():
+                        phases[key] = phases.get(key, 0) + value
+                    phase = time.perf_counter_ns()
+                    pieces = (payload[a:b] for a, b in zip(offsets, offsets[1:], strict=False))
+                    rows = (
+                        tuple(pieces)
+                        if as_bytes
+                        else tuple(piece.decode("utf-8", errors="strict") for piece in pieces)
+                    )
+                    phases["detokenization_validation_ns"] = (
+                        phases.get("detokenization_validation_ns", 0)
+                        + time.perf_counter_ns()
+                        - phase
+                    )
+                    yield rows
+            finally:
+                phases["native_decompression_ipc_ns"] = native.phase_ns - initial_native_ns
+        return
     index = read_json(archive / "index.json")
     outer = manifest.get("outer_codec", {}).get("name", "none")
     data_name = "data.zst" if outer == "zstd" else "data.bin"

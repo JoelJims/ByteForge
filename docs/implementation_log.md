@@ -423,3 +423,36 @@ failures across 24 trial executions and exact reconstruction; query run retained
 review; final Ruff and whitespace checks passed. No unit test suite was run in
 this follow-up. No source dataset or
 pre-existing measurement was modified.
+
+## Query-aware storage and selective decoding — 2026-10-24
+
+Continued from `5daf0de` on `implementation/core`. Added a versioned v2 HDFS
+archive with independent 256-row compressed blocks, a Zstd-compressed block
+directory, safe byte-trigram Bloom filters, per-frame checksums, and bounded
+decoded-block LRU caching. `QuerySession` supports ordered `contains`, `equals`,
+`prefix`, and half-open row-range filtering without full-column reconstruction.
+The original v1 reader/query path remains covered. All B results still use the
+test-only byte-symbol encoder; no SGTT implementation or claim was introduced.
+
+Reproduced the release A/full B run on the verified unchanged 2k source and
+measured 11 deterministic query cases across Parquet, full B, and v2 B: two
+warmups and ten measured rounds. All 10,296 observations matched the Python
+reference; exact v2 restore produced the same 2,000 canonical rows. Complete
+sizes: A 64,278 B, full B 100,813 B, and block B 114,957 B. Cold `WARN` p50:
+1.337/17.064/17.300 ms; cold absent-sentinel p50: 1.404/17.994/0.581 ms for
+A/full B/block B. The absent query pruned 8/8 blocks and read zero data frames;
+`WARN` examined 5/8 blocks. A 16 MiB cache gave block B warm `WARN` p50 of
+0.323 ms. Block layout improves selective work for prunable terms but increases
+size and does not beat Parquet on cold common terms. Raw trial records and
+configuration are in `docs/measurements/query-aware-hdfs-2k/`; full discussion
+is `docs/query_aware_storage_results.md`.
+
+The Release-worker Python unittest suite passed 37 tests after updating the
+protocol-3 fast-decoder corruption test to exercise the byte-ID operation and
+offset validation. Ruff check and format check passed, compileall passed,
+`pip check` found no broken requirements, and Release native CTest passed 5/5.
+Initial
+`cmake`/`ctest` commands failed because the executables were not on the shell
+PATH; reran successfully through `.venv/bin/cmake` and `.venv/bin/ctest`. No source data,
+research-owned files, prior measurement outputs, or Git history were changed;
+no push or merge was performed.

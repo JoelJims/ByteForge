@@ -140,6 +140,26 @@ No extra dependencies were installed, and no measurements were dropped as outlie
 
 ## Measured query results
 
+### Selective block-query follow-up
+
+The newer query-aware archive adds independent 256-row decoding and a safe
+byte-trigram Bloom filter. Full v2 layout, dataset hash, complete archive costs,
+query semantics and the cold/warm comparison against Parquet and v1 full-column
+B are documented in [query-aware storage results](query_aware_storage_results.md).
+The v2 measurement is still the test-only byte encoder, not SGTT. For `WARN`,
+the block filter skips 3/8 blocks but the cold request is 17.300 ms versus
+Parquet's 1.337 ms. An absent long sentinel is pruned from all 8 blocks and
+returns in 0.581 ms cold; repeated cached `WARN` is 0.323 ms. V2 costs 114,957 B,
+14,144 B more than full-column B and 1.79x Parquet. This tradeoff improves
+selective query work for prunable terms, not compression ratio or every query.
+
+The earlier query runner defaulted to zero retained-value cache. The current
+Python `QuerySession` retains a bounded 16 MiB block cache by default; CLI
+single-shot queries still do not gain cross-request reuse. Set `cache_bytes=0`
+to measure uncached behavior.
+
+### Earlier full-column result
+
 Two frozen literal queries: `contains("WARN")` returns 80 ordered row IDs;
 `equals(first_original_line)` returns one. Each backend/session configuration has
 two warmups and ten measured rounds. All **216 observation records** (including
