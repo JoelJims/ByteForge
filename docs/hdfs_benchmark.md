@@ -264,3 +264,12 @@ for complete archive size, checksum, exactness, query timings, raw records and
 reproduction commands. On HDFS_2k, absent long-term searches benefit sharply;
 cold common-term searches remain slower than Parquet, while the block index adds
 storage overhead versus full-column B.
+
+A separate 200 MiB ordered prefix of the official Spark raw log was used as a
+larger scale check; it is clearly distinguished from the complete Spark
+dataset. See [Spark sample results](query_aware_spark_200m_results.md) and
+machine-readable observations under
+`docs/measurements/query-aware-spark-200m/`. The test-only block path pruned
+most blocks for selected Spark queries and beat the Parquet query scan on this
+sample, with substantial extra archive storage. The Spark archive and derived
+prefix remain ignored local data and are not committed.

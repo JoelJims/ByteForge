@@ -8,6 +8,7 @@ import re
 import statistics
 import struct
 import time
+from collections import Counter
 from pathlib import Path
 
 from byteforge.benchmark import environment
@@ -28,8 +29,10 @@ def _rows(path: Path) -> list[str]:
 
 
 def _queries(values: list[str]) -> list[dict]:
-    ids = sorted({match for row in values for match in re.findall(r"blk_[^\s,:]+", row)})
-    frequencies = {term: sum(term in row for row in values) for term in ids}
+    frequencies = Counter()
+    for row in values:
+        frequencies.update(set(re.findall(r"blk_[^\s,:]+", row)))
+    ids = sorted(frequencies)
     present = [term for term in ids if frequencies[term]]
     rare = min(present, key=lambda term: (frequencies[term], -len(term), term)) if present else ""
     first = values[0] if values else ""
@@ -107,6 +110,18 @@ def run(args) -> int:
         if load_archive(archive)["dataset"]["source_sha256"] != source_hash:
             raise ValueError("Archive/source checksum mismatch")
     queries = _queries(rows)
+    if args.query_ids:
+        requested = set(args.query_ids)
+        known = {query["id"] for query in queries}
+        unknown = requested - known
+        if unknown:
+            raise ValueError(f"Unknown query IDs: {sorted(unknown)}")
+        queries = [query for query in queries if query["id"] in requested]
+        if not queries:
+            raise ValueError("No benchmark queries selected")
+    # Reference answers depend only on the immutable input and query definition.
+    # Compute once so a large dataset does not get rescanned for every trial.
+    expected_results = {query["id"]: _expected(rows, query) for query in queries}
     configs = [(label, budget) for label in archives for budget in (0, args.cache_bytes)]
     dump_json(
         args.output / "run.json",
@@ -124,7 +139,8 @@ def run(args) -> int:
             "cache_policy": "bounded decoded Arrow blocks; LRU for archive v2; no result cache",
             "warmups": args.warmups,
             "repetitions": args.repetitions,
-            "repeated_warmups_per_session": 2,
+            "warm_repetitions_per_session": args.warm_repetitions,
+            "repeated_warmups_per_session": min(2, args.warm_repetitions),
             "block_rows": {
                 label: (
                     load_archive(path).get("settings", {}).get("block_rows")
@@ -148,7 +164,7 @@ def run(args) -> int:
             order = trials.copy()
             rng.shuffle(order)
             for label, budget, query in order:
-                expected = _expected(rows, query)
+                expected = expected_results[query["id"]]
                 base = {
                     "round": round_id,
                     "warmup": round_id < args.warmups,
@@ -189,7 +205,7 @@ def run(args) -> int:
                         record["worker_peak_rss_bytes"] = _peak_worker_rss(native_pid)
                         out.write(json.dumps(record, ensure_ascii=False) + "\n")
                         observations.append(record)
-                        for warmup_id in range(2):
+                        for warmup_id in range(min(2, args.warm_repetitions)):
                             warmed = session.filter(
                                 query["operation"],
                                 query["value"],
@@ -215,7 +231,7 @@ def run(args) -> int:
                             }
                             out.write(json.dumps(warmup_record, ensure_ascii=False) + "\n")
                             observations.append(warmup_record)
-                        for _ in range(args.repetitions):
+                        for _ in range(args.warm_repetitions):
                             warm_start = time.perf_counter_ns()
                             warmed = session.filter(
                                 query["operation"],
@@ -296,6 +312,21 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--repetitions", type=int, default=10)
+    parser.add_argument(
+        "--warm-repetitions",
+        type=int,
+        help="timed repeated filters per session; defaults to --repetitions",
+    )
+    parser.add_argument(
+        "--query-ids",
+        nargs="+",
+        help="optional subset of generated query IDs for a bounded large-data run",
+    )
     parser.add_argument("--cache-bytes", type=int, default=16 << 20)
     parser.add_argument("--seed", type=int, default=20261024)
-    raise SystemExit(run(parser.parse_args()))
+    args = parser.parse_args()
+    if args.warm_repetitions is None:
+        args.warm_repetitions = args.repetitions
+    if args.warm_repetitions < 1:
+        parser.error("--warm-repetitions must be at least 1")
+    raise SystemExit(run(args))

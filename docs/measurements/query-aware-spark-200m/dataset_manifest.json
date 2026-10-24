@@ -1,0 +1,25 @@
+{
+  "dataset": "LogHub-2.0 Spark raw log prefix",
+  "release": "Zenodo record 8275861 v1, published 2023-08-23",
+  "record_url": "https://zenodo.org/records/8275861",
+  "archive_name": "Spark.zip",
+  "archive_url": "https://zenodo.org/records/8275861/files/Spark.zip",
+  "archive_bytes": 230699188,
+  "archive_published_md5": "ca0ef9c6e8ece0df602793bd302e03a6",
+  "archive_verified_md5": "ca0ef9c6e8ece0df602793bd302e03a6",
+  "raw_member": "Spark/Spark_full.log",
+  "raw_member_uncompressed_bytes": 1629352119,
+  "sample_path": "data/loghub-2.0/Spark_200MiB.log",
+  "selection": "first complete LF-terminated records not exceeding 200 MiB of raw file bytes; ordered prefix, no content edits",
+  "sample_bytes": 209715181,
+  "sample_rows": 2035741,
+  "sample_sha256": "61330feaedcd2ad3021816605401a1e272659c2bb2ad1a2851b98310b3635ea3",
+  "format": "raw UTF-8 log text; strict UTF-8 validation performed by ByteForge loader",
+  "license": "Research/academic use per LogHub-2.0 notice; retain repository URL and cite the listed papers",
+  "license_url": "https://github.com/logpai/Loghub-2.0/blob/main/LICENSE",
+  "citations": [
+    "Zhihan Jiang et al., A Large-scale Evaluation for Log Parsing Techniques: How Far are We?, ISSTA 2024",
+    "Jieming Zhu et al., Loghub: A Large Collection of System Log Datasets for AI-driven Log Analytics, ISSRE 2023"
+  ],
+  "scope_note": "Derived prefix, not a separately published artifact or the complete Spark corpus."
+}

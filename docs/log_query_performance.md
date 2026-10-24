@@ -158,6 +158,16 @@ Python `QuerySession` retains a bounded 16 MiB block cache by default; CLI
 single-shot queries still do not gain cross-request reuse. Set `cache_bytes=0`
 to measure uncached behavior.
 
+On a separately downloaded 200 MiB complete-line prefix of Spark's raw LogHub-2.0
+log, Block B beat Parquet on the tested cold common, rare, and absent terms by
+pruning 96.3%, 99.99%, and 100% of 7,953 blocks respectively. Cold `WARN` was
+202.7 ms for Block B versus 463.0 ms for Parquet; its 7.1 MB index made session
+opening about 114 ms. See [Spark 200 MiB results](query_aware_spark_200m_results.md).
+This differs from HDFS_2k, where only 8 blocks existed and `WARN` matched 5,
+leaving too much work to make a cold B query faster. Here “cold” is first query
+in a new process/session, not cold physical storage; OS cache state was not
+controlled. Both B runs use test-only bytes, not SGTT.
+
 ### Earlier full-column result
 
 Two frozen literal queries: `contains("WARN")` returns 80 ordered row IDs;

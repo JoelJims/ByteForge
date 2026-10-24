@@ -456,3 +456,32 @@ Initial
 PATH; reran successfully through `.venv/bin/cmake` and `.venv/bin/ctest`. No source data,
 research-owned files, prior measurement outputs, or Git history were changed;
 no push or merge was performed.
+
+## Larger Spark query scale check — 2026-10-24
+
+Downloaded LogHub-2.0's Spark archive from its Zenodo v1 record and verified the
+published 230,699,188-byte archive MD5 `ca0ef9c6e8ece0df602793bd302e03a6`. Its
+raw member is 1,629,352,119 bytes. Created a local ignored prefix ending at a
+complete LF record: 209,715,181 bytes (200 MiB minus 19 bytes), 2,035,741 rows,
+SHA-256 `61330feaedcd2ad3021816605401a1e272659c2bb2ad1a2851b98310b3635ea3`.
+The full Spark corpus was not extracted or benchmarked. Dataset notice and
+citations are recorded in the sample manifest.
+
+Built Parquet, full BtrBlocks+Zstd and block B archives. Complete sizes were
+14,016,582 B / 33,430,273 B / 52,780,861 B; build times were 1.413 / 46.299 /
+71.127 s. The two B configurations use test-only byte IDs. On three queries
+(WARN, a rare block identifier, absent sentinel), two warmup and three measured
+rounds, 270 observations had zero correctness failures. All three archives
+restored exactly to the same canonical checksum. Cold first-request p50s in ms:
+WARN 463.0 / 1,773.4 / 202.7; rare ID 502.0 / 1,860.3 / 140.5; absent 500.3 /
+1,754.9 / 129.2 (A/full B/block B). The block path checked 292/7,953 blocks for
+WARN, one block for the rare ID, and no payload blocks for the absent term.
+Its 7.1 MB index caused roughly 114 ms of first-session open time. Here “cold”
+means first query in a new session, not cold disk; OS cache was uncontrolled.
+
+Improved the large-run query harness by counting rare terms in one pass,
+precomputing reference results once, and allowing selected query IDs and a
+separate timed warm-repeat count. Raw data, archive measurements and full
+observation records are saved under `docs/measurements/query-aware-spark-200m/`;
+analysis is in `docs/query_aware_spark_200m_results.md`. No dataset/archive
+binary was staged or committed.

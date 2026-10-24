@@ -1,0 +1,258 @@
+{
+  "latencies": {
+    "btr-full/0/cold/common-warning": {
+      "p50_ns": 1773425210,
+      "p95_ns": 1966683917.3,
+      "min_ns": 1737006261,
+      "max_ns": 1988157107,
+      "trials": 3
+    },
+    "btr-full/0/warm/common-warning": {
+      "p50_ns": 1877602883,
+      "p95_ns": 1921538179.4,
+      "min_ns": 1714822227,
+      "max_ns": 1926419879,
+      "trials": 3
+    },
+    "btr-block/0/cold/common-warning": {
+      "p50_ns": 202702966,
+      "p95_ns": 209935856.5,
+      "min_ns": 197373643,
+      "max_ns": 210739511,
+      "trials": 3
+    },
+    "btr-block/0/warm/common-warning": {
+      "p50_ns": 69679982,
+      "p95_ns": 70777708.4,
+      "min_ns": 68999096,
+      "max_ns": 70899678,
+      "trials": 3
+    },
+    "btr-block/0/cold/rare-block-id": {
+      "p50_ns": 140464036,
+      "p95_ns": 163856814.4,
+      "min_ns": 140285781,
+      "max_ns": 166456012,
+      "trials": 3
+    },
+    "btr-block/0/warm/rare-block-id": {
+      "p50_ns": 13231995,
+      "p95_ns": 13818325.2,
+      "min_ns": 13079239,
+      "max_ns": 13883473,
+      "trials": 3
+    },
+    "btr-full/0/cold/rare-block-id": {
+      "p50_ns": 1860310538,
+      "p95_ns": 1959054865.1,
+      "min_ns": 1783846862,
+      "max_ns": 1970026457,
+      "trials": 3
+    },
+    "btr-full/0/warm/rare-block-id": {
+      "p50_ns": 1767811326,
+      "p95_ns": 1872949206.3,
+      "min_ns": 1740839854,
+      "max_ns": 1884631193,
+      "trials": 3
+    },
+    "btr-full/0/cold/absent-sentinel": {
+      "p50_ns": 1754914413,
+      "p95_ns": 1826297673.6,
+      "min_ns": 1754745742,
+      "max_ns": 1834229147,
+      "trials": 3
+    },
+    "btr-full/0/warm/absent-sentinel": {
+      "p50_ns": 1758236200,
+      "p95_ns": 1775294673.1,
+      "min_ns": 1752193717,
+      "max_ns": 1777190059,
+      "trials": 3
+    },
+    "btr-full/16777216/cold/absent-sentinel": {
+      "p50_ns": 1797803137,
+      "p95_ns": 1841540341.6,
+      "min_ns": 1772622641,
+      "max_ns": 1846400031,
+      "trials": 3
+    },
+    "btr-full/16777216/warm/absent-sentinel": {
+      "p50_ns": 1718409017,
+      "p95_ns": 1844421536.9,
+      "min_ns": 1705962821,
+      "max_ns": 1858422928,
+      "trials": 3
+    },
+    "parquet/0/cold/absent-sentinel": {
+      "p50_ns": 500266717,
+      "p95_ns": 550965482.8,
+      "min_ns": 488338250,
+      "max_ns": 556598679,
+      "trials": 3
+    },
+    "parquet/0/warm/absent-sentinel": {
+      "p50_ns": 478307102,
+      "p95_ns": 478364980.1,
+      "min_ns": 466654759,
+      "max_ns": 478371411,
+      "trials": 3
+    },
+    "btr-block/0/cold/absent-sentinel": {
+      "p50_ns": 129195502,
+      "p95_ns": 130170566.5,
+      "min_ns": 121641180,
+      "max_ns": 130278907,
+      "trials": 3
+    },
+    "btr-block/0/warm/absent-sentinel": {
+      "p50_ns": 12768628,
+      "p95_ns": 13766578.6,
+      "min_ns": 12604496,
+      "max_ns": 13877462,
+      "trials": 3
+    },
+    "parquet/0/cold/common-warning": {
+      "p50_ns": 463043064,
+      "p95_ns": 475606628.4,
+      "min_ns": 462539264,
+      "max_ns": 477002580,
+      "trials": 3
+    },
+    "parquet/0/warm/common-warning": {
+      "p50_ns": 455420866,
+      "p95_ns": 475991436.1,
+      "min_ns": 445307141,
+      "max_ns": 478277055,
+      "trials": 3
+    },
+    "btr-full/16777216/cold/common-warning": {
+      "p50_ns": 1721213583,
+      "p95_ns": 1938337373.4,
+      "min_ns": 1720722165,
+      "max_ns": 1962462239,
+      "trials": 3
+    },
+    "btr-full/16777216/warm/common-warning": {
+      "p50_ns": 1912304310,
+      "p95_ns": 2092908174.0,
+      "min_ns": 1709944639,
+      "max_ns": 2112975270,
+      "trials": 3
+    },
+    "btr-full/16777216/cold/rare-block-id": {
+      "p50_ns": 1775509369,
+      "p95_ns": 1808948804.2,
+      "min_ns": 1739610757,
+      "max_ns": 1812664297,
+      "trials": 3
+    },
+    "btr-full/16777216/warm/rare-block-id": {
+      "p50_ns": 1760753560,
+      "p95_ns": 1817594647.6,
+      "min_ns": 1714273340,
+      "max_ns": 1823910324,
+      "trials": 3
+    },
+    "parquet/16777216/cold/common-warning": {
+      "p50_ns": 475849381,
+      "p95_ns": 539301428.5,
+      "min_ns": 458201582,
+      "max_ns": 546351656,
+      "trials": 3
+    },
+    "parquet/16777216/warm/common-warning": {
+      "p50_ns": 459440213,
+      "p95_ns": 502187155.7,
+      "min_ns": 449926927,
+      "max_ns": 506936816,
+      "trials": 3
+    },
+    "btr-block/16777216/cold/absent-sentinel": {
+      "p50_ns": 143401342,
+      "p95_ns": 165932968.0,
+      "min_ns": 129744685,
+      "max_ns": 168436482,
+      "trials": 3
+    },
+    "btr-block/16777216/warm/absent-sentinel": {
+      "p50_ns": 12420321,
+      "p95_ns": 12743530.8,
+      "min_ns": 11900955,
+      "max_ns": 12779443,
+      "trials": 3
+    },
+    "parquet/0/cold/rare-block-id": {
+      "p50_ns": 501976981,
+      "p95_ns": 516760588.0,
+      "min_ns": 493111263,
+      "max_ns": 518403211,
+      "trials": 3
+    },
+    "parquet/0/warm/rare-block-id": {
+      "p50_ns": 489649455,
+      "p95_ns": 502985701.8,
+      "min_ns": 479600708,
+      "max_ns": 504467507,
+      "trials": 3
+    },
+    "btr-block/16777216/cold/common-warning": {
+      "p50_ns": 201031931,
+      "p95_ns": 219625767.2,
+      "min_ns": 197102597,
+      "max_ns": 221691749,
+      "trials": 3
+    },
+    "btr-block/16777216/warm/common-warning": {
+      "p50_ns": 28098784,
+      "p95_ns": 30156107.5,
+      "min_ns": 27958437,
+      "max_ns": 30384699,
+      "trials": 3
+    },
+    "parquet/16777216/cold/rare-block-id": {
+      "p50_ns": 501969746,
+      "p95_ns": 518556008.9,
+      "min_ns": 493888788,
+      "max_ns": 520398927,
+      "trials": 3
+    },
+    "parquet/16777216/warm/rare-block-id": {
+      "p50_ns": 494728064,
+      "p95_ns": 497356857.8,
+      "min_ns": 494012143,
+      "max_ns": 497648946,
+      "trials": 3
+    },
+    "parquet/16777216/cold/absent-sentinel": {
+      "p50_ns": 494342393,
+      "p95_ns": 544337840.3,
+      "min_ns": 486760386,
+      "max_ns": 549892890,
+      "trials": 3
+    },
+    "parquet/16777216/warm/absent-sentinel": {
+      "p50_ns": 490474012,
+      "p95_ns": 504191281.9,
+      "min_ns": 474243624,
+      "max_ns": 505715423,
+      "trials": 3
+    },
+    "btr-block/16777216/cold/rare-block-id": {
+      "p50_ns": 139557594,
+      "p95_ns": 149383487.1,
+      "min_ns": 137950678,
+      "max_ns": 150475253,
+      "trials": 3
+    },
+    "btr-block/16777216/warm/rare-block-id": {
+      "p50_ns": 12540389,
+      "p95_ns": 12578076.5,
+      "min_ns": 12527770,
+      "max_ns": 12582264,
+      "trials": 3
+    }
+  },
+  "failures": [],
+  "observations_sha256": "9ef19c9abc19cf427e941137d877341e02ba3c248c432d09f032da73714d551c"
+}
