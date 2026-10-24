@@ -38,6 +38,15 @@ class DatasetTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 prepare(root / "missing.log", root / "missing")
 
+    def test_deterministic_manifest_and_universal_line_separators(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "raw.log").write_bytes("a\u2028b\u0085c\n".encode())
+            first = prepare(root / "raw.log", root / "one", synthetic=True)
+            second = prepare(root / "raw.log", root / "two", synthetic=True)
+            self.assertEqual(first, second)
+            self.assertEqual(tuple(row_windows(root / "one/rows.bin")), (("a\u2028b\u0085c",),))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -72,8 +72,14 @@ target_link_libraries(btrblocks PUBLIC Threads::Threads fsst fastpfor croaring d
 add_executable(byteforge_btrblocks_probe probe.cpp)
 target_link_libraries(byteforge_btrblocks_probe PRIVATE btrblocks)
 target_compile_features(byteforge_btrblocks_probe PRIVATE cxx_std_17)
+add_executable(byteforge_integer_worker integer_worker.cpp)
+target_link_libraries(byteforge_integer_worker PRIVATE btrblocks)
+target_compile_features(byteforge_integer_worker PRIVATE cxx_std_17)
+target_compile_definitions(byteforge_integer_worker PRIVATE
+  BYTEFORGE_SANITIZED=$<BOOL:${BYTEFORGE_SANITIZE}>
+  BYTEFORGE_FSST_FIXED=$<BOOL:${BYTEFORGE_FSST_SAFETY_FIX}>)
 if(BYTEFORGE_SANITIZE)
-  foreach(target btrblocks byteforge_btrblocks_probe)
+  foreach(target btrblocks byteforge_btrblocks_probe byteforge_integer_worker)
     target_compile_options(${target} PRIVATE -fsanitize=address -fno-omit-frame-pointer)
     target_link_options(${target} PUBLIC -fsanitize=address)
   endforeach()

@@ -23,6 +23,7 @@ HDFS = {
     "artifact_bytes": 321944794,
     "artifact_md5": "f23880dd4938379a535ab71a8d27a798",
     "published_rows": 11167740,
+    "published_rows_scope": "README annotated HDFS logs; full raw count not locally verified",
     "zip_directory_raw_bytes": 1565682217,
     "format": "raw text, strict UTF-8 validation on ingestion",
     "license_url": "https://github.com/logpai/loghub-2.0/blob/main/LICENSE",
