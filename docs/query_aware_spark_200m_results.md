@@ -26,8 +26,9 @@ the test-only byte-symbol encoder, not SGTT. The Release BtrBlocks worker used
 protocol 3, sanitizers off, and one CPU. The three literal queries were common
 `WARN`, a rare exact Spark `blk_...` identifier, and an absent sentinel. Two
 warmup rounds and three measured rounds were used because these scans operate on
-200 MiB of text; each session also performed two untimed warm filters followed
-by one timed warm filter. All 270 observations passed the Python reference.
+200 MiB of text; each session performed **one** untimed warm filter and one timed
+warm filter (`--warm-repetitions 1`). All 270 observations passed the Python
+reference.
 
 All three formats were restored in a fresh process and their canonical output
 SHA-256 matched `5a27af138a1b2d5a2cb248acc4657cd7bdc385293696cd5e11803701fa834fdd`
@@ -45,6 +46,40 @@ Block B includes 45,637,011 B block frames, 7,136,395 B compressed index,
 2,308 B vocabulary and 5,147 B manifest. Full B includes a 33,002,540 B outer
 compressed stream, 420,420 B index, 2,308 B vocabulary and 5,005 B manifest.
 The diagnostic B archive sizes are 2.38x and 3.76x Parquet respectively.
+
+## Full experiment parameters
+
+| Parameter | Value |
+|---|---|
+| Dataset | LogHub-2.0 Spark raw-log ordered prefix; first complete LF records |
+| Raw sample | 209,715,181 B; 2,035,741 rows; 207,679,440 UTF-8 payload B |
+| Sample SHA-256 | `61330feaedcd2ad3021816605401a1e272659c2bb2ad1a2851b98310b3635ea3` |
+| Zenodo archive | 230,699,188 B; MD5 `ca0ef9c6e8ece0df602793bd302e03a6` |
+| Runtime | Python 3.14.8; Linux x86-64, kernel 6.18.57; Intel i3-1215U |
+| Libraries | PyArrow/Arrow 26.0.0; python-zstandard 0.25.0 |
+| Native BtrBlocks | Release, protocol 3, sanitizers off; revision `c950c3c`; `fsst-safety-v1` on |
+| Native selection | SAMPLE; sample count 10; sample run 64; max depth 3 |
+| CPU/thread policy | CPU affinity 0; Arrow, OMP, BLAS thread limits 1 |
+| Query cases | `WARN`; rare `blk_1076204381_2463557`; absent sentinel |
+| Query repetitions | 2 outer warmup rounds; 3 measured rounds; 1 untimed and 1 timed warm request/session |
+| Query cache budgets | 0 B and 16,777,216 B; no query-result cache |
+| Random seed | 20261024; archive/query/cache configurations shuffled each round |
+| Clock / storage cache | Monotonic wall time; OS page cache uncontrolled |
+| B encoder identity | `test-only-byte-symbols-v1`; explicitly diagnostic, not SGTT |
+
+| Pipeline setting | A: Parquet + Zstd | Full B | Block B |
+|---|---|---|---|
+| Logical input | Single non-null UTF-8 `value` column | Same rows, token IDs + row offsets | Same rows, token IDs + row offsets per block |
+| Format | Parquet 2.6; data page 1.0 | ByteForge archive v1 | ByteForge archive v2 |
+| Compression | Zstd level 3; dictionary on; 1 MiB page/dictionary limits; statistics on | BtrBlocks int32 leaves; outer Zstd level 1 | BtrBlocks int32 leaves; independent Zstd level 1 frames |
+| Integer/window/block size | Row groups up to 65,536 rows; 64 MiB window payload | 65,536 rows / 64 MiB windows; 65,536 leaf elements | Up to 256 rows/block; 65,536 leaf elements |
+| Index / pruning | Parquet row groups and statistics | Full-column leaf index, no substring pruning | Zstd level 1 index; 5-hash byte-trigram Bloom filters, 2,048–8,192 bits/filter |
+| Required token asset | None | 2,308 B diagnostic vocabulary | 2,308 B diagnostic vocabulary |
+| Archive components | Parquet 14,012,558 B + manifest 4,024 B | Zstd data 33,002,540 B + index 420,420 B + vocabulary 2,308 B + manifest 5,005 B | Frames 45,637,011 B + index 7,136,395 B + vocabulary 2,308 B + manifest 5,147 B |
+
+The block index is correctness-preserving for literal substring search: a
+missing query trigram can prove a block cannot match; Bloom false positives
+cause extra scans only. Terms shorter than three bytes are not pruned.
 
 ## Query latency
 
@@ -65,6 +100,17 @@ trials do not support a useful tail-latency estimate. Times below are millisecon
 | `contains("WARN")` | 455.4 | 1,877.6 | **69.7** |
 | Rare block ID | 489.6 | 1,767.8 | **13.2** |
 | Absent sentinel | 478.3 | 1,758.2 | **12.8** |
+
+| Query, repeated in open session, 16 MiB decoded cache | Parquet | Full B | Block B |
+|---|---:|---:|---:|
+| `contains("WARN")` | 459.4 | 1,912.3 | **28.1** |
+| Rare block ID | 494.7 | 1,760.8 | **12.5** |
+| Absent sentinel | 490.5 | 1,718.4 | **12.4** |
+
+The 16 MiB cap cannot retain the entire 200 MiB Parquet or full-B column. Block B
+can retain decoded candidate blocks, so its repeated-query figures benefit from
+the bounded cache. Cache budgets and behavior are therefore reported separately
+from the cache-disabled scan results.
 
 The block index reduced the `WARN` scan to 292 of 7,953 blocks (74,752 rows and
 8.69 MB of decoded log payload, about 4.2% of input payload). The rare identifier
