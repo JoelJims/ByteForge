@@ -1,0 +1,10 @@
+{
+  "initial_query_runner_launch": {
+    "command": ".venv/bin/python scripts/benchmark_log_queries.py ...",
+    "exit_code": 1,
+    "error": "ModuleNotFoundError: No module named 'byteforge.query'",
+    "reason": "Installed non-editable ByteForge copy predates new module; direct script path excludes repository root.",
+    "trial_output_created": false,
+    "resolution": "Run from repository root as python -m scripts.benchmark_log_queries; no dependencies changed."
+  }
+}

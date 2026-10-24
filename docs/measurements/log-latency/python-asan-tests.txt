@@ -1,0 +1,34 @@
+test_deterministic_manifest_and_universal_line_separators (test_dataset.DatasetTests.test_deterministic_manifest_and_universal_line_separators) ... ok
+test_physical_and_logical_roundtrips (test_dataset.DatasetTests.test_physical_and_logical_roundtrips) ... ok
+test_rejects_invalid_input_and_keeps_failure (test_dataset.DatasetTests.test_rejects_invalid_input_and_keeps_failure) ... ok
+test_sample_identity_requires_checksum_and_dimensions (test_dataset.DatasetTests.test_sample_identity_requires_checksum_and_dimensions) ... ok
+test_invalid_unicode (test_dependencies.ParquetTests.test_invalid_unicode) ... ok
+test_utf8_null_and_empty (test_dependencies.ParquetTests.test_utf8_null_and_empty) ... ok
+test_integer_frames (test_dependencies.ZstdTests.test_integer_frames) ... ok
+test_variant_and_idempotence (test_fsst_patch.FsstPatchTests.test_variant_and_idempotence) ... ok
+test_missing_dataset_help (test_pipelines.DatasetCommandTests.test_missing_dataset_help) ... ok
+test_corruption_and_invalid_offsets_rejected (test_pipelines.HybridArchiveTests.test_corruption_and_invalid_offsets_rejected) ... ok
+test_explicit_test_encoder_preserves_input_provenance (test_pipelines.HybridArchiveTests.test_explicit_test_encoder_preserves_input_provenance) ... ok
+test_mismatched_table_even_with_updated_integrity_is_rejected (test_pipelines.HybridArchiveTests.test_mismatched_table_even_with_updated_integrity_is_rejected) ... ok
+test_native_boundaries_and_repeated_requests (test_pipelines.HybridArchiveTests.test_native_boundaries_and_repeated_requests) ... ok
+test_real_input_cannot_use_test_encoder (test_pipelines.HybridArchiveTests.test_real_input_cannot_use_test_encoder) ... ok
+test_standalone_assets_and_boundaries (test_pipelines.HybridArchiveTests.test_standalone_assets_and_boundaries) ... ok
+test_complete_archive_and_empty_inputs (test_pipelines.ParquetArchiveTests.test_complete_archive_and_empty_inputs) ... ok
+test_runner_missing_native_is_explicit (test_pipelines.ParquetArchiveTests.test_runner_missing_native_is_explicit) ... ok
+test_test_encoder_does_not_relabel_input_as_synthetic (test_pipelines.ParquetArchiveTests.test_test_encoder_does_not_relabel_input_as_synthetic) ... ok
+test_empty_archives_and_invalid_budget (test_query.QueryTests.test_empty_archives_and_invalid_budget) ... ok
+test_fast_decoder_still_rejects_bad_ids_and_row_boundaries (test_query.QueryTests.test_fast_decoder_still_rejects_bad_ids_and_row_boundaries) ... ok
+test_streamed_and_bounded_cached_queries_match_reference (test_query.QueryTests.test_streamed_and_bounded_cached_queries_match_reference) ... ok
+test_exact_rows_and_token_stability (test_representation.RepresentationTests.test_exact_rows_and_token_stability) ... ok
+test_explicit_little_endian_and_bounds (test_representation.RepresentationTests.test_explicit_little_endian_and_bounds) ... ok
+test_invalid_metadata (test_representation.RepresentationTests.test_invalid_metadata) ... ok
+test_leaf_and_row_boundaries (test_representation.RepresentationTests.test_leaf_and_row_boundaries) ... ok
+test_entire_directory_preflight (test_sgtt.DirectoryValidationTests.test_entire_directory_preflight) ... ok
+test_archive_identity_and_dataset_bounds (test_sgtt.SGTTQualificationTests.test_archive_identity_and_dataset_bounds) ... ok
+test_custom_production_encoder_cannot_bypass_qualification (test_sgtt.SGTTQualificationTests.test_custom_production_encoder_cannot_bypass_qualification) ... ok
+test_explicit_selection_never_falls_back (test_sgtt.SGTTQualificationTests.test_explicit_selection_never_falls_back) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 2.322s
+
+OK

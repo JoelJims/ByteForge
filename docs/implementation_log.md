@@ -350,3 +350,32 @@ offset regression tests and a reproducible exploratory query timing runner.
 Release-worker Python suite passed 29 tests; Ruff checks passed after fixing
 formatting and a test closure binding. No additional dependencies installed.
 Measurements and user-facing commands follow in `docs/log_query_performance.md`.
+
+### Latency measurements and final validation
+
+At `3ff31e4`, a paired before/after test (`scripts/compare_restore.py`) used the
+identical original 233,320-byte diagnostic archive and unchanged Release worker.
+Python `41f6ae6` was read via a private `git archive` snapshot; no worktree/branch
+was modified. Two warmups plus ten trials per variant: all 24 physical outputs
+matched exactly. Median full restoration 83.055 → 28.234 ms (2.94×); median token
+decode/validation 56.276 → 0.949 ms. This is not a native codec or SGTT speedup.
+
+A new fast-scan complete pipeline run had zero failures and 24 exact round trips.
+Fast-scan A: 57,655 B; diagnostic B: unchanged 233,320 B. Existing results untouched.
+The query runner compared standard A, fast-scan A and diagnostic B on the same
+canonical source, no cache and equal 16 MiB cache caps, with two warmups/ten
+measured rounds. All 216 observation records passed the Python result reference.
+Repeated WARN scan medians without value cache: 0.730/0.599/6.814 ms; with cache:
+0.367/0.368/0.369 ms. Cached equality: approximately 0.042 ms for all. Retained
+Arrow buffers 291,852 B. First-request costs, trial ranges, batching and limitations
+are documented; caching is not called decompression. Final-query-evaluation
+batching protocol is not claimed for this exploratory API benchmark.
+
+Saved raw observations/configurations under `docs/measurements/log-latency/` and
+commands/explanations in `docs/log_query_performance.md`. An initial direct-script
+query launch failed before creating output because the installed package lacked
+the new module; `python -m scripts.benchmark_log_queries` from the repository root
+uses current sources and resolved it. Failure retained in attempts.json. Default
+ASan-worker and Release-worker Python suites both passed 29 tests; CTest 5/5,
+Ruff check/format, pip check and diff checks passed. No extra dependencies installed,
+no restricted SGTT assets used, no user research/data modified, nothing pushed.

@@ -231,3 +231,22 @@ verify the diagnostic vocabulary identity before native decompression. Checksums
 are not authenticity guarantees; trusted native archives are still required.
 Fresh-process timings include separate startup/import/setup measurements. Warmups
 are not a persistent warm-service benchmark; that metric remains unavailable.
+
+## Log-query latency and optional fast-scan profile
+
+[Log-query performance](log_query_performance.md) documents the optimized diagnostic
+decoder, literal query CLI/API and fresh measurements. `--parquet-profile fast-scan`
+selects Zstd level 1 without dictionary encoding; the standard profile is unchanged.
+
+```sh
+.venv/bin/python -m byteforge query \
+  results/log-latency-fast-scan/round-002-A/archive \
+  --operation contains --value WARN
+```
+
+Use `byteforge.query.QuerySession` for retained handles and repeated queries;
+`cache_bytes=16 << 20` allows a bounded Arrow-value cache equally for A/B.
+The default zero budget re-decompresses on every scan. Cache-backed queries are
+not decompression benchmarks. Immutable session archives, explicit profile/cache
+configuration and ordered-result reference checks are required. No actual SGTT,
+SQL engine or large-corpus performance claim follows from these measurements.

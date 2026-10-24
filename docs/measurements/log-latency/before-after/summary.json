@@ -1,0 +1,32 @@
+{
+  "variants": {
+    "before": {
+      "valid_trials": 10,
+      "restore_total_ns": {
+        "median": 83055360.5,
+        "min": 77718514,
+        "max": 98827071
+      },
+      "detokenization_validation_ns": {
+        "median": 56275726.0,
+        "min": 54710486,
+        "max": 62253058
+      }
+    },
+    "after": {
+      "valid_trials": 10,
+      "restore_total_ns": {
+        "median": 28233839.5,
+        "min": 23645124,
+        "max": 36221235
+      },
+      "detokenization_validation_ns": {
+        "median": 948833.0,
+        "min": 929351,
+        "max": 1574399
+      }
+    }
+  },
+  "failures": 0,
+  "observations_sha256": "75e71405456c3aaaa02dadc153d9b552ba2b902539f4bf86e61b622a3745e7d4"
+}

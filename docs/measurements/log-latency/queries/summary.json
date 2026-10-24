@@ -1,0 +1,114 @@
+{
+  "latencies": {
+    "byte-btrblocks/16777216/first_query/contains": {
+      "median_ns": 21586484.5,
+      "min_ns": 19452872,
+      "max_ns": 25101893,
+      "trials": 10
+    },
+    "byte-btrblocks/16777216/repeated_query/contains": {
+      "median_ns": 369150.7074890137,
+      "min_ns": 363794.7685546875,
+      "max_ns": 376737.6780395508,
+      "trials": 10
+    },
+    "byte-btrblocks/16777216/repeated_query/equals": {
+      "median_ns": 42289.95086669922,
+      "min_ns": 41313.659118652344,
+      "max_ns": 45059.75262451172,
+      "trials": 10
+    },
+    "parquet-fast-scan/0/first_query/contains": {
+      "median_ns": 1267083.5,
+      "min_ns": 1196203,
+      "max_ns": 2714063,
+      "trials": 10
+    },
+    "parquet-fast-scan/0/repeated_query/contains": {
+      "median_ns": 599378.296875,
+      "min_ns": 575779.46875,
+      "max_ns": 629502.5,
+      "trials": 10
+    },
+    "parquet-fast-scan/0/repeated_query/equals": {
+      "median_ns": 307807.9375,
+      "min_ns": 291049.125,
+      "max_ns": 338054.40625,
+      "trials": 10
+    },
+    "byte-btrblocks/0/first_query/contains": {
+      "median_ns": 24080912.0,
+      "min_ns": 21207217,
+      "max_ns": 34987955,
+      "trials": 10
+    },
+    "byte-btrblocks/0/repeated_query/contains": {
+      "median_ns": 6814366.09375,
+      "min_ns": 6179638.5625,
+      "max_ns": 7498630.8125,
+      "trials": 10
+    },
+    "byte-btrblocks/0/repeated_query/equals": {
+      "median_ns": 6246768.75,
+      "min_ns": 5870025.34375,
+      "max_ns": 6703791.625,
+      "trials": 10
+    },
+    "parquet-standard/16777216/first_query/contains": {
+      "median_ns": 1558564.5,
+      "min_ns": 1181522,
+      "max_ns": 6452410,
+      "trials": 10
+    },
+    "parquet-standard/16777216/repeated_query/contains": {
+      "median_ns": 367142.9366455078,
+      "min_ns": 361148.98889160156,
+      "max_ns": 380817.70806884766,
+      "trials": 10
+    },
+    "parquet-standard/16777216/repeated_query/equals": {
+      "median_ns": 41757.837158203125,
+      "min_ns": 40984.540466308594,
+      "max_ns": 46273.490783691406,
+      "trials": 10
+    },
+    "parquet-fast-scan/16777216/first_query/contains": {
+      "median_ns": 1271291.0,
+      "min_ns": 1047066,
+      "max_ns": 3349203,
+      "trials": 10
+    },
+    "parquet-fast-scan/16777216/repeated_query/contains": {
+      "median_ns": 367849.568939209,
+      "min_ns": 362221.49603271484,
+      "max_ns": 383631.84564208984,
+      "trials": 10
+    },
+    "parquet-fast-scan/16777216/repeated_query/equals": {
+      "median_ns": 42339.94583129883,
+      "min_ns": 40636.557373046875,
+      "max_ns": 44775.61474609375,
+      "trials": 10
+    },
+    "parquet-standard/0/first_query/contains": {
+      "median_ns": 1618138.5,
+      "min_ns": 1302706,
+      "max_ns": 16056036,
+      "trials": 10
+    },
+    "parquet-standard/0/repeated_query/contains": {
+      "median_ns": 729601.109375,
+      "min_ns": 657506.90625,
+      "max_ns": 839742.5,
+      "trials": 10
+    },
+    "parquet-standard/0/repeated_query/equals": {
+      "median_ns": 425254.203125,
+      "min_ns": 391893.40625,
+      "max_ns": 790186.625,
+      "trials": 10
+    }
+  },
+  "failures": [],
+  "observations_sha256": "8a3456c300e710d2d4556eb1d100371669772332d7f2d40fff9b9a38196c7052"
+}
