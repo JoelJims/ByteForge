@@ -12,11 +12,11 @@ from byteforge.pipelines import _hybrid_rows, load_archive
 class QuerySession:
     """Retain decoder handles. Archives must remain immutable during a session.
 
-    An optional all-or-nothing Arrow buffer cache has the same byte budget for
-    both backends. Default zero means every query reads/decompresses again.
+    An all-or-nothing Arrow buffer cache has the same byte budget for both
+    backends. The default keeps small datasets decoded for subsequent filters.
     """
 
-    def __init__(self, archive: Path, *, worker: Path | None = None, cache_bytes: int = 0):
+    def __init__(self, archive: Path, *, worker: Path | None = None, cache_bytes: int = 16 << 20):
         if type(cache_bytes) is not int or cache_bytes < 0:
             raise ValueError("cache_bytes must be a nonnegative integer")
         import pyarrow as pa
@@ -73,9 +73,14 @@ class QuerySession:
             )
         else:
             batches = (
-                pa.array(rows, type=pa.string())
+                pa.array(rows, type=pa.binary())
                 for rows in _hybrid_rows(
-                    self.archive, self.manifest, self.worker, phases, native_session=self.native
+                    self.archive,
+                    self.manifest,
+                    self.worker,
+                    phases,
+                    native_session=self.native,
+                    as_bytes=True,
                 )
             )
         retained, size, fits = [], 0, self.cache_budget > 0
@@ -109,7 +114,7 @@ class QuerySession:
             raise ValueError("Query session is closed")
         if operation not in ("equals", "contains") or type(value) is not str:
             raise ValueError("Expected equals/contains and a string value")
-        value.encode("utf-8", errors="strict")
+        needle = value.encode("utf-8", errors="strict")
         import pyarrow.compute as pc
 
         start = time.perf_counter_ns()
@@ -117,10 +122,11 @@ class QuerySession:
         ids, base = [], 0
         phases = {"detokenization_validation_ns": 0}
         for array in self._arrays(phases):
+            query_value = needle if self.native is not None else value
             mask = (
-                pc.equal(array, value)
+                pc.equal(array, query_value)
                 if operation == "equals"
-                else pc.match_substring(array, value)
+                else pc.match_substring(array, query_value)
             )
             ids.extend(base + index for index in pc.indices_nonzero(mask).to_pylist())
             base += len(array)
@@ -135,5 +141,6 @@ class QuerySession:
             "cache_budget_bytes": self.cache_budget,
             "pipeline": self.manifest["pipeline"],
             "encoder": self.manifest.get("tokenizer", {}).get("identity", "none"),
+            "query_representation": "utf8-bytes" if self.native is not None else "string",
             "phases": phases,
         }

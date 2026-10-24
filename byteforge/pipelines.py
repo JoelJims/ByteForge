@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import shutil
 import struct
 import time
 from contextlib import ExitStack
@@ -15,7 +16,6 @@ from byteforge.dataset import (
     checksum,
     dump_json,
     row_windows,
-    write_rows,
 )
 from byteforge.native import NativeIntegers
 from byteforge.representation import leaf_blocks, pack_unsigned, unpack_unsigned
@@ -151,11 +151,24 @@ def load_archive(archive: Path) -> dict:
             require_sgtt()
         if tokenizer.get("identity") != TestByteEncoder.identity:
             raise ValueError("Unsupported test-only encoder identity")
-    expected = (
-        {"data.parquet"}
-        if manifest["pipeline"] == "A"
-        else {"data.bin", "index.json", "vocabulary.bin"}
-    )
+    if manifest["pipeline"] == "A":
+        expected = {"data.parquet"}
+    else:
+        outer = manifest.get("outer_codec", {}).get("name", "none")
+        if outer == "none":
+            expected_data = "data.bin"
+        elif outer == "zstd":
+            metadata = manifest["outer_codec"]
+            if (
+                metadata.get("level") != 1
+                or metadata.get("checksum") is not True
+                or metadata.get("content_size") is not True
+            ):
+                raise ValueError("Unsupported outer Zstandard configuration")
+            expected_data = "data.zst"
+        else:
+            raise ValueError("Unsupported outer codec")
+        expected = {expected_data, "index.json", "vocabulary.bin"}
     if set(manifest["files"]) != expected or {p.name for p in archive.iterdir()} != expected | {
         "manifest.json"
     }:
@@ -265,7 +278,13 @@ def build_hybrid(
     worker: Path,
     *,
     allow_test_encoder_on_real: bool = False,
+    outer_codec: str = "none",
 ) -> dict:
+    if outer_codec not in ("none", "zstd"):
+        raise ValueError("Unsupported BtrBlocks outer codec")
+    zstd_module = None
+    if outer_codec == "zstd":
+        import zstandard as zstd_module
     start = time.perf_counter_ns()
     dataset = prepared_manifest(prepared)
     test_only = bool(getattr(tokenizer, "test_only", False))
@@ -305,7 +324,30 @@ def build_hybrid(
                     window[name].append(entry)
             windows.append(window)
         native_ns, info, codec_bytes = native.phase_ns, native.info, native.codec_bytes
+    native_path = output / "data.bin"
+    native_data_bytes = native_path.stat().st_size
+    outer_ns = 0
+    if outer_codec == "zstd":
+        phase = time.perf_counter_ns()
+        compressed_path = output / "data.zst"
+        compressor = zstd_module.ZstdCompressor(
+            level=1, write_checksum=True, write_content_size=True
+        )
+        with native_path.open("rb") as source, compressed_path.open("xb") as target:
+            with compressor.stream_writer(target, closefd=False) as stream:
+                shutil.copyfileobj(source, stream, length=1 << 20)
+        native_path.unlink()
+        outer_ns = time.perf_counter_ns() - phase
     dump_json(output / "index.json", {"version": 1, "windows": windows})
+    outer_metadata = None
+    if outer_codec == "zstd":
+        outer_metadata = {
+            "name": "zstd",
+            "level": 1,
+            "checksum": True,
+            "content_size": True,
+            "library_version": zstd_module.__version__,
+        }
     manifest = finish(
         output,
         {
@@ -322,6 +364,11 @@ def build_hybrid(
                 "decode_assets": "complete ID-to-byte vocabulary.bin",
             },
             "native": info,
+            **(
+                {"outer_codec": outer_metadata, "native_data_bytes": native_data_bytes}
+                if outer_metadata
+                else {}
+            ),
             "representation": "separate nonnegative int32 ID/offset leaves; little endian",
             "settings": {
                 "leaf_elements": 65536,
@@ -339,7 +386,12 @@ def build_hybrid(
         "codec_compressed_bytes": codec_bytes,
         "codec_size_scope": "BtrBlocks encoded column data, including nested cascade metadata; "
         "excludes outer datablock headers and null maps",
-        "native_block_bytes": manifest["files"]["data.bin"]["bytes"],
+        "native_block_bytes": native_data_bytes,
+        "outer_compression_ns": outer_ns,
+        "native_data_bytes": native_data_bytes,
+        "archive_data_bytes": manifest["files"][
+            "data.zst" if outer_codec == "zstd" else "data.bin"
+        ]["bytes"],
     }
 
 
@@ -350,19 +402,31 @@ def _hybrid_rows(
     phases: dict,
     *,
     native_session: NativeIntegers | None = None,
+    as_bytes: bool = False,
 ):
     vocabulary = _read_vocabulary(archive / "vocabulary.bin")
     if vocabulary != TestByteEncoder.vocabulary:
         raise ValueError("Test-only vocabulary identity mismatch")
     index = read_json(archive / "index.json")
-    validate_index(index, (archive / "data.bin").stat().st_size, manifest["dataset"]["rows"])
+    outer = manifest.get("outer_codec", {}).get("name", "none")
+    data_name = "data.zst" if outer == "zstd" else "data.bin"
+    native_data_bytes = manifest.get("native_data_bytes", (archive / data_name).stat().st_size)
+    validate_index(index, native_data_bytes, manifest["dataset"]["rows"])
     position = 0
     with ExitStack() as stack:
         native = native_session or stack.enter_context(
             NativeIntegers(worker, expected=manifest["native"])
         )
         initial_native_ns = native.phase_ns
-        stream = stack.enter_context((archive / "data.bin").open("rb"))
+        source = stack.enter_context((archive / data_name).open("rb"))
+        if outer == "zstd":
+            import zstandard as zstd
+
+            stream = stack.enter_context(
+                zstd.ZstdDecompressor().stream_reader(source, closefd=False)
+            )
+        else:
+            stream = source
         for window in index["windows"]:
             if (
                 type(window["rows"]) is not int
@@ -373,32 +437,40 @@ def _hybrid_rows(
             decoded = {}
             for name, total in (("ids", window["tokens"]), ("offsets", window["rows"] + 1)):
                 values = []
+                byte_values = bytearray()
                 for leaf in window[name]:
                     count, size = leaf["elements"], leaf["bytes"]
+                    decoded_so_far = len(byte_values) if name == "ids" else len(values)
                     if (
                         type(count) is not int
                         or not 1 <= count <= 65536
                         or not 32 <= size <= 4 << 20
                         or leaf["offset"] != position
-                        or len(values) + count > total
+                        or decoded_so_far + count > total
                     ):
                         raise ValueError("Invalid leaf directory")
                     compressed = stream.read(size)
                     if len(compressed) != size:
                         raise ValueError("Truncated native data")
-                    raw, scheme = native.transform(2, count, compressed)
+                    compact_bytes = name == "ids" and native.info["protocol"] >= 3
+                    raw, scheme = native.transform(3 if compact_bytes else 2, count, compressed)
                     if scheme != leaf["scheme"]:
                         raise ValueError("Native scheme mismatch")
-                    values.extend(unpack_unsigned(raw))
+                    if compact_bytes:
+                        byte_values.extend(raw)
+                    else:
+                        values.extend(unpack_unsigned(raw))
                     position += size
-                if len(values) != total:
+                compact_bytes = name == "ids" and native.info["protocol"] >= 3
+                decoded_count = len(byte_values) if compact_bytes else len(values)
+                if decoded_count != total:
                     raise ValueError("Stream element count mismatch")
-                decoded[name] = tuple(values)
+                decoded[name] = bytes(byte_values) if compact_bytes else tuple(values)
             phase = time.perf_counter_ns()
             # This archive version accepts only the complete byte table above.
-            # unpack_unsigned produced actual ints, so C bytes conversion checks
-            # every ID's 0..255 range without repeated Python per-token loops.
-            payload = bytes(decoded["ids"])
+            # Protocol 3 checks each ID in native code; protocol 2 retains the
+            # checked Python conversion for compatibility with older workers.
+            payload = decoded["ids"] if type(decoded["ids"]) is bytes else bytes(decoded["ids"])
             offsets = decoded["offsets"]
             if (
                 not offsets
@@ -409,9 +481,11 @@ def _hybrid_rows(
                 raise ValueError("Invalid row offsets")
             if len(payload) > MAX_PAYLOAD:
                 raise ValueError("Decoded window exceeds payload limit")
-            rows = tuple(
-                payload[a:b].decode("utf-8", errors="strict")
-                for a, b in zip(offsets, offsets[1:], strict=False)
+            pieces = (payload[a:b] for a, b in zip(offsets, offsets[1:], strict=False))
+            rows = (
+                tuple(pieces)
+                if as_bytes
+                else tuple(piece.decode("utf-8", errors="strict") for piece in pieces)
             )
             phases["detokenization_validation_ns"] += time.perf_counter_ns() - phase
             yield rows
@@ -452,10 +526,13 @@ def restore(archive: Path, output: Path, *, worker: Path | None = None) -> dict:
                 if type(row) is not str:
                     raise ValueError("Unexpected null/missing output")
                 data = row.encode("utf-8", errors="strict")
-                logical.update(U64.pack(len(data)) + data)
+                length = U64.pack(len(data))
+                logical.update(length)
+                logical.update(data)
+                stream.write(length)
+                stream.write(data)
                 payload += len(data)
                 count += 1
-            write_rows(stream, rows)
     dataset = manifest["dataset"]
     if (
         count != dataset["rows"]

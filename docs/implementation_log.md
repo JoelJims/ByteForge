@@ -379,3 +379,47 @@ uses current sources and resolved it. Failure retained in attempts.json. Default
 ASan-worker and Release-worker Python suites both passed 29 tests; CTest 5/5,
 Ruff check/format, pip check and diff checks passed. No extra dependencies installed,
 no restricted SGTT assets used, no user research/data modified, nothing pushed.
+
+## Follow-up: reduce B archive size and query/reconstruction latency — 2026-10-24
+
+Working tree continued from `d178668` on `implementation/core`; no push or merge.
+Inspected pipeline, native worker, query, CLI and benchmark code plus prior result
+artifacts. The new worker was built as a separate unsanitized Release target with
+protocol 3; the previous worker/build and archive variants were left intact.
+
+Added direct native int32-to-byte output for checked 0..255 token IDs, so restore
+and query no longer create a Python integer object per encoded byte. Added optional
+outer Zstd framing around BtrBlocks' native stream, defaulted benchmark runs to
+level 1, and retained `none` as an explicit comparison. Existing protocol-2
+archives remain readable with their matching worker. Restore now encodes each row
+once for both canonical output and logical hashing. A Python `QuerySession` caches
+decoded Arrow values up to 16 MiB by default; cache remains configurable and the
+single-shot CLI stays uncached. Literal B queries pass UTF-8 bytes directly to
+Arrow binary kernels.
+
+On `data/hdfs/HDFS_2k.log` (2,000 rows, 285,848 source bytes, previously verified
+SHA-256 unchanged), two warmups and ten measured Release trials per pipeline all
+passed exact canonical and physical reconstruction. A: 64,278 B, 6.801 ms encode,
+14.259 ms restore. Diagnostic B: 100,811–100,813 B with outer Zstd (233,320 B
+without it), 67.579 ms encode and 20.228 ms restore. The latest B archive is still
+1.57x A size and 1.42x its restore median; this is not an SGTT comparison.
+Outer Zstd level 1 saves 56.8% over raw B. BtrBlocks DICT-encodes byte IDs and
+BP-encodes offsets; encoded native stream is 225,545 B before outer Zstd. One
+32-bit ID per raw input byte is the principal diagnostic-representation problem.
+
+Ten-round query observations (all IDs checked against a Python reference): first
+WARN query A/B 1.361/18.087 ms; uncached repeated contains 0.713/2.534 ms;
+uncached repeated equality 0.425/2.203 ms. With equal 16 MiB cache caps, contains
+is 0.366/0.372 ms and equality 0.048/0.049 ms. The cache makes repeated filters
+competitive by retaining decoded values; it does not accelerate the cold first
+decode. The test-only encoder remains visibly named and production SGTT remains
+license-blocked. See `docs/log_query_performance.md` and
+`docs/measurements/btrblocks-latency-hdfs-2k/` for raw evidence and limitations.
+
+Validation for this follow-up: isolated CMake Release build succeeded, worker
+reports protocol 3 and `sanitized=0`; the complete HDFS benchmark reported 0
+failures across 24 trial executions and exact reconstruction; query run retained
+288 observations with 0 failures. Ruff and whitespace checks are pending final
+review; final Ruff and whitespace checks passed. No unit test suite was run in
+this follow-up. No source dataset or
+pre-existing measurement was modified.

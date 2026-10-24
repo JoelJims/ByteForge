@@ -191,3 +191,64 @@ measurements nor the source data were overwritten. The next scale-oriented step
 would be indexed block selection and a bounded partial-block cache; this first
 implementation intentionally falls back to scans when the whole Arrow value
 column exceeds the cache budget.
+
+## Follow-up: native decode and outer Zstandard — 2026-10-24
+
+The next profile showed that B's ID decode was crossing the native/Python boundary
+as one Python integer per byte. A release-only protocol-3 operation now validates
+the BtrBlocks integers and returns compact bytes directly. Protocol-2 readers and
+existing archive variants remain supported. B's archive can also wrap the native
+payload in explicit Zstandard level 1; this is now the benchmark runner default,
+and `--b-outer-codec none` retains an unwrapped comparison. This adds a small
+streaming decompression cost but substantially reduces the diagnostic archive.
+
+The restore writer previously encoded each reconstructed row twice: once for the
+logical checksum and again for canonical serialization. It now encodes once and
+feeds the same bytes to both. `QuerySession` now retains a decoded Arrow column up
+to 16 MiB by default; the CLI's one-shot `query` still defaults to no cache because
+that process cannot reuse the cache. Set `cache_bytes=0` to measure each BtrBlocks
+decompression, or choose a different explicit cap. Oversized datasets stream and
+skip retaining the full column. This cache stores decoded values, not query
+results, and gives both A and B the same limit.
+
+### Latest HDFS_2k diagnostic run
+
+The protocol-3 unsanitized Release worker was built in
+`build/btrblocks-bytefast-release`. On the unchanged 2,000-row sample, 10 measured
+trials plus two warmups per backend all reconstructed the canonical and physical
+input exactly; zero trials failed. The production SGTT path remains blocked on
+source/table usage rights. B below is explicitly test-only byte IDs.
+
+| Metric | Parquet + Zstd | Test byte IDs + BtrBlocks + Zstd-1 |
+|---|---:|---:|
+| Complete archive | 64,278 B | 100,811–100,813 B |
+| Encode median | 6.801 ms | 67.579 ms |
+| Restore/reconstruct median | 14.259 ms | 20.228 ms |
+| Native integer decode IPC phase | n/a | 2.092 ms |
+| Exact trials | 10/10 | 10/10 |
+
+Without outer Zstd, B is 233,320 B. The outer frame reduces that by 56.8% to
+about 100,812 B, but B remains 1.57x the complete Parquet archive. BtrBlocks
+selects DICT for the IDs and BP for row offsets. The diagnostic encoder creates
+one 32-bit integer per original input byte, then BtrBlocks' encoded integer
+stream is 225,545 B before the outer frame. Parquet compresses the original
+strings directly. The remaining size gap therefore comes mainly from this
+inefficient test representation plus ID/offset/table/archive metadata; it is not
+evidence about SGTT. The outer Zstd pass took 0.818 ms in a representative final
+trial.
+
+Query runner: two warmups and ten measured trials for each query mode; query row
+IDs matched the Python reference on every observation. On this sample, the first
+WARN filter was 1.361 ms for Parquet and 18.087 ms for B; this includes the first
+column read/decode. Repeated uncached scans were 0.713 vs 2.534 ms for `contains`
+and 0.425 vs 2.203 ms for equality. With the same 16 MiB value cache, repeated
+`contains` was 0.366 ms for Parquet and 0.372 ms for B, and equality was 0.048 ms
+for Parquet and 0.049 ms for B. Thus repeated query latency is fixed by keeping
+the decoded column resident; the first B query still pays archive decode. The cache is a
+memory/latency tradeoff, not a faster decompression result.
+
+Raw round-trip and query observations are in
+[measurements/btrblocks-latency-hdfs-2k](measurements/btrblocks-latency-hdfs-2k/).
+Earlier measurements remain unchanged. These small-sample diagnostics are not a
+final query-engine benchmark and do not demonstrate SGTT or a general performance
+win over Parquet.

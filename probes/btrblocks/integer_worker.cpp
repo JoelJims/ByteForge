@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     if (argc == 2 && std::string(argv[1]) == "--info") {
       std::cout << "{\"backend\":\"btrblocks\",\"revision\":"
         "\"c950c3c01c1fbf91007936b05781d431a29a60d3\","
-        "\"protocol\":2,\"integer_bits\":32,\"endian\":\"little\","
+        "\"protocol\":3,\"integer_bits\":32,\"endian\":\"little\","
         "\"pointer_bytes\":" << sizeof(void*) << ",\"sanitized\":"
         << BYTEFORGE_SANITIZED << ",\"fsst_safety_v1\":" << BYTEFORGE_FSST_FIXED
         << ",\"compiler\":\"" << __VERSION__ << "\",\"selection\":\"SAMPLE\","
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
       const int operation = std::cin.get();
       const uint32_t count = read32(), size = read32();
       check(count >= 1 && count <= 65536 && size <= (4u << 20), "invalid request bounds");
-      check(operation == 1 || operation == 2, "unknown operation");
+      check(operation == 1 || operation == 2 || operation == 3, "unknown operation");
       std::vector<uint8_t> bytes(size);
       std::cin.read(reinterpret_cast<char*>(bytes.data()), size);
       check(bool(std::cin), "truncated body");
@@ -92,12 +92,25 @@ int main(int argc, char** argv) {
               column.offset >= 32 && column.offset < size && column.nullmap_offset <= size &&
               static_cast<uint8_t>(column.bitmap_type) <= 3, "invalid native column metadata");
         auto result = codec.decompress(compressed);
-        for (size_t i = 0; i < count; ++i)
-          check(result.has(0, i) && result.get<INTEGER>(0, i) >= 0, "invalid decoded integer");
-        write32(count * 4);
+        std::vector<uint8_t> byte_values;
+        if (operation == 3) byte_values.resize(count);
+        for (size_t i = 0; i < count; ++i) {
+          check(result.has(0, i), "null decoded integer");
+          const auto value = result.get<INTEGER>(0, i);
+          check(value >= 0, "invalid decoded integer");
+          if (operation == 3) {
+            check(value <= 255, "decoded byte ID outside range");
+            byte_values[i] = static_cast<uint8_t>(value);
+          }
+        }
+        write32(operation == 3 ? count : count * 4);
         write32(column.compression_type);
         write32(0);
-        std::cout.write(reinterpret_cast<const char*>(result.columns[0].get()), count * 4);
+        if (operation == 3) {
+          std::cout.write(reinterpret_cast<const char*>(byte_values.data()), count);
+        } else {
+          std::cout.write(reinterpret_cast<const char*>(result.columns[0].get()), count * 4);
+        }
       }
       std::cout.flush();
       check(bool(std::cout), "response write failed");

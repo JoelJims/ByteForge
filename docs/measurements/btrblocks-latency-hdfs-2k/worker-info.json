@@ -1,0 +1,1 @@
+{"backend":"btrblocks","revision":"c950c3c01c1fbf91007936b05781d431a29a60d3","protocol":3,"integer_bits":32,"endian":"little","pointer_bytes":8,"sanitized":0,"fsst_safety_v1":1,"compiler":"16.2.1 20260810","selection":"SAMPLE","sample_count":10,"sample_run_size":64,"max_depth":3,"cpu_limit_seconds":3600,"address_space_limit_bytes":2147483648}

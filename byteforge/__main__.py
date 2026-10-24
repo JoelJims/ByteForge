@@ -39,6 +39,7 @@ def main() -> int:
     )
     bench.add_argument("--worker", type=Path, default=worker_path())
     bench.add_argument("--parquet-profile", choices=("standard", "fast-scan"), default="standard")
+    bench.add_argument("--b-outer-codec", choices=("none", "zstd"), default="zstd")
     bench.add_argument(
         "--encoder",
         choices=("sgtt", "test-byte"),
@@ -101,6 +102,7 @@ def main() -> int:
                 seed=args.seed,
                 timeout=args.timeout,
                 parquet_profile=args.parquet_profile,
+                b_outer_codec=args.b_outer_codec,
             )
         elif args.command == "query":
             from byteforge.query import QuerySession

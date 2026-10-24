@@ -1,0 +1,78 @@
+{
+  "latencies": {
+    "B-zstd/0/first_query/contains": {
+      "median_ns": 18087409.0,
+      "min_ns": 15862561,
+      "max_ns": 20327580,
+      "trials": 10
+    },
+    "B-zstd/0/repeated_query/contains": {
+      "median_ns": 2533712.125,
+      "min_ns": 2294466.625,
+      "max_ns": 2861762.375,
+      "trials": 10
+    },
+    "B-zstd/0/repeated_query/equals": {
+      "median_ns": 2203453.6875,
+      "min_ns": 2130230.75,
+      "max_ns": 2559670.75,
+      "trials": 10
+    },
+    "B-zstd/16777216/first_query/contains": {
+      "median_ns": 17811589.0,
+      "min_ns": 16470471,
+      "max_ns": 22888072,
+      "trials": 10
+    },
+    "B-zstd/16777216/repeated_query/contains": {
+      "median_ns": 372397.109375,
+      "min_ns": 360466.9140625,
+      "max_ns": 389299.203125,
+      "trials": 10
+    },
+    "B-zstd/16777216/repeated_query/equals": {
+      "median_ns": 48908.45703125,
+      "min_ns": 46718.546875,
+      "max_ns": 74870.65625,
+      "trials": 10
+    },
+    "parquet/16777216/first_query/contains": {
+      "median_ns": 1407582.0,
+      "min_ns": 1158689,
+      "max_ns": 2229958,
+      "trials": 10
+    },
+    "parquet/16777216/repeated_query/contains": {
+      "median_ns": 366019.51953125,
+      "min_ns": 361717.0234375,
+      "max_ns": 418903.21875,
+      "trials": 10
+    },
+    "parquet/16777216/repeated_query/equals": {
+      "median_ns": 48053.4609375,
+      "min_ns": 45868.7421875,
+      "max_ns": 68848.9140625,
+      "trials": 10
+    },
+    "parquet/0/first_query/contains": {
+      "median_ns": 1360701.0,
+      "min_ns": 1041542,
+      "max_ns": 1801419,
+      "trials": 10
+    },
+    "parquet/0/repeated_query/contains": {
+      "median_ns": 712784.6875,
+      "min_ns": 676167.125,
+      "max_ns": 922980.625,
+      "trials": 10
+    },
+    "parquet/0/repeated_query/equals": {
+      "median_ns": 425397.375,
+      "min_ns": 393143.5,
+      "max_ns": 444700.25,
+      "trials": 10
+    }
+  },
+  "failures": [],
+  "observations_sha256": "c4ee629306783c460e127b1bb1780b941516460859eada8930dd8fbff73e2575"
+}

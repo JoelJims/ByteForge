@@ -22,7 +22,7 @@ def worker_info(path: Path) -> dict:
             f"BtrBlocks integer worker missing: {path}; see docs/hdfs_benchmark.md"
         )
     info = json.loads(subprocess.check_output([str(path.resolve()), "--info"], timeout=30))
-    if info.get("backend") != "btrblocks" or info.get("protocol") != 2:
+    if info.get("backend") != "btrblocks" or info.get("protocol") not in (2, 3):
         raise ValueError("Unsupported native worker")
     info["executable_sha256"] = checksum(path)
     return info
@@ -81,7 +81,7 @@ class NativeIntegers:
         return bytes(result)
 
     def transform(self, operation: int, count: int, data: bytes) -> tuple[bytes, int]:
-        if operation not in (1, 2) or not 1 <= count <= 65536 or len(data) > 4 << 20:
+        if operation not in (1, 2, 3) or not 1 <= count <= 65536 or len(data) > 4 << 20:
             raise ValueError("Invalid native request")
         start = time.perf_counter_ns()
         packet = memoryview(struct.pack("<BII", operation, count, len(data)) + data)
@@ -91,7 +91,12 @@ class NativeIntegers:
                 raise RuntimeError("Native request pipe closed")
             packet = packet[written:]
         size, scheme, codec_bytes = struct.unpack("<III", self._read(12))
-        if size > 4 << 20 or codec_bytes > size or (operation == 2 and size != count * 4):
+        expected_size = count if operation == 3 else count * 4 if operation == 2 else None
+        if (
+            size > 4 << 20
+            or codec_bytes > size
+            or (expected_size is not None and size != expected_size)
+        ):
             raise ValueError("Invalid native response length")
         result = self._read(size)
         self.codec_bytes += codec_bytes

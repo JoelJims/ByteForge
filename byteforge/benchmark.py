@@ -90,7 +90,12 @@ def work(spec: dict) -> dict:
             build_parquet(prepared, archive, profile=spec.get("parquet_profile", "standard"))
             if spec["pipeline"] == "A"
             else build_hybrid(
-                prepared, archive, TestByteEncoder(), native, allow_test_encoder_on_real=True
+                prepared,
+                archive,
+                TestByteEncoder(),
+                native,
+                allow_test_encoder_on_real=True,
+                outer_codec=spec.get("b_outer_codec", "zstd"),
             )
         )
     else:
@@ -171,12 +176,14 @@ def run(
     seed: int = 20261023,
     timeout: float = 3600,
     parquet_profile: str = "standard",
+    b_outer_codec: str = "zstd",
 ) -> dict:
     if (
         warmups < 0
         or repetitions < 1
         or timeout <= 0
         or parquet_profile not in ("standard", "fast-scan")
+        or b_outer_codec not in ("none", "zstd")
     ):
         raise ValueError("Invalid trial counts/timeout")
     output.mkdir(parents=True, exist_ok=False)
@@ -206,6 +213,7 @@ def run(
         "seed": seed,
         "test_encoder": test_encoder,
         "parquet_profile": parquet_profile,
+        "b_outer_codec": b_outer_codec,
         "native": native_info,
         "dataset": dataset,
         "source_preparation_ns": preparation_ns,
@@ -253,6 +261,7 @@ def run(
                         "worker": str(worker.resolve()),
                         "operation": "encode",
                         "parquet_profile": parquet_profile,
+                        "b_outer_codec": b_outer_codec,
                     }
                     observation["encode"] = invoke(spec, trial, "encode", timeout)
                     restored = trial / "restored.bin"
