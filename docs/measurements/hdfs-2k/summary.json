@@ -1,0 +1,49 @@
+{
+  "pipelines": {
+    "A": {
+      "valid_measured_trials": 10,
+      "dataset_kind": "hdfs_2k_sample",
+      "performance_claim": null,
+      "encode_total_ns": {
+        "median": 6861713.5,
+        "min": 5861285,
+        "max": 7796394
+      },
+      "restore_total_ns": {
+        "median": 14535713.5,
+        "min": 13205137,
+        "max": 18094778
+      },
+      "archive_total_bytes": {
+        "median": 64278.0,
+        "min": 64278,
+        "max": 64278
+      }
+    },
+    "B-test-only": {
+      "valid_measured_trials": 10,
+      "dataset_kind": "hdfs_2k_sample",
+      "performance_claim": null,
+      "encode_total_ns": {
+        "median": 138685819.5,
+        "min": 133495307,
+        "max": 143337951
+      },
+      "restore_total_ns": {
+        "median": 92813197.5,
+        "min": 89705544,
+        "max": 105669079
+      },
+      "archive_total_bytes": {
+        "median": 233314.0,
+        "min": 233314,
+        "max": 233314
+      }
+    }
+  },
+  "production_B": {
+    "status": "unsupported",
+    "reason": "SGTT code/table reuse rights unresolved"
+  },
+  "note": "Warmups/failures excluded from summaries, retained in raw JSONL. No winner or SGTT inference; test-only timings are diagnostics."
+}

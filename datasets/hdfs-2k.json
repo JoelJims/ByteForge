@@ -1,0 +1,75 @@
+{
+  "official": {
+    "dataset": "LogHub-2.0/HDFS_2k",
+    "release": "GitHub 2k sample at ac4aad2ea86f561e5a0acbc6587fa28b487259f9",
+    "official_repository": "https://github.com/logpai/loghub-2.0",
+    "artifact_name": "HDFS_2k.log",
+    "artifact_url": "https://raw.githubusercontent.com/logpai/loghub-2.0/ac4aad2ea86f561e5a0acbc6587fa28b487259f9/2k_dataset/HDFS/HDFS_2k.log",
+    "documentation_url": "https://github.com/logpai/loghub-2.0/blob/main/2k_dataset/HDFS/HDFS_2k.log",
+    "official_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+    "official_file_bytes": 285848,
+    "official_rows": 2000,
+    "license_url": "https://github.com/logpai/loghub-2.0/blob/main/LICENSE",
+    "license_notice": "LICENSE OF LOGHUB-2.0\n\nThe datasets are freely available for research or academic work, subject to\nthe following condition: For any usage or distribution of the loghub-2.0 datasets,\nplease refer to the loghub repository URL (https://github.com/logpai/loghub-2.0)\nand cite the following loghub papers where applicable.\n\n+ Zhihan Jiang, Jinyang Liu, Junjie Huang, Yichen Li, Yintong Huo, Jiazhen Gu,\n   Zhuangbin Chen, Jieming Zhu, Michael R. Lyu. A Large-scale Evaluation for\n   Log Parsing Techniques: How Far are We? In ISSTA, 2024.\n+ Jieming Zhu, Shilin He, Pinjia He, Jinyang Liu, Michael R. Lyu. Loghub: A Large\n   Collection of System Log Datasets for AI-driven Log Analytics. In ISSRE, 2023.\n\nThe above license notice shall be included in all copies of the datasets.\n",
+    "rights": "Research/academic use; retain repository license notice, URL and citations.",
+    "citations": [
+      "Jiang et al., A Large-scale Evaluation for Log Parsing Techniques: How Far are We?, ISSTA 2024",
+      "Zhu et al., Loghub: A Large Collection of System Log Datasets for AI-driven Log Analytics, ISSRE 2023"
+    ],
+    "scope": "Real 2k sample, distinct from the Zenodo full HDFS corpus"
+  },
+  "local_path": "data/hdfs/HDFS_2k.log",
+  "observed": {
+    "version": 1,
+    "kind": "hdfs_2k_sample",
+    "provenance": {
+      "dataset": "LogHub-2.0/HDFS_2k",
+      "release": "GitHub 2k sample at ac4aad2ea86f561e5a0acbc6587fa28b487259f9",
+      "official_repository": "https://github.com/logpai/loghub-2.0",
+      "artifact_name": "HDFS_2k.log",
+      "artifact_url": "https://raw.githubusercontent.com/logpai/loghub-2.0/ac4aad2ea86f561e5a0acbc6587fa28b487259f9/2k_dataset/HDFS/HDFS_2k.log",
+      "documentation_url": "https://github.com/logpai/loghub-2.0/blob/main/2k_dataset/HDFS/HDFS_2k.log",
+      "official_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+      "official_file_bytes": 285848,
+      "official_rows": 2000,
+      "license_url": "https://github.com/logpai/loghub-2.0/blob/main/LICENSE",
+      "license_notice": "LICENSE OF LOGHUB-2.0\n\nThe datasets are freely available for research or academic work, subject to\nthe following condition: For any usage or distribution of the loghub-2.0 datasets,\nplease refer to the loghub repository URL (https://github.com/logpai/loghub-2.0)\nand cite the following loghub papers where applicable.\n\n+ Zhihan Jiang, Jinyang Liu, Junjie Huang, Yichen Li, Yintong Huo, Jiazhen Gu,\n   Zhuangbin Chen, Jieming Zhu, Michael R. Lyu. A Large-scale Evaluation for\n   Log Parsing Techniques: How Far are We? In ISSTA, 2024.\n+ Jieming Zhu, Shilin He, Pinjia He, Jinyang Liu, Michael R. Lyu. Loghub: A Large\n   Collection of System Log Datasets for AI-driven Log Analytics. In ISSRE, 2023.\n\nThe above license notice shall be included in all copies of the datasets.\n",
+      "rights": "Research/academic use; retain repository license notice, URL and citations.",
+      "citations": [
+        "Jiang et al., A Large-scale Evaluation for Log Parsing Techniques: How Far are We?, ISSTA 2024",
+        "Zhu et al., Loghub: A Large Collection of System Log Datasets for AI-driven Log Analytics, ISSRE 2023"
+      ],
+      "scope": "Real 2k sample, distinct from the Zenodo full HDFS corpus"
+    },
+    "contract": {
+      "version": "raw-lf-utf8-v1",
+      "schema": "value: non-null UTF-8 string",
+      "delimiter": "LF byte only; delimiter excluded from value; CR retained",
+      "blank_lines": "one empty string per LF-delimited blank record",
+      "final_newline": "terminal LF terminates the last record; no phantom extra row",
+      "preprocessing": "none; BOM, NUL, whitespace, Unicode forms and order preserved"
+    },
+    "source_path": "/home/nishant/coding/ByteForge/data/hdfs/HDFS_2k.log",
+    "source_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a",
+    "source_file_bytes": 285848,
+    "rows": 2000,
+    "payload_bytes": 283848,
+    "matches_published_full_shape": null,
+    "final_lf": true,
+    "logical_sha256": "7ca3199136281f5fcbe9c53d011aa7658c577d917a95fce8c23751945036b860",
+    "canonical_sha256": "cab203dd59d057619cfd67f6c4c6b4741420477a3102653ccc49bd2335ab0160",
+    "canonical_file_bytes": 299864,
+    "artifact_identity": "byte-identical to pinned official HDFS_2k.log"
+  },
+  "byte_inspection": {
+    "encoding": "strict UTF-8; all bytes ASCII",
+    "lf": 2000,
+    "crlf": 0,
+    "cr": 0,
+    "final_lf": true,
+    "blank_records": 0,
+    "reference_download": "pinned official 2k sample only; no full dataset download",
+    "reference_sha256": "6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a"
+  },
+  "source_unchanged_after_runs": true
+}

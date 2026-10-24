@@ -1,0 +1,8 @@
+{
+  "execution_complete": true,
+  "fully_qualified_primary_comparison": false,
+  "status": "complete_with_sgtt_blocked",
+  "failed_trials": 0,
+  "production_B": "blocked_license",
+  "observations_sha256": "8295ec822a4228a7911b2528b8214219aa4c7f4e083d49389794cb70d86d6785"
+}

@@ -216,3 +216,54 @@ table rights and implement its authorized adapter, complete independent review,
 lock all native transitive dependencies, and declare hardware/run budgets before
 real full-corpus measurements. Synthetic byte-token results cannot answer the
 primary research question. Reproduction commands: `docs/hdfs_benchmark.md`.
+
+## Real HDFS_2k validation and SGTT recheck — 2026-10-24
+
+Starting HEAD verified at `aa01a96` on `implementation/core`; origin remains the
+canonical ByteForge URL. The source is `data/hdfs/HDFS_2k.log`, not another dataset
+named after a directory. Its full bytes match the official raw sample at current
+LogHub-2.0 main `ac4aad2ea86f561e5a0acbc6587fa28b487259f9`: 285,848 bytes,
+2,000 logical records, 283,848 UTF-8 payload bytes, 2,000 LF terminators, zero
+CR/CRLF or blank rows, final LF present. It is ASCII-compatible strict UTF-8.
+SHA-256 is `6fe25449e79d75e35bb223ead9729fa02c00b7abb23e4e8ec0f3bb2addec6e3a`;
+the original remains unchanged. Only a small official sample was downloaded for
+comparison, not the full corpus. The source/license/contract record is now
+`datasets/hdfs-2k.json`.
+
+An initial A-only run at `aa01a96` passed and is retained separately. Inspection
+showed two in-scope issues: metadata mislabeled the sample as a full-corpus
+candidate, and the previous synthetic-only encoder guard prevented the newly
+authorized real-data infrastructure test. Code commit `0ebf117` identifies the
+sample by pinned checksum/dimensions, separates data provenance from encoder
+provenance, and permits the explicit CLI `--test-encoder` choice on real input.
+The library's default real-input guard remains, with an explicit opt-in override.
+Production B still cannot fall back to the byte-symbol test encoder.
+
+At `0ebf117`, the paired run on the actual sample with two warmups and ten measured
+repetitions passed **20 measured trials + four warmups, zero failures**. Both
+canonical ordered values and physical raw files match byte for byte. Separate
+`restore --raw` + `cmp` checks also passed for A and B-test-only. Actual archive
+sizes: A 64,278 bytes (Parquet file 60,508), B-test-only 233,314 bytes (native data
+225,545, vocabulary 2,308, index 892, manifest 4,569). The sample result is not a
+claim about SGTT or the full corpus. Native workers remain ASan/LSan instrumented.
+Raw measurements and full configurations are preserved under
+`docs/measurements/hdfs-2k/` and `results/hdfs-2k-real-validation/`; report and exact
+commands are in `docs/hdfs_2k_results.md`. No outliers were discarded or pooled
+with the earlier A-only run.
+
+SGTT remote HEAD still equals pinned `e202e36e2b33a4768d1122f96880b64416234175`.
+Root LICENSE/COPYING endpoints return 404; the tracked tree contains a nested
+dataset MIT notice and an OnPair dependency notice, not an established SGTT
+source/patched-table grant. The dataset notice was missed by earlier filesystem
+inventory; that correction does not establish permission for the implementation.
+The protected ID/table API boundary was re-inspected. No SGTT source/table was
+copied into ByteForge, built or executed, and no author was contacted. Evidence
+and the remaining permission requirement are in `docs/sgtt_integration_status.json`.
+The actual SGTT run remains unsupported under the user's stated restriction.
+
+`.venv/bin/python -m unittest discover -s tests -v`: **21 pass**, no skips, with
+new sample-identity and real-input/test-encoder separation regressions. Ruff lint,
+format checks and `pip check` pass. Existing Python dependencies and native worker
+were reused; no new dependency installation or backend substitution. AGENTS.md,
+research files, source dataset and old results were preserved. Independent review
+is still missing; it did not block this explicitly authorized validation.

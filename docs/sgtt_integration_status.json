@@ -1,0 +1,27 @@
+{
+  "checked_utc": "2026-10-24T11:16:54.048326+00:00",
+  "repository": "https://github.com/umbra-db/token-vldb2026",
+  "remote_head": "e202e36e2b33a4768d1122f96880b64416234175",
+  "inspected_source_revision": "e202e36e2b33a4768d1122f96880b64416234175",
+  "root_license_checks": {
+    "https://raw.githubusercontent.com/umbra-db/token-vldb2026/master/LICENSE": 404,
+    "https://raw.githubusercontent.com/umbra-db/token-vldb2026/master/COPYING": 404
+  },
+  "tracked_license_paths": [
+    "data/dbtext/LICENSE",
+    "thirdparty/onpair/LICENSE"
+  ],
+  "scope_finding": "Nested dataset/dependency notices do not establish a license grant for SGTT source and patched token tables. No root grant or README reuse permission found in inspected snapshot.",
+  "source_author_notice": "Tokenizer.hpp identifies (c) 2025 Tobias Schmidt",
+  "api_findings": [
+    "public prepare/encode/compress/decompress/decode methods",
+    "raw encoder state and vocabulary accessors are protected",
+    "per-row ID extraction and exported decode-table assets still need an authorized adapter"
+  ],
+  "permission_status": "not_established_under_task_restriction",
+  "code_or_table_copied_into_byteforge": false,
+  "sgtt_built_or_executed": false,
+  "outbound_author_contact": false,
+  "actual_sgtt_benchmark_status": "unsupported",
+  "next_requirement": "Applicable license/permission covering SGTT source and patched table assets before reuse/execution; then implement adapter and qualification. Test-byte-symbol runs cannot close this requirement."
+}

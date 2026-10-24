@@ -3,8 +3,10 @@
 The implemented experiment has two paths: **A**, genuine PyArrow Parquet+Zstd;
 and **B**, row token IDs/offsets compressed by the actual pinned BtrBlocks integer
 backend. Production B is blocked by SGTT code/table reuse rights. An explicit
-**B-test-only** path exercises the complete archive infrastructure on synthetic
-input using reversible byte symbols. Its results do not validate an LLM encoder.
+**B-test-only** path exercises the complete archive infrastructure using reversible
+byte symbols. Its results do not validate an LLM encoder. The
+[real HDFS_2k validation](hdfs_2k_results.md) uses the actual 2k sample and keeps
+that real-input identity separate from its test-only tokenizer identity.
 
 ## Exact dataset identity and access
 
@@ -120,7 +122,10 @@ physically reconstructed log to the source **byte for byte**. On success only it
 own temporary decoded files are removed; archives and measurements remain.
 Warmup observations and failed trials are retained, with no numeric zero standing
 in for missing data. Missing BtrBlocks produces unavailable trials, never another
-codec. Test encoders are refused unless input is explicitly marked synthetic.
+codec. `--test-encoder` explicitly opts into infrastructure validation on either
+synthetic or real input; it does not change the input's provenance or activate
+SGTT. Direct library callers retain a default guard for real input and must opt
+in with `allow_test_encoder_on_real=True`.
 
 When the real member is available, the same loader and A implementation run with:
 
