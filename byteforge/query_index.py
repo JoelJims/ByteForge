@@ -7,7 +7,7 @@ import struct
 
 TRIGRAM_BYTES = 3
 MIN_BITS = 2048
-MAX_BITS = 8192
+MAX_BITS = 65536
 HASHES = 5
 
 
@@ -24,8 +24,8 @@ def _positions(gram: bytes, bit_count: int):
 
 
 def build_filter(values: set[bytes]) -> dict:
-    # Eight bits per distinct gram targets a useful false-positive rate while capping
-    # index growth for unusually diverse blocks. Bloom filters never false-negative.
+    # Eight bits per distinct gram targets a useful false-positive rate. The larger
+    # cap keeps filters selective for larger row blocks; filters never false-negative.
     bit_count = max(MIN_BITS, math.ceil(len(values) * 8 / 64) * 64)
     bit_count = min(bit_count, MAX_BITS)
     bits = bytearray(bit_count // 8)

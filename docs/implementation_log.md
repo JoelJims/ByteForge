@@ -511,3 +511,32 @@ provenance, and the full-B builder accepts bounded payload windows to keep
 intermediate integer buffers practical. Validation outcomes and local commit
 are recorded in the handoff; no data binaries, research files, or AGENTS.md were
 staged.
+
+## Parquet LZ4 and Block B tuning — 2026-10-24
+
+Added `--parquet-profile lz4` / `build_parquet(profile="lz4")`, keeping the
+standard Parquet 2.6, dictionary, page and window settings while selecting
+PyArrow's Parquet LZ4 codec. Unit tests cover exact restore and query results.
+The 16.6-million-row Thunderbird LZ4 archive was 299,019,419 B; build was
+13.826 s and full canonical restore 13.547 s. Zstd was 164,417,323 B, 15.354 s
+build and 13.857 s restore in the measured runs. One-run query timing favored
+LZ4 by roughly 6–10%, with substantially larger storage.
+
+Investigated Block B's 64,851-block/62.7 MB index. A 4,096-row variant reduced
+its index to 2.09 MB and complete archive to 640,649,882 B, and reduced build /
+restore from 866.466 / 47.110 s to 718.325 / 32.211 s. Query selectivity
+regressed for a sampled timestamp and common term, so the default remains 256
+rows. Raising the Bloom cap to 65,536 bits yielded a 17.14 MB index and
+655,699,338 B archive; it pruned absent queries quickly but still scanned 11.1M
+rows for the sampled timestamp. The block-size tradeoff is documented rather
+than presented as a universal improvement.
+
+The completed query screen recorded 48 observations with zero reference
+mismatches, one trial per query/configuration, no warmups, and uncontrolled OS
+cache. Exact restores of the Parquet LZ4 and 4,096-row variants matched the full
+canonical SHA-256. The full Python suite passed 40 tests; Ruff, formatting,
+compileall, `pip check`, and native CTest (5/5) passed. See
+`docs/query_aware_thunderbird_lz4_results.md` and
+`docs/measurements/query-aware-thunderbird-lz4/`. The larger repeated-query
+matrix was interrupted for runtime cost; its partial output is excluded from
+reported measurements. No data files were added to Git.

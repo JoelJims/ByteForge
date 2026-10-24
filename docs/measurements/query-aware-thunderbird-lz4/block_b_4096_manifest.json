@@ -1,0 +1,101 @@
+{
+  "format": "byteforge-hdfs-block-archive-v2",
+  "archive_version": 2,
+  "pipeline": "B",
+  "dataset": {
+    "version": 1,
+    "kind": "loghub_2_0_full_raw",
+    "provenance": {
+      "dataset": "LogHub-2.0 Thunderbird",
+      "release": "Zenodo record 8275861 v1",
+      "archive_url": "https://zenodo.org/records/8275861/files/Thunderbird.zip",
+      "archive_name": "Thunderbird.zip",
+      "archive_md5": "a8d365d003845c3bef61661375513910",
+      "raw_member": "Thunderbird/Thunderbird_full.log",
+      "raw_member_published_bytes": 2516177713,
+      "license_url": "https://github.com/logpai/Loghub-2.0/blob/main/LICENSE",
+      "citations": [
+        "Loghub (ISSRE 2023)",
+        "Loghub-2.0 (ISSTA 2024)"
+      ]
+    },
+    "contract": {
+      "version": "raw-lf-utf8-v1",
+      "schema": "value: non-null UTF-8 string",
+      "delimiter": "LF byte only; delimiter excluded from value; CR retained",
+      "blank_lines": "one empty string per LF-delimited blank record",
+      "final_newline": "terminal LF terminates the last record; no phantom extra row",
+      "preprocessing": "none; BOM, NUL, whitespace, Unicode forms and order preserved"
+    },
+    "source_path": "/home/nishant/coding/ByteForge/data/loghub-2.0/Thunderbird_full.log",
+    "source_sha256": "a276905e7517a7d2c1d658490a0f27919c666045c3454ba695a5e77f79e9cbfe",
+    "source_file_bytes": 2516177713,
+    "rows": 16601745,
+    "payload_bytes": 2499575968,
+    "matches_published_full_shape": null,
+    "final_lf": true,
+    "logical_sha256": "6865ffa1cc474699063996c826c5fb052158ef42464076433595f9e4ec0ad9d4",
+    "canonical_sha256": "19eb21df372ea06090ac92496ed5bb6c727df789a2f9306378b807d619cd2066",
+    "canonical_file_bytes": 2632389944,
+    "artifact_identity": "full raw Thunderbird log member extracted from the MD5-verified official Zenodo archive"
+  },
+  "tokenizer": {
+    "identity": "test-only-byte-symbols-v1",
+    "test_only": true,
+    "validation_scope": "archive infrastructure only; not SGTT",
+    "configuration": {},
+    "decode_assets": "complete ID-to-byte vocabulary.bin"
+  },
+  "native": {
+    "backend": "btrblocks",
+    "revision": "c950c3c01c1fbf91007936b05781d431a29a60d3",
+    "protocol": 3,
+    "integer_bits": 32,
+    "endian": "little",
+    "pointer_bytes": 8,
+    "sanitized": 0,
+    "fsst_safety_v1": 1,
+    "compiler": "16.2.1 20260810",
+    "selection": "SAMPLE",
+    "sample_count": 10,
+    "sample_run_size": 64,
+    "max_depth": 3,
+    "cpu_limit_seconds": 3600,
+    "address_space_limit_bytes": 2147483648,
+    "executable_sha256": "d6a1578ac6d0bef3ece823d6c96fe196d496c507d42b24048842c4b8b9ea8448"
+  },
+  "outer_codec": {
+    "name": "zstd-per-block",
+    "level": 1,
+    "checksum": true,
+    "content_size": true
+  },
+  "index_codec": {
+    "name": "zstd",
+    "level": 1,
+    "checksum": true,
+    "content_size": true
+  },
+  "representation": "per-row token IDs and token offsets; int32 little-endian leaves",
+  "settings": {
+    "block_rows": 4096,
+    "leaf_elements": 65536,
+    "max_payload_per_block": 67108864,
+    "selection": "upstream defaults",
+    "query_pruning": "byte trigram Bloom; false-positive only"
+  },
+  "files": {
+    "data.bin": {
+      "bytes": 638550348,
+      "sha256": "c7eae82dd2257489db3c4dcb74074122dbc2d9df4e34dc2ce42e862076c1b9e2"
+    },
+    "index.json.zst": {
+      "bytes": 17143110,
+      "sha256": "577ffe2b57103aeee600778bdca87b3b6be2815c0473adca629c674c7e6983b6"
+    },
+    "vocabulary.bin": {
+      "bytes": 2308,
+      "sha256": "7310b03ffa367fc8d92de69ab0298387019de6ab9fb6d762ed1f6bc5adeb8953"
+    }
+  }
+}

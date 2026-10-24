@@ -38,7 +38,9 @@ def main() -> int:
         help="explicitly run test-only byte symbols on the supplied input; not SGTT",
     )
     bench.add_argument("--worker", type=Path, default=worker_path())
-    bench.add_argument("--parquet-profile", choices=("standard", "fast-scan"), default="standard")
+    bench.add_argument(
+        "--parquet-profile", choices=("standard", "fast-scan", "lz4"), default="standard"
+    )
     bench.add_argument("--b-outer-codec", choices=("none", "zstd"), default="zstd")
     bench.add_argument(
         "--encoder",

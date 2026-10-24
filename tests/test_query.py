@@ -15,6 +15,17 @@ HAS_ARROW = bool(importlib.util.find_spec("pyarrow"))
 
 @unittest.skipUnless(HAS_ARROW, "Optional PyArrow not installed")
 class QueryTests(unittest.TestCase):
+    def test_lz4_parquet_queries_match_reference(self):
+        values = ("WARN alpha", "no match", "WARN 😀", "WARN alpha")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "raw").write_text("\n".join(values), encoding="utf-8")
+            prepare(root / "raw", root / "input", synthetic=True)
+            build_parquet(root / "input", root / "archive", profile="lz4")
+            with QuerySession(root / "archive", cache_bytes=0) as session:
+                self.assertEqual(session.filter("contains", "WARN")["row_ids"], [0, 2, 3])
+                self.assertEqual(session.filter("equals", "no match")["row_ids"], [1])
+
     def test_streamed_and_bounded_cached_queries_match_reference(self):
         values = ("", "alpha", "alpha", "😀é", "tail", "head", " whitespace\r", "x" * 70000)
         for pipeline in ("A", "B"):

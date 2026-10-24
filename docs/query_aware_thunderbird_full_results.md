@@ -129,3 +129,7 @@ verified uncompressed checksum), build/restore component metrics and complete
 status are preserved under
 [`measurements/query-aware-thunderbird-full/`](measurements/query-aware-thunderbird-full/).
 Downloaded data and generated archives remain local and are not committed.
+
+Follow-up LZ4 and Block B granularity/Bloom-filter experiments on the same
+Thunderbird source are documented in
+[the codec and tuning report](query_aware_thunderbird_lz4_results.md).

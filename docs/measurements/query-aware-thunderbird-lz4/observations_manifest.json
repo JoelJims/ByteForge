@@ -1,0 +1,8 @@
+{
+  "file": "observations.jsonl.zst",
+  "uncompressed_bytes": 48775,
+  "uncompressed_sha256": "3330dde56aedc35a0fec97993029cc9dae1fe436954f3b8be0bcd81e2113ce2e",
+  "compressed_bytes": 2453,
+  "compression": "Zstandard level 9; checksum and content size enabled",
+  "observation_count": 48
+}

@@ -175,3 +175,10 @@ class TrigramFilterTests(unittest.TestCase):
             encoded = value.encode()
             for start in range(len(encoded) - 2):
                 self.assertTrue(may_contain(bloom, encoded[start : start + 3]))
+
+    def test_large_filters_expand_instead_of_saturating_at_small_cap(self):
+        grams = {index.to_bytes(3, "little") for index in range(9000)}
+        bloom = build_filter(grams)
+        self.assertEqual(bloom["bits"], 65536)
+        for gram in grams:
+            self.assertTrue(may_contain(bloom, gram))

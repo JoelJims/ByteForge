@@ -182,7 +182,7 @@ def run(
         warmups < 0
         or repetitions < 1
         or timeout <= 0
-        or parquet_profile not in ("standard", "fast-scan")
+        or parquet_profile not in ("standard", "fast-scan", "lz4")
         or b_outer_codec not in ("none", "zstd")
     ):
         raise ValueError("Invalid trial counts/timeout")

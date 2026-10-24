@@ -292,3 +292,16 @@ and checking its 62.7 MB index costs about 1.3 s even when every data block is
 pruned. This is one screening trial per case; see the [full results and query
 tables](query_aware_thunderbird_full_results.md) and raw observations under
 `measurements/query-aware-thunderbird-full/`. The B encoder remains test-only.
+
+### LZ4 and block-granularity follow-up
+
+Added Parquet LZ4 and compared it with Zstd on all Thunderbird rows. On the
+single screening run, LZ4 was about 6–10% faster for literal queries and about
+2% faster for full reconstruction, with an 82% larger Parquet archive. Block B
+row size now supports up to 4,096 rows, but the measured 4,096-row layout traded
+smaller archive/index and faster full restoration for much weaker present-term
+pruning. The default remains 256 rows. A 65,536-bit Bloom cap improved filter
+selectivity but did not make the sampled timestamp query selective enough at
+that granularity. Full settings, tables and limitations are in the [Thunderbird
+LZ4 and Block B report](query_aware_thunderbird_lz4_results.md); raw observations
+are in `measurements/query-aware-thunderbird-lz4/`.

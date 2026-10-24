@@ -212,6 +212,11 @@ reconstruction times, query observations, provenance, and limitations are in
 variants use test-only byte symbols, not SGTT. The query screening run has one
 trial per case and is not a stable p50/p95 evaluation.
 
+A Parquet LZ4 profile is also available with `--parquet-profile lz4`; it retains
+the standard dictionary/page settings while replacing Zstd with Parquet's LZ4
+codec. The full Thunderbird LZ4 comparison and Block B row/Bloom tuning results
+are in [the follow-up report](query_aware_thunderbird_lz4_results.md).
+
 ## Actual SGTT qualification and release controls
 
 See [SGTT/HDFS_2k report](sgtt_hdfs_2k_results.md) and the new independent

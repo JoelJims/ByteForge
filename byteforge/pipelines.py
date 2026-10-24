@@ -26,6 +26,7 @@ from byteforge.tokenizers import Tokenizer, encode_rows
 FORMAT = "byteforge-hdfs-archive-v1"
 BLOCK_FORMAT = "byteforge-hdfs-block-archive-v2"
 BLOCK_ROWS = 256
+MAX_BLOCK_ROWS = 4096
 MAX_BLOCK_NATIVE_BYTES = 321 << 20
 MAX_BLOCK_FRAME_BYTES = MAX_BLOCK_NATIVE_BYTES + (1 << 20)
 PARQUET_SETTINGS = {
@@ -156,7 +157,7 @@ def validate_block_index(index: dict, data_bytes: int, dataset: dict) -> None:
         or type(index.get("rows")) is not int
         or index["rows"] != dataset["rows"]
         or type(block_rows) is not int
-        or not 1 <= block_rows <= BLOCK_ROWS
+        or not 1 <= block_rows <= MAX_BLOCK_ROWS
         or type(data_bytes) is not int
         or data_bytes < 0
     ):
@@ -167,7 +168,7 @@ def validate_block_index(index: dict, data_bytes: int, dataset: dict) -> None:
     for block in blocks:
         if not isinstance(block, dict):
             raise ValueError("Invalid block metadata")
-        rows = bounded_integer(block.get("rows"), "block rows", BLOCK_ROWS)
+        rows = bounded_integer(block.get("rows"), "block rows", MAX_BLOCK_ROWS)
         start = bounded_integer(block.get("row_start"), "block row start")
         tokens = bounded_integer(block.get("tokens"), "block token count", MAX_PAYLOAD)
         payload = bounded_integer(block.get("payload_bytes"), "block payload", MAX_PAYLOAD)
@@ -328,11 +329,15 @@ def build_parquet(prepared: Path, output: Path, *, profile: str = "standard") ->
     import pyarrow as pa
     import pyarrow.parquet as pq
 
-    if profile not in ("standard", "fast-scan"):
+    if profile not in ("standard", "fast-scan", "lz4"):
         raise ValueError("Unknown Parquet profile")
     settings = dict(PARQUET_SETTINGS)
     if profile == "fast-scan":
         settings.update(compression_level=1, use_dictionary=False)
+    elif profile == "lz4":
+        # Parquet's "lz4" codec is the interoperable LZ4_RAW representation.
+        settings["compression"] = "lz4"
+        settings.pop("compression_level", None)
     start = time.perf_counter_ns()
     dataset = prepared_manifest(prepared)
     output.mkdir(parents=True, exist_ok=False)
@@ -361,6 +366,7 @@ def build_parquet(prepared: Path, output: Path, *, profile: str = "standard") ->
                 "pyarrow": pa.__version__,
                 "arrow_cpp": pa.cpp_version,
                 "linked_zstd_version": None,
+                "lz4_available": pa.Codec.is_available("lz4"),
             },
         },
     )
@@ -547,8 +553,8 @@ def build_hybrid_blocked(
     block_rows: int = BLOCK_ROWS,
 ) -> dict:
     """Create independently compressed row blocks plus safe trigram filters."""
-    if type(block_rows) is not int or not 1 <= block_rows <= BLOCK_ROWS:
-        raise ValueError(f"block_rows must be in 1..{BLOCK_ROWS}")
+    if type(block_rows) is not int or not 1 <= block_rows <= MAX_BLOCK_ROWS:
+        raise ValueError(f"block_rows must be in 1..{MAX_BLOCK_ROWS}")
     dataset = prepared_manifest(prepared)
     test_only = bool(getattr(tokenizer, "test_only", False))
     if not test_only:

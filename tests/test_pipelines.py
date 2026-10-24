@@ -38,19 +38,24 @@ class ParquetArchiveTests(unittest.TestCase):
 
     def test_complete_archive_and_empty_inputs(self):
         for data in (FIXTURE.read_bytes(), b"", b"\n\n", b"x\r\n\r\nlast", b"x" * 100000):
-            with tempfile.TemporaryDirectory() as tmp:
-                root = Path(tmp)
-                (root / "raw.log").write_bytes(data)
-                prepare(root / "raw.log", root / "input", synthetic=True)
-                expected = (root / "input/rows.bin").read_bytes()
-                build_parquet(root / "input", root / "archive")
-                restore(root / "archive", root / "restored.bin")
-                self.assertEqual((root / "restored.bin").read_bytes(), expected)
-                stats = storage(root / "archive")
-                self.assertEqual(
-                    stats["archive_total_bytes"], sum(stats["component_bytes"].values())
-                )
-                self.assertEqual((root / "archive/data.parquet").read_bytes()[:4], b"PAR1")
+            for profile in ("standard", "lz4"):
+                with self.subTest(profile=profile), tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    (root / "raw.log").write_bytes(data)
+                    prepare(root / "raw.log", root / "input", synthetic=True)
+                    expected = (root / "input/rows.bin").read_bytes()
+                    build_parquet(root / "input", root / "archive", profile=profile)
+                    manifest = json.loads((root / "archive/manifest.json").read_text())
+                    if profile == "lz4":
+                        self.assertEqual(manifest["settings"]["compression"], "lz4")
+                        self.assertTrue(manifest["settings"]["use_dictionary"])
+                    restore(root / "archive", root / "restored.bin")
+                    self.assertEqual((root / "restored.bin").read_bytes(), expected)
+                    stats = storage(root / "archive")
+                    self.assertEqual(
+                        stats["archive_total_bytes"], sum(stats["component_bytes"].values())
+                    )
+                    self.assertEqual((root / "archive/data.parquet").read_bytes()[:4], b"PAR1")
 
     def test_runner_missing_native_is_explicit(self):
         with tempfile.TemporaryDirectory() as tmp:
