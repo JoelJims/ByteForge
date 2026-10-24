@@ -11,11 +11,15 @@ dependencies = []
 
 [project.optional-dependencies]
 qualification = ["pyarrow==26.0.0", "zstandard==0.25.0"]
+benchmark = ["pyarrow==26.0.0"]
 dev = ["ruff==0.15.7"]
 native = ["cmake==3.31.10"]
 
 [tool.setuptools.packages.find]
 include = ["byteforge*"]
+
+[tool.setuptools.package-data]
+byteforge = ["assets/*.txt"]
 
 [tool.ruff]
 line-length = 100

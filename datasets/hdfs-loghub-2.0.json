@@ -1,0 +1,51 @@
+{
+  "source": {
+    "dataset": "LogHub-2.0/HDFS",
+    "release": "Zenodo 8275861, v1 (2023-08-23)",
+    "official_repository": "https://github.com/logpai/loghub-2.0",
+    "documentation_revision": "ac4aad2ea86f561e5a0acbc6587fa28b487259f9",
+    "artifact_url": "https://zenodo.org/records/8275861/files/HDFS.zip",
+    "artifact_name": "HDFS.zip",
+    "raw_member": "HDFS/HDFS_full.log",
+    "artifact_bytes": 321944794,
+    "artifact_md5": "f23880dd4938379a535ab71a8d27a798",
+    "published_rows": 11167740,
+    "zip_directory_raw_bytes": 1565682217,
+    "format": "raw text, strict UTF-8 validation on ingestion",
+    "license_url": "https://github.com/logpai/loghub-2.0/blob/main/LICENSE",
+    "license_notice": "LICENSE OF LOGHUB-2.0\n\nThe datasets are freely available for research or academic work, subject to\nthe following condition: For any usage or distribution of the loghub-2.0 datasets,\nplease refer to the loghub repository URL (https://github.com/logpai/loghub-2.0)\nand cite the following loghub papers where applicable.\n\n+ Zhihan Jiang, Jinyang Liu, Junjie Huang, Yichen Li, Yintong Huo, Jiazhen Gu,\n   Zhuangbin Chen, Jieming Zhu, Michael R. Lyu. A Large-scale Evaluation for\n   Log Parsing Techniques: How Far are We? In ISSTA, 2024.\n+ Jieming Zhu, Shilin He, Pinjia He, Jinyang Liu, Michael R. Lyu. Loghub: A Large\n   Collection of System Log Datasets for AI-driven Log Analytics. In ISSRE, 2023.\n\nThe above license notice shall be included in all copies of the datasets.\n",
+    "rights": "Research/academic use; retain license notice, repository URL and citations. Zenodo metadata additionally declares CC-BY-4.0.",
+    "citations": [
+      "Jiang et al., A Large-scale Evaluation for Log Parsing Techniques: How Far are We?, ISSTA 2024",
+      "Zhu et al., Loghub: A Large Collection of System Log Datasets for AI-driven Log Analytics, ISSRE 2023"
+    ],
+    "inspection": "Official metadata, ZIP directory and first partial member bytes only; full dataset not downloaded or validated during implementation."
+  },
+  "contract": {
+    "version": "raw-lf-utf8-v1",
+    "schema": "value: non-null UTF-8 string",
+    "delimiter": "LF byte only; delimiter excluded from value; CR retained",
+    "blank_lines": "one empty string per LF-delimited blank record",
+    "final_newline": "terminal LF terminates the last record; no phantom extra row",
+    "preprocessing": "none; BOM, NUL, whitespace, Unicode forms and order preserved"
+  },
+  "local_file_sha256": null,
+  "full_dataset_available": false,
+  "representative_inspection": {
+    "archive_ranges": [
+      [
+        0,
+        65535
+      ],
+      [
+        321879258,
+        321944793
+      ]
+    ],
+    "zip_member_raw_bytes": 1565682217,
+    "sample_decompressed_bytes": 8192,
+    "sample_complete_lines": 58,
+    "sample_line_endings": "LF; no CRLF observed in this partial sample",
+    "sample_is_not_full_dataset": true
+  }
+}
