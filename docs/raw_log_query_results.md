@@ -51,3 +51,8 @@ not already exist.
 
 Raw configuration and observations are in
 [`measurements/raw-thunderbird-only/`](measurements/raw-thunderbird-only/).
+
+An optimized native memory-mapped scanner was subsequently measured against the
+same raw-file queries. See [native raw-scan results](raw_scan_optimization_results.md)
+and the new per-trial observations in
+[`measurements/raw-thunderbird-native/`](measurements/raw-thunderbird-native/).

@@ -6,7 +6,9 @@ import json
 import os
 import statistics
 import struct
+import subprocess
 import time
+from array import array
 from pathlib import Path
 
 from byteforge.benchmark import environment
@@ -42,6 +44,30 @@ def _scan(path: Path, operation: str, needle: bytes):
     return ids, rows, payload
 
 
+def _scan_native(executable: Path, path: Path, operation: str, needle: bytes):
+    begin = time.perf_counter_ns()
+    cpu_begin = time.process_time_ns()
+    process = subprocess.run(
+        [str(executable.resolve()), str(path.resolve()), operation, needle.hex()],
+        capture_output=True,
+        check=True,
+    )
+    parent_cpu = time.process_time_ns() - cpu_begin
+    elapsed = time.perf_counter_ns() - begin
+    if len(process.stdout) < 8:
+        raise ValueError("Native raw scanner returned a truncated result")
+    count = struct.unpack_from("<Q", process.stdout)[0]
+    if len(process.stdout) != 8 + count * 8:
+        raise ValueError("Native raw scanner result length mismatch")
+    ids = array("Q")
+    if ids.itemsize != 8:
+        raise RuntimeError("Native scanner requires 64-bit array items")
+    ids.frombytes(process.stdout[8:])
+    if struct.pack("<Q", 1) != struct.pack("=Q", 1):
+        ids.byteswap()
+    return list(ids), json.loads(process.stderr), elapsed, parent_cpu
+
+
 def _reference(path: Path, operation: str, needle: str):
     """Independent UTF-8 text reference scan; outside timed observations."""
     result = []
@@ -75,6 +101,10 @@ def run(args):
         raise ValueError("Invalid warmup or repetition count")
     if not args.source.is_file():
         raise FileNotFoundError(args.source)
+    if args.scanner in ("native", "both") and (
+        args.native_scanner is None or not args.native_scanner.is_file()
+    ):
+        raise FileNotFoundError("Native scanner missing; compile probes/raw_scan/raw_query.cpp")
     if hasattr(os, "sched_getaffinity"):
         os.sched_setaffinity(0, {min(os.sched_getaffinity(0))})
     args.output.mkdir(parents=True, exist_ok=False)
@@ -117,6 +147,16 @@ def run(args):
         {
             "environment": environment(),
             "benchmark": "raw-file-only literal row scans; no archive, codec, sidecar or index",
+            "scanners": (
+                ["python-lines"]
+                if args.scanner == "python"
+                else ["native-mmap"]
+                if args.scanner == "native"
+                else ["python-lines", "native-mmap"]
+            ),
+            "native_executable_sha256": (
+                checksum(args.native_scanner) if args.scanner in ("native", "both") else None
+            ),
             "source_path": str(args.source.resolve()),
             "source_sha256": source_hash,
             "source_bytes": args.source.stat().st_size,
@@ -129,10 +169,7 @@ def run(args):
             "queries": queries,
             "warmups": args.warmups,
             "repetitions": args.repetitions,
-            "timing": (
-                "each request reopens and sequentially scans the raw file; cold/warm "
-                "describe first/repeated pass, OS cache uncontrolled"
-            ),
+            "timing": "each request reopens and scans the raw file; OS cache uncontrolled",
             "result": (
                 "ordered row IDs; timing includes row scanning and match-ID accumulation, "
                 "excludes oracle/reference and digest"
@@ -140,7 +177,19 @@ def run(args):
             "seed": args.seed,
         },
     )
-    trials = [(query, slot) for query in queries for slot in range(args.scans_per_query_per_round)]
+    scanners = (
+        ["python-lines"]
+        if args.scanner == "python"
+        else ["native-mmap"]
+        if args.scanner == "native"
+        else ["python-lines", "native-mmap"]
+    )
+    trials = [
+        (query, slot, scanner)
+        for query in queries
+        for slot in range(args.scans_per_query_per_round)
+        for scanner in scanners
+    ]
     import random
 
     rng = random.Random(args.seed)
@@ -149,14 +198,21 @@ def run(args):
         for round_id in range(args.warmups + args.repetitions):
             order = trials.copy()
             rng.shuffle(order)
-            for query, scan_slot in order:
-                begin = time.perf_counter_ns()
-                cpu_begin = time.process_time_ns()
-                ids, rows, payload = _scan(
-                    args.source, query["operation"], query["value"].encode("utf-8")
-                )
-                elapsed = time.perf_counter_ns() - begin
-                cpu = time.process_time_ns() - cpu_begin
+            for query, scan_slot, scanner in order:
+                needle = query["value"].encode("utf-8")
+                if scanner == "python-lines":
+                    begin = time.perf_counter_ns()
+                    cpu_begin = time.process_time_ns()
+                    ids, rows, payload = _scan(args.source, query["operation"], needle)
+                    elapsed = time.perf_counter_ns() - begin
+                    cpu = time.process_time_ns() - cpu_begin
+                    diagnostics = {"scan_wall_ns": elapsed, "scan_cpu_ns": cpu}
+                    parent_cpu = cpu
+                else:
+                    ids, diagnostics, elapsed, parent_cpu = _scan_native(
+                        args.native_scanner, args.source, query["operation"], needle
+                    )
+                    rows, payload = diagnostics["rows"], diagnostics["payload_bytes"]
                 if ids != reference[query["id"]]:
                     raise AssertionError(f"Reference mismatch for {query['id']}")
                 if (rows, payload) != identity:
@@ -166,12 +222,15 @@ def run(args):
                     "round": round_id,
                     "warmup": round_id < args.warmups,
                     "track": "raw-file-scan",
+                    "scanner": scanner,
                     "scan_slot": scan_slot,
                     "query_id": query["id"],
                     "operation": query["operation"],
                     "value": query["value"],
                     "request_ns": elapsed,
-                    "process_cpu_ns": cpu,
+                    "process_cpu_ns": parent_cpu,
+                    "scanner_wall_ns": diagnostics["scan_wall_ns"],
+                    "scanner_cpu_ns": diagnostics["scan_cpu_ns"],
                     "rows_scanned": rows,
                     "payload_bytes_scanned": payload,
                     "result_count": len(ids),
@@ -185,13 +244,13 @@ def run(args):
     ]
     summaries = {}
     for query in queries:
-        for track in ("raw-file-scan",):
+        for scanner in scanners:
             samples = [
                 r["request_ns"]
                 for r in observations
-                if not r["warmup"] and r["query_id"] == query["id"] and r["track"] == track
+                if not r["warmup"] and r["query_id"] == query["id"] and r["scanner"] == scanner
             ]
-            summaries[f"{query['id']}/{track}"] = {
+            summaries[f"{query['id']}/{scanner}"] = {
                 "p50_ns": statistics.median(samples),
                 "p95_ns": statistics.quantiles(samples, n=20, method="inclusive")[18]
                 if len(samples) > 1
@@ -231,6 +290,8 @@ if __name__ == "__main__":
     parser.add_argument("--warmups", type=int, default=2)
     parser.add_argument("--repetitions", type=int, default=10)
     parser.add_argument("--scans-per-query-per-round", type=int, default=1)
+    parser.add_argument("--scanner", choices=("python", "native", "both"), default="python")
+    parser.add_argument("--native-scanner", type=Path)
     parser.add_argument("--seed", type=int, default=20261024)
     args = parser.parse_args()
     if args.scans_per_query_per_round < 1:

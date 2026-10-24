@@ -1,0 +1,48 @@
+{
+  "latencies": {
+    "common-warning/python-lines": {
+      "p50_ns": 8560140482.5,
+      "p95_ns": 8824599994.75,
+      "min_ns": 8319114741,
+      "max_ns": 8852505982,
+      "trials": 10
+    },
+    "common-warning/native-mmap": {
+      "p50_ns": 1442395970.0,
+      "p95_ns": 2023723106.8,
+      "min_ns": 1338962085,
+      "max_ns": 2246120854,
+      "trials": 10
+    },
+    "rare-failure/python-lines": {
+      "p50_ns": 8681926760.0,
+      "p95_ns": 8833552864.1,
+      "min_ns": 8349355781,
+      "max_ns": 8860988510,
+      "trials": 10
+    },
+    "rare-failure/native-mmap": {
+      "p50_ns": 1436546270.5,
+      "p95_ns": 1894340866.55,
+      "min_ns": 1348479674,
+      "max_ns": 1939072379,
+      "trials": 10
+    },
+    "absent-word/python-lines": {
+      "p50_ns": 8278228794.0,
+      "p95_ns": 8778902099.85,
+      "min_ns": 8101457348,
+      "max_ns": 8809414083,
+      "trials": 10
+    },
+    "absent-word/native-mmap": {
+      "p50_ns": 1451406034.0,
+      "p95_ns": 1591216434.3,
+      "min_ns": 1345355584,
+      "max_ns": 1627268448,
+      "trials": 10
+    }
+  },
+  "correctness_failures": 0,
+  "observations_sha256": "c4bb07188cdf7961c2031bf6e72101b586990b48b17a261787d4fc792cc0a817"
+}
