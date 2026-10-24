@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "byteforge"
+version = "0.1.0"
+description = "Correctness-first probes for token and column compression research"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+qualification = ["pyarrow==26.0.0", "zstandard==0.25.0"]
+dev = ["ruff==0.15.7"]
+native = ["cmake==3.31.10"]
+
+[tool.setuptools.packages.find]
+include = ["byteforge*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
