@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="5"
+	failures="1"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="0"
+	timestamp="2026-10-24T15:51:07"
+	>
+	<testcase name="native_integers" classname="native_integers" time="0.0769605" status="run">
+		<properties/>
+		<system-out>integer rows=1 scheme=1 passed
+integer rows=65535 scheme=5 passed
+integer rows=65536 scheme=5 passed
+</system-out>
+	</testcase>
+	<testcase name="native_empty" classname="native_empty" time="0.00963092" status="run">
+		<properties/>
+		<system-out>string rows=1 scheme=1 passed
+</system-out>
+	</testcase>
+	<testcase name="native_all_empty" classname="native_all_empty" time="0.0109126" status="run">
+		<properties/>
+		<system-out>string rows=3 scheme=1 passed
+</system-out>
+	</testcase>
+	<testcase name="native_unicode" classname="native_unicode" time="0.0128824" status="run">
+		<properties/>
+		<system-out>string rows=9 scheme=0 passed
+</system-out>
+	</testcase>
+	<testcase name="native_long" classname="native_long" time="0.0452764" status="fail">
+		<failure message="Failed"/>
+		<properties/>
+		<system-out>=================================================================
+==85768==ERROR: AddressSanitizer: unknown-crash on address 0x7b5f9eaf0759 at pc 0x5598509b7a71 bp 0x7fff31b7a520 sp 0x7fff31b7a510
+READ of size 8 at 0x7b5f9eaf0759 thread T0
+    #0 0x5598509b7a70 in compressBulk(SymbolTable&amp;, unsigned long, unsigned long*, unsigned char**, unsigned long, unsigned char*, unsigned long*, unsigned char**, bool, bool) (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x17ea70) (BuildId: f64d7853bb22555c0ede4fc47f53dd5c4e4f0cf5)
+    #1 0x5598509ba2cd in fsst_compress (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x1812cd) (BuildId: f64d7853bb22555c0ede4fc47f53dd5c4e4f0cf5)
+    #2 0x559850914b7c in btrblocks::strings::Fsst::compress(btrblocks::StringArrayViewer, unsigned char const*, unsigned char*, btrblocks::StringStats&amp;) /tmp/byteforge-btr/btrblocks/scheme/string/Fsst.cpp:54
+    #3 0x55985086f5e1 in btrblocks::Datablock::compress(btrblocks::Chunk const&amp;, std::unique_ptr&lt;unsigned char [], std::default_delete&lt;unsigned char []&gt; &gt;&amp;) /tmp/byteforge-btr/btrblocks/compression/Datablock.cpp:272
+    #4 0x55985085feed in strings(std::vector&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;, std::allocator&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &gt; &gt; const&amp;) (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x26eed) (BuildId: f64d7853bb22555c0ede4fc47f53dd5c4e4f0cf5)
+    #5 0x55985085c941 in main (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x23941) (BuildId: f64d7853bb22555c0ede4fc47f53dd5c4e4f0cf5)
+    #6 0x7f5fa0a27780  (/usr/lib/libc.so.6+0x27780) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #7 0x7f5fa0a278b8 in __libc_start_main (/usr/lib/libc.so.6+0x278b8) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #8 0x55985085ec54 in _start (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x25c54) (BuildId: f64d7853bb22555c0ede4fc47f53dd5c4e4f0cf5)
+
+Address 0x7b5f9eaf0759 is located in stack of thread T0 at offset 857 in frame
+    #0 0x5598509b668f in compressBulk(SymbolTable&amp;, unsigned long, unsigned long*, unsigned char**, unsigned long, unsigned char*, unsigned long*, unsigned char**, bool, bool) (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x17d68f) (BuildId: f64d7853bb22555c0ede4fc47f53dd5c4e4f0cf5)
+
+  This frame has 10 object(s):
+    [32, 33) 'byteLim' (line 380)
+    [48, 56) 'cur' (line 378)
+    [80, 88) 'end' (line 378)
+    [112, 120) 'suffixLim' (line 379)
+    [144, 152) 'out' (line 377)
+    [176, 224) 'compressVariant' (line 383)
+    [256, 272) 's' (line 393)
+    [288, 304) 's' (line 393)
+    [320, 336) 's' (line 393)
+    [352, 864) 'buf' (line 378) &lt;== Memory access at offset 857 partially overflows this variable
+HINT: this may be a false positive if your program uses some custom stack unwind mechanism, swapcontext or vfork
+      (longjmp and C++ exceptions *are* supported)
+SUMMARY: AddressSanitizer: unknown-crash (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x17ea70) (BuildId: f64d7853bb22555c0ede4fc47f53dd5c4e4f0cf5) in compressBulk(SymbolTable&amp;, unsigned long, unsigned long*, unsigned char**, unsigned long, unsigned char*, unsigned long*, unsigned char**, bool, bool)
+Shadow bytes around the buggy address:
+  0x7b5f9eaf0480: f2 f2 00 f2 f2 f2 00 00 00 00 00 00 f2 f2 f2 f2
+  0x7b5f9eaf0500: 00 00 f2 f2 00 00 f2 f2 f8 f8 f2 f2 00 00 00 00
+  0x7b5f9eaf0580: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5f9eaf0600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5f9eaf0680: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=&gt;0x7b5f9eaf0700: 00 00 00 00 00 00 00 00 00 00 00[00]f3 f3 f3 f3
+  0x7b5f9eaf0780: f3 f3 f3 f3 f3 f3 f3 f3 f3 f3 f3 f3 f3 f3 f3 f3
+  0x7b5f9eaf0800: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5f9eaf0880: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5f9eaf0900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x7b5f9eaf0980: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==85768==ABORTING
+</system-out>
+	</testcase>
+</testsuite>

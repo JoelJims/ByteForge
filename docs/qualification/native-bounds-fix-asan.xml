@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="5"
+	failures="1"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="0"
+	timestamp="2026-10-24T15:52:02"
+	>
+	<testcase name="native_integers" classname="native_integers" time="0.0741193" status="run">
+		<properties/>
+		<system-out>integer rows=1 scheme=1 passed
+integer rows=65535 scheme=5 passed
+integer rows=65536 scheme=5 passed
+</system-out>
+	</testcase>
+	<testcase name="native_empty" classname="native_empty" time="0.00763438" status="run">
+		<properties/>
+		<system-out>string rows=1 scheme=1 passed
+</system-out>
+	</testcase>
+	<testcase name="native_all_empty" classname="native_all_empty" time="0.00929965" status="run">
+		<properties/>
+		<system-out>string rows=3 scheme=1 passed
+</system-out>
+	</testcase>
+	<testcase name="native_unicode" classname="native_unicode" time="0.00996822" status="run">
+		<properties/>
+		<system-out>string rows=9 scheme=0 passed
+</system-out>
+	</testcase>
+	<testcase name="native_long" classname="native_long" time="0.0448734" status="fail">
+		<failure message="Failed"/>
+		<properties/>
+		<system-out>
+=================================================================
+==86133==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 1572880 byte(s) in 1 object(s) allocated from:
+    #0 0x7f2ceab2d2a1 in operator new(unsigned long) (/usr/lib/libasan.so.8+0x12d2a1) (BuildId: b8a4241051a1621937fdc46e867ba7ecb56d96ea)
+    #1 0x5567c5346638 in fsst_create (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x189638) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #2 0x5567c5298a3a in btrblocks::strings::Fsst::compress(btrblocks::StringArrayViewer, unsigned char const*, unsigned char*, btrblocks::StringStats&amp;) /tmp/byteforge-btr/btrblocks/scheme/string/Fsst.cpp:45
+    #3 0x5567c51f35e1 in btrblocks::Datablock::compress(btrblocks::Chunk const&amp;, std::unique_ptr&lt;unsigned char [], std::default_delete&lt;unsigned char []&gt; &gt;&amp;) /tmp/byteforge-btr/btrblocks/compression/Datablock.cpp:272
+    #4 0x5567c51e3eed in strings(std::vector&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;, std::allocator&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &gt; &gt; const&amp;) (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x26eed) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #5 0x5567c51e0941 in main (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x23941) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #6 0x7f2cea227780  (/usr/lib/libc.so.6+0x27780) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #7 0x7f2cea2278b8 in __libc_start_main (/usr/lib/libc.so.6+0x278b8) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #8 0x5567c51e2c54 in _start (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x25c54) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+
+Indirect leak of 156192 byte(s) in 1 object(s) allocated from:
+    #0 0x7f2ceab2d2a1 in operator new(unsigned long) (/usr/lib/libasan.so.8+0x12d2a1) (BuildId: b8a4241051a1621937fdc46e867ba7ecb56d96ea)
+    #1 0x5567c5343e96 in buildSymbolTable(Counters&amp;, std::vector&lt;unsigned char*, std::allocator&lt;unsigned char*&gt; &gt;, unsigned long*, bool) (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x186e96) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #2 0x5567c53468dc in fsst_create (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x1898dc) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #3 0x5567c5298a3a in btrblocks::strings::Fsst::compress(btrblocks::StringArrayViewer, unsigned char const*, unsigned char*, btrblocks::StringStats&amp;) /tmp/byteforge-btr/btrblocks/scheme/string/Fsst.cpp:45
+    #4 0x5567c51f35e1 in btrblocks::Datablock::compress(btrblocks::Chunk const&amp;, std::unique_ptr&lt;unsigned char [], std::default_delete&lt;unsigned char []&gt; &gt;&amp;) /tmp/byteforge-btr/btrblocks/compression/Datablock.cpp:272
+    #5 0x5567c51e3eed in strings(std::vector&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;, std::allocator&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &gt; &gt; const&amp;) (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x26eed) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #6 0x5567c51e0941 in main (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x23941) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #7 0x7f2cea227780  (/usr/lib/libc.so.6+0x27780) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #8 0x7f2cea2278b8 in __libc_start_main (/usr/lib/libc.so.6+0x278b8) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #9 0x5567c51e2c54 in _start (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x25c54) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+
+Indirect leak of 24 byte(s) in 1 object(s) allocated from:
+    #0 0x7f2ceab2d2a1 in operator new(unsigned long) (/usr/lib/libasan.so.8+0x12d2a1) (BuildId: b8a4241051a1621937fdc46e867ba7ecb56d96ea)
+    #1 0x5567c5346935 in fsst_create (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x189935) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #2 0x5567c5298a3a in btrblocks::strings::Fsst::compress(btrblocks::StringArrayViewer, unsigned char const*, unsigned char*, btrblocks::StringStats&amp;) /tmp/byteforge-btr/btrblocks/scheme/string/Fsst.cpp:45
+    #3 0x5567c51f35e1 in btrblocks::Datablock::compress(btrblocks::Chunk const&amp;, std::unique_ptr&lt;unsigned char [], std::default_delete&lt;unsigned char []&gt; &gt;&amp;) /tmp/byteforge-btr/btrblocks/compression/Datablock.cpp:272
+    #4 0x5567c51e3eed in strings(std::vector&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;, std::allocator&lt;std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &gt; &gt; const&amp;) (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x26eed) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #5 0x5567c51e0941 in main (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x23941) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+    #6 0x7f2cea227780  (/usr/lib/libc.so.6+0x27780) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #7 0x7f2cea2278b8 in __libc_start_main (/usr/lib/libc.so.6+0x278b8) (BuildId: d320029ad1a23be2f4bce117fd321cbd23a2014b)
+    #8 0x5567c51e2c54 in _start (/home/nishant/coding/ByteForge/build/btrblocks/byteforge_btrblocks_probe+0x25c54) (BuildId: fb5fa9e49b89988991cf18fa00a7d26c76fca3cd)
+
+SUMMARY: AddressSanitizer: 1729096 byte(s) leaked in 3 allocation(s).
+</system-out>
+	</testcase>
+</testsuite>

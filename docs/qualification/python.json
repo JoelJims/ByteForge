@@ -1,0 +1,154 @@
+{
+  "kind": "compatibility_probe",
+  "benchmark": false,
+  "timestamp_utc": "2026-10-24T10:16:27.230865+00:00",
+  "python": "3.14.8 (main, Oct  2 2026, 10:23:31) [GCC 16.2.1 20260810]",
+  "platform": "Linux-6.18.53-1-lts-x86_64-with-glibc2.44",
+  "git_revision": "c1643ab0c43726cd115ff8b40c2dbc5249c7fd03",
+  "git_status": "?? AGENTS.md\n?? byteforge/qualification.py\n?? probes/\n?? research/\n?? tests/test_dependencies.py\n",
+  "dependencies": {
+    "pyarrow": "26.0.0",
+    "zstandard": "0.25.0",
+    "cmake": "3.31.10",
+    "ruff": "0.15.7",
+    "arrow_cpp": "26.0.0",
+    "arrow_zstd_version": null,
+    "python_zstd_library": [
+      1,
+      5,
+      7
+    ]
+  },
+  "probes": {
+    "parquet_zstd": {
+      "status": "valid",
+      "cases": [
+        {
+          "rows": 0,
+          "parquet_file_bytes": 345,
+          "column_chunk_compressed_bytes": 23,
+          "encodings": [
+            [
+              "PLAIN",
+              "RLE"
+            ]
+          ],
+          "note": "Column-chunk size includes page headers; not raw Zstd payload size."
+        },
+        {
+          "rows": 1,
+          "parquet_file_bytes": 424,
+          "column_chunk_compressed_bytes": 72,
+          "encodings": [
+            [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ]
+          ],
+          "note": "Column-chunk size includes page headers; not raw Zstd payload size."
+        },
+        {
+          "rows": 3,
+          "parquet_file_bytes": 424,
+          "column_chunk_compressed_bytes": 72,
+          "encodings": [
+            [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ]
+          ],
+          "note": "Column-chunk size includes page headers; not raw Zstd payload size."
+        },
+        {
+          "rows": 10,
+          "parquet_file_bytes": 516,
+          "column_chunk_compressed_bytes": 157,
+          "encodings": [
+            [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ]
+          ],
+          "note": "Column-chunk size includes page headers; not raw Zstd payload size."
+        },
+        {
+          "rows": 4,
+          "parquet_file_bytes": 448,
+          "column_chunk_compressed_bytes": 88,
+          "encodings": [
+            [
+              "PLAIN",
+              "RLE",
+              "RLE_DICTIONARY"
+            ]
+          ],
+          "note": "Column-chunk size includes page headers; not raw Zstd payload size."
+        }
+      ]
+    },
+    "zstd_integer_streams": {
+      "status": "valid",
+      "cases": [
+        {
+          "elements": 0,
+          "width": 16,
+          "input_bytes": 0,
+          "zstd_frame_bytes": 13,
+          "level": 3,
+          "checksum": true
+        },
+        {
+          "elements": 3,
+          "width": 16,
+          "input_bytes": 6,
+          "zstd_frame_bytes": 19,
+          "level": 3,
+          "checksum": true
+        },
+        {
+          "elements": 65536,
+          "width": 16,
+          "input_bytes": 131072,
+          "zstd_frame_bytes": 131088,
+          "level": 3,
+          "checksum": true
+        },
+        {
+          "elements": 0,
+          "width": 32,
+          "input_bytes": 0,
+          "zstd_frame_bytes": 13,
+          "level": 3,
+          "checksum": true
+        },
+        {
+          "elements": 3,
+          "width": 32,
+          "input_bytes": 12,
+          "zstd_frame_bytes": 25,
+          "level": 3,
+          "checksum": true
+        },
+        {
+          "elements": 65536,
+          "width": 32,
+          "input_bytes": 262144,
+          "zstd_frame_bytes": 161422,
+          "level": 3,
+          "checksum": true
+        }
+      ]
+    }
+  },
+  "sgtt": {
+    "status": "not_run",
+    "reason": "Code/table reuse rights unresolved"
+  },
+  "btrblocks": {
+    "status": "not_run",
+    "reason": "Run the separate native probe"
+  }
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="(empty)"
+	tests="5"
+	failures="1"
+	disabled="0"
+	skipped="0"
+	hostname=""
+	time="0"
+	timestamp="2026-10-24T15:47:16"
+	>
+	<testcase name="native_integers" classname="native_integers" time="0.027897" status="run">
+		<properties/>
+		<system-out>integer rows=1 scheme=1 passed
+integer rows=65535 scheme=5 passed
+integer rows=65536 scheme=5 passed
+</system-out>
+	</testcase>
+	<testcase name="native_empty" classname="native_empty" time="0.00224119" status="run">
+		<properties/>
+		<system-out>string rows=1 scheme=1 passed
+</system-out>
+	</testcase>
+	<testcase name="native_all_empty" classname="native_all_empty" time="0.00205597" status="run">
+		<properties/>
+		<system-out>string rows=3 scheme=1 passed
+</system-out>
+	</testcase>
+	<testcase name="native_unicode" classname="native_unicode" time="0.00169604" status="run">
+		<properties/>
+		<system-out>string rows=9 scheme=0 passed
+</system-out>
+	</testcase>
+	<testcase name="native_long" classname="native_long" time="0.123639" status="fail">
+		<failure message="Subprocess aborted"/>
+		<properties/>
+		<system-out>malloc(): unaligned tcache chunk detected
+</system-out>
+	</testcase>
+</testsuite>

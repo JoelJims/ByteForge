@@ -1,0 +1,17 @@
+{
+  "variant": "btrblocks-c950c3c-fsst-safety-v1",
+  "sanitizers": "ASan/LSan core, probe, FSST; FastPFOR/CRoaring not instrumented",
+  "cmake_flags": {
+    "CMAKE_BUILD_TYPE": "Release",
+    "BYTEFORGE_SANITIZE": true,
+    "BYTEFORGE_FSST_SAFETY_FIX": true
+  },
+  "sha256": {
+    "fsst_source": "36e2b38d6e73c6e8c1b1cf93062f5c90e50a880a619c3e7ddfcf24d6c5aa607c",
+    "generated_btrblocks_adapter": "7bace1240514bc6148db49c8e3671219e19950be2ac4178fd90b5fdfa78ca67c",
+    "probe_executable": "1856b112d38764c950c64d89a9c2cf04ca4420bccc8447ab186329b50637fd4b",
+    "correction_script": "29ff76e1296e6aff2c07a38c155a202d58dcf4dcfcf1a3b6fbf6a9e803474e8f",
+    "cmake_harness": "11b2baa8b2ab48497b53cbcc7719dc284829233593b05a7413bfb778d44672ce"
+  },
+  "fsst_diff": "diff --git a/libfsst.cpp b/libfsst.cpp\nindex d35dad3..6990ea8 100644\n--- a/libfsst.cpp\n+++ b/libfsst.cpp\n@@ -375,7 +375,7 @@ static inline size_t compressSIMD(SymbolTable &symbolTable, u8* symbolBase, size\n \n // optimized adaptive *scalar* compression method\n static inline size_t compressBulk(SymbolTable &symbolTable, size_t nlines, size_t lenIn[], u8* strIn[], size_t size, u8* out, size_t lenOut[], u8* strOut[], bool noSuffixOpt, bool avoidBranch) {\n-   u8 buf[512], *cur = NULL, *end =  NULL, *lim = out + size;\n+   u8 buf[512 + 8] = {}, *cur = NULL, *end =  NULL, *lim = out + size;\n    size_t curLine, suffixLim = symbolTable.suffixLim;\n    u8 byteLim = symbolTable.nSymbols + symbolTable.zeroTerminated - symbolTable.lenHisto[0];\n \n@@ -464,7 +464,7 @@ vector<u8*> makeSample(u8* sampleBuf, u8* strIn[], size_t **lenRef, size_t nline\n    } else {\n       size_t sampleRnd = FSST_HASH(4637947);\n       u8* sampleLim = sampleBuf + FSST_SAMPLETARGET;\n-      size_t *sampleLen = *lenRef = new size_t[nlines + FSST_SAMPLEMAXSZ/FSST_SAMPLELINE];\n+      size_t *sampleLen = *lenRef = new size_t[FSST_SAMPLETARGET];\n \n       while(sampleBuf < sampleLim) {\n          // choose a non-empty line\n"
+}
