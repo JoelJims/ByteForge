@@ -1,0 +1,11 @@
+{
+  "status": "complete",
+  "queries": 3,
+  "repetitions": 10,
+  "observations": 72,
+  "correctness_failures": 0,
+  "rows": 16601745,
+  "payload_bytes": 2499575968,
+  "measured_scans_per_query": 10,
+  "warmup_scans_per_query": 2
+}

@@ -1,0 +1,41 @@
+{
+  "scope": "Pooled direct raw-file scans; OS cache uncontrolled; no cold/warm distinction",
+  "queries": [
+    {
+      "query_id": "common-warning",
+      "p50_ns": 8141729011.5,
+      "p95_ns": 8294405580.35,
+      "min_ns": 8093186755,
+      "max_ns": 8535558679,
+      "process_cpu_p50_ns": 7644675176.5,
+      "trials": 20,
+      "result_count": 636710,
+      "result_sha256": "d61f42ec91ad8c54ede2aa01a2b87814b4788c5ba63a60f20aa5bacfd5db894f"
+    },
+    {
+      "query_id": "rare-failure",
+      "p50_ns": 8166356808.0,
+      "p95_ns": 8564507318.7,
+      "min_ns": 8002872074,
+      "max_ns": 8872335851,
+      "process_cpu_p50_ns": 7691678710.5,
+      "trials": 20,
+      "result_count": 2374,
+      "result_sha256": "d307548ece6b3f2c52406de925f591b2f70e83223a52fb4d5d60263d61382682"
+    },
+    {
+      "query_id": "absent-word",
+      "p50_ns": 8077579848.0,
+      "p95_ns": 8601973462.55,
+      "min_ns": 7911144327,
+      "max_ns": 8635533629,
+      "process_cpu_p50_ns": 7577390967.5,
+      "trials": 20,
+      "result_count": 0,
+      "result_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "correctness_failures": 0,
+  "observation_count": 72,
+  "observations_sha256": "704bb31d4ab3e3b5173615de3650e3ba2f01e3c3042dbe678e694c23bf7330dc"
+}

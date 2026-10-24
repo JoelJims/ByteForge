@@ -1,0 +1,18 @@
+{
+  "run.json": {
+    "bytes": 18545,
+    "sha256": "aa3cb2a6ae5e7e6aa24c5ec78f8587dc3913eed4aacc75e16f49f5f603b11253"
+  },
+  "observations.jsonl": {
+    "bytes": 30408,
+    "sha256": "704bb31d4ab3e3b5173615de3650e3ba2f01e3c3042dbe678e694c23bf7330dc"
+  },
+  "summary.json": {
+    "bytes": 1294,
+    "sha256": "3d274dbdc97fc8a52567abfd905ac0c74df2603171b2c6aef92eb01068ae5d14"
+  },
+  "complete.json": {
+    "bytes": 231,
+    "sha256": "a64af663b31499b0c6aa770ffaf8a7b986c0cfb102d131f3ce0938ea4039916d"
+  }
+}

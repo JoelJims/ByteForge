@@ -586,3 +586,16 @@ only worked with native protocol 3. Its injection now targets the correct byte
 or integer operation by protocol; sanitizer-worker and Release-worker suites
 both passed 48/48. Native CTest passed 5/5 in both builds. The sanitizer worker
 was never used for timing.
+
+## Direct raw-file query baseline — 2026-10-25
+
+Ran a raw-data-only query benchmark on the unchanged full Thunderbird log. The
+timed path reads the original LF-delimited file and searches its UTF-8 bytes;
+there is no archive, codec, index or cache. A separate strict UTF-8 text scan
+validated exact ordered row IDs. Across 20 measured scans per query, p50/p95
+were 8.142/8.294 s for `warning`, 8.166/8.565 s for `failure`, and 8.078/8.602 s
+for an absent word. All 72 observations, including warmups, passed. Source SHA
+remained `a276905e7517a7d2c1d658490a0f27919c666045c3454ba695a5e77f79e9cbfe`.
+No cold-disk claim: page-cache state was uncontrolled and misleading randomized
+cold/warm labels were discarded. Raw data, commands and limitations are in
+`docs/raw_log_query_results.md` and `docs/measurements/raw-thunderbird-only/`.
