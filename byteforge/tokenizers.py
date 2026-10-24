@@ -25,7 +25,6 @@ def encode_rows(rows: tuple[str | None, ...], tokenizer: Tokenizer) -> TokenRows
         offsets.append(len(ids))
     validity = tuple(value is not None for value in rows) if None in rows else None
     encoded = TokenRows(tuple(ids), tuple(offsets), validity)
-    encoded.validate(len(tokenizer.vocabulary))
     if encoded.restore(tokenizer.vocabulary) != rows:
         raise ValueError("tokenizer failed exact row reconstruction")
     return encoded

@@ -38,6 +38,7 @@ def main() -> int:
         help="explicitly run test-only byte symbols on the supplied input; not SGTT",
     )
     bench.add_argument("--worker", type=Path, default=worker_path())
+    bench.add_argument("--parquet-profile", choices=("standard", "fast-scan"), default="standard")
     bench.add_argument(
         "--encoder",
         choices=("sgtt", "test-byte"),
@@ -52,6 +53,14 @@ def main() -> int:
     decode.add_argument("--output", type=Path, required=True)
     decode.add_argument("--worker", type=Path, default=worker_path())
     decode.add_argument("--raw", action="store_true", help="reconstruct physical raw-log framing")
+    query = commands.add_parser(
+        "query", help="literal filters without exporting reconstructed logs"
+    )
+    query.add_argument("archive", type=Path)
+    query.add_argument("--operation", choices=("equals", "contains"), required=True)
+    query.add_argument("--value", required=True)
+    query.add_argument("--worker", type=Path, default=worker_path())
+    query.add_argument("--cache-bytes", type=int, default=0)
     private = commands.add_parser("_work", help="internal isolated measurement worker")
     private.add_argument("spec", type=Path)
     args = parser.parse_args()
@@ -91,7 +100,18 @@ def main() -> int:
                 repetitions=args.repetitions,
                 seed=args.seed,
                 timeout=args.timeout,
+                parquet_profile=args.parquet_profile,
             )
+        elif args.command == "query":
+            from byteforge.query import QuerySession
+
+            start = time.perf_counter_ns()
+            with QuerySession(
+                args.archive, worker=args.worker, cache_bytes=args.cache_bytes
+            ) as session:
+                result = session.filter(args.operation, args.value)
+                result["archive_open_ns"] = session.open_ns
+            result["request_ns"] = time.perf_counter_ns() - start
         elif args.command == "_work":
             from byteforge.benchmark import work
             from byteforge.pipelines import read_json

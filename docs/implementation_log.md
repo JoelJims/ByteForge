@@ -325,3 +325,28 @@ complete transitive dependency audit, then qualify public Encoder/Decoder APIs,
 reference IDs, empty rows, byte fallback, 2,000-row exact reconstruction and a
 versioned asset-aware production archive. Author contact requires authorization.
 Existing research documents and AGENTS.md were neither modified nor staged.
+
+## Log-query and decompression latency work — 2026-10-24
+
+User prioritizes query/decompression speed and permits a compression-ratio tradeoff.
+Continued at `41f6ae6` on `implementation/core`; origin fetched safely and existing
+untracked AGENTS.md/research preserved. Read current archive/representation/
+tokenizer/benchmark/CLI sources, saved phase observations, AGENTS.md and relevant
+query/cache requirements in research benchmark/decision documents. Actual SGTT
+permission blocker remains unchanged; no restricted material was used.
+
+Optimized the exact diagnostic byte-table decoder using C-level integer-to-byte
+conversion and row slicing, preserving ID bounds, offset validation and strict
+per-row UTF-8. Removed redundant serialization allocations and repeated validation
+while retaining all required checks. Existing archives/native variants remain
+compatible. Added streaming literal equality/contains queries with consumed ordered
+row IDs, reusable native handles and optional equally bounded Arrow-buffer caches
+for A/B. The cache does not store query results; default zero re-decompresses each
+scan. Archives must remain immutable while a query session is open.
+
+Added opt-in `fast-scan` Parquet profile (Zstd level 1, no dictionary); standard
+profile remains unchanged. Added query correctness/edge/budget/invalid-ID and
+offset regression tests and a reproducible exploratory query timing runner.
+Release-worker Python suite passed 29 tests; Ruff checks passed after fixing
+formatting and a test closure binding. No additional dependencies installed.
+Measurements and user-facing commands follow in `docs/log_query_performance.md`.

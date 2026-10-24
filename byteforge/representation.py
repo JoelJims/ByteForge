@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 INT32_MAX = (1 << 31) - 1
 LEAF_ELEMENTS = 65_536
+BYTE_VOCABULARY = tuple(bytes([value]) for value in range(256))
 
 
 def pack_unsigned(values: Sequence[int], width: int = 32, *, native_int32: bool = False) -> bytes:
@@ -41,8 +42,9 @@ class TokenRows:
     def validate(self, vocabulary_size: int) -> None:
         if type(vocabulary_size) is not int or not 1 <= vocabulary_size <= INT32_MAX:
             raise ValueError("invalid vocabulary size")
-        pack_unsigned(self.ids, native_int32=True)
-        pack_unsigned(self.offsets, native_int32=True)
+        for values in (self.ids, self.offsets):
+            if any(type(value) is not int or not 0 <= value <= INT32_MAX for value in values):
+                raise ValueError("integer outside supported int32 range")
         if not self.offsets or self.offsets[0] != 0 or self.offsets[-1] != len(self.ids):
             raise ValueError("offsets must begin at zero and end at token count")
         if any(left > right for left, right in zip(self.offsets, self.offsets[1:], strict=False)):
@@ -63,12 +65,19 @@ class TokenRows:
         self.validate(len(vocabulary))
         if any(type(piece) is not bytes or not piece for piece in vocabulary):
             raise ValueError("vocabulary entries must be nonempty bytes")
+        # Exact byte-table specialization, not a substitute for SGTT decoding.
+        # C-level conversion replaces one Python generator operation per token.
+        byte_stream = bytes(self.ids) if tuple(vocabulary) == BYTE_VOCABULARY else None
         rows = []
         for index, (start, end) in enumerate(zip(self.offsets, self.offsets[1:], strict=False)):
             if self.validity is not None and not self.validity[index]:
                 rows.append(None)
             else:
                 rows.append(
-                    b"".join(vocabulary[token] for token in self.ids[start:end]).decode("utf-8")
+                    (
+                        byte_stream[start:end]
+                        if byte_stream is not None
+                        else b"".join(vocabulary[token] for token in self.ids[start:end])
+                    ).decode("utf-8")
                 )
         return tuple(rows)

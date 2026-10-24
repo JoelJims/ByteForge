@@ -4,6 +4,7 @@ import hashlib
 import json
 import struct
 import time
+from contextlib import ExitStack
 from pathlib import Path
 
 from byteforge.dataset import (
@@ -17,7 +18,7 @@ from byteforge.dataset import (
     write_rows,
 )
 from byteforge.native import NativeIntegers
-from byteforge.representation import TokenRows, leaf_blocks, pack_unsigned, unpack_unsigned
+from byteforge.representation import leaf_blocks, pack_unsigned, unpack_unsigned
 from byteforge.sgtt import require_sgtt
 from byteforge.tokenizers import Tokenizer, encode_rows
 
@@ -171,16 +172,21 @@ def load_archive(archive: Path) -> dict:
     return manifest
 
 
-def build_parquet(prepared: Path, output: Path) -> dict:
+def build_parquet(prepared: Path, output: Path, *, profile: str = "standard") -> dict:
     import pyarrow as pa
     import pyarrow.parquet as pq
 
+    if profile not in ("standard", "fast-scan"):
+        raise ValueError("Unknown Parquet profile")
+    settings = dict(PARQUET_SETTINGS)
+    if profile == "fast-scan":
+        settings.update(compression_level=1, use_dictionary=False)
     start = time.perf_counter_ns()
     dataset = prepared_manifest(prepared)
     output.mkdir(parents=True, exist_ok=False)
     schema = pa.schema([pa.field("value", pa.string(), nullable=False)])
     codec_start = time.perf_counter_ns()
-    with pq.ParquetWriter(output / "data.parquet", schema, **PARQUET_SETTINGS) as writer:
+    with pq.ParquetWriter(output / "data.parquet", schema, **settings) as writer:
         for rows in row_windows(prepared / "rows.bin"):
             writer.write_table(
                 pa.table({"value": pa.array(rows, type=pa.string())}, schema=schema),
@@ -195,7 +201,7 @@ def build_parquet(prepared: Path, output: Path) -> dict:
             "dataset": dataset,
             "schema": str(schema),
             "settings": {
-                **PARQUET_SETTINGS,
+                **settings,
                 "max_rows_per_window": MAX_ROWS,
                 "max_payload_per_window": MAX_PAYLOAD,
             },
@@ -337,17 +343,26 @@ def build_hybrid(
     }
 
 
-def _hybrid_rows(archive: Path, manifest: dict, worker: Path, phases: dict):
+def _hybrid_rows(
+    archive: Path,
+    manifest: dict,
+    worker: Path,
+    phases: dict,
+    *,
+    native_session: NativeIntegers | None = None,
+):
     vocabulary = _read_vocabulary(archive / "vocabulary.bin")
     if vocabulary != TestByteEncoder.vocabulary:
         raise ValueError("Test-only vocabulary identity mismatch")
     index = read_json(archive / "index.json")
     validate_index(index, (archive / "data.bin").stat().st_size, manifest["dataset"]["rows"])
     position = 0
-    with (
-        NativeIntegers(worker, expected=manifest["native"]) as native,
-        (archive / "data.bin").open("rb") as stream,
-    ):
+    with ExitStack() as stack:
+        native = native_session or stack.enter_context(
+            NativeIntegers(worker, expected=manifest["native"])
+        )
+        initial_native_ns = native.phase_ns
+        stream = stack.enter_context((archive / "data.bin").open("rb"))
         for window in index["windows"]:
             if (
                 type(window["rows"]) is not int
@@ -380,16 +395,29 @@ def _hybrid_rows(archive: Path, manifest: dict, worker: Path, phases: dict):
                     raise ValueError("Stream element count mismatch")
                 decoded[name] = tuple(values)
             phase = time.perf_counter_ns()
-            encoded = TokenRows(decoded["ids"], decoded["offsets"])
-            encoded.validate(len(vocabulary))
-            if sum(len(vocabulary[token]) for token in encoded.ids) > MAX_PAYLOAD:
+            # This archive version accepts only the complete byte table above.
+            # unpack_unsigned produced actual ints, so C bytes conversion checks
+            # every ID's 0..255 range without repeated Python per-token loops.
+            payload = bytes(decoded["ids"])
+            offsets = decoded["offsets"]
+            if (
+                not offsets
+                or offsets[0] != 0
+                or offsets[-1] != len(payload)
+                or any(a > b for a, b in zip(offsets, offsets[1:], strict=False))
+            ):
+                raise ValueError("Invalid row offsets")
+            if len(payload) > MAX_PAYLOAD:
                 raise ValueError("Decoded window exceeds payload limit")
-            rows = encoded.restore(vocabulary)
+            rows = tuple(
+                payload[a:b].decode("utf-8", errors="strict")
+                for a, b in zip(offsets, offsets[1:], strict=False)
+            )
             phases["detokenization_validation_ns"] += time.perf_counter_ns() - phase
             yield rows
         if stream.read(1):
             raise ValueError("Unindexed trailing native bytes")
-        phases["native_decompression_ipc_ns"] = native.phase_ns
+        phases["native_decompression_ipc_ns"] = native.phase_ns - initial_native_ns
 
 
 def restore(archive: Path, output: Path, *, worker: Path | None = None) -> dict:

@@ -87,7 +87,7 @@ def work(spec: dict) -> dict:
     if spec["operation"] == "encode":
         prepared = Path(spec["prepared"])
         result = (
-            build_parquet(prepared, archive)
+            build_parquet(prepared, archive, profile=spec.get("parquet_profile", "standard"))
             if spec["pipeline"] == "A"
             else build_hybrid(
                 prepared, archive, TestByteEncoder(), native, allow_test_encoder_on_real=True
@@ -170,8 +170,14 @@ def run(
     repetitions: int = 10,
     seed: int = 20261023,
     timeout: float = 3600,
+    parquet_profile: str = "standard",
 ) -> dict:
-    if warmups < 0 or repetitions < 1 or timeout <= 0:
+    if (
+        warmups < 0
+        or repetitions < 1
+        or timeout <= 0
+        or parquet_profile not in ("standard", "fast-scan")
+    ):
         raise ValueError("Invalid trial counts/timeout")
     output.mkdir(parents=True, exist_ok=False)
     prestart = time.perf_counter_ns()
@@ -199,6 +205,7 @@ def run(
         "repetitions": repetitions,
         "seed": seed,
         "test_encoder": test_encoder,
+        "parquet_profile": parquet_profile,
         "native": native_info,
         "dataset": dataset,
         "source_preparation_ns": preparation_ns,
@@ -245,6 +252,7 @@ def run(
                         "archive": str((trial / "archive").resolve()),
                         "worker": str(worker.resolve()),
                         "operation": "encode",
+                        "parquet_profile": parquet_profile,
                     }
                     observation["encode"] = invoke(spec, trial, "encode", timeout)
                     restored = trial / "restored.bin"
