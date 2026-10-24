@@ -71,7 +71,12 @@ class ParquetArchiveTests(unittest.TestCase):
             ]
             self.assertEqual(
                 {r["pipeline"]: r["status"] for r in rows},
-                {"A": "valid", "B-test-only": "unavailable_dependency", "B": "unsupported"},
+                {
+                    "A": "valid",
+                    "B-test-only": "unavailable_dependency",
+                    "B": "unsupported",
+                    "C-sgtt-zstd": "unsupported",
+                },
             )
 
 
@@ -146,7 +151,7 @@ class HybridArchiveTests(unittest.TestCase):
                 "sha256": checksum(path),
             }
             manifest_path.write_text(json.dumps(manifest))
-            with self.assertRaisesRegex(ValueError, "leaf directory"):
+            with self.assertRaisesRegex(ValueError, "leaf offset"):
                 restore(root / "archive", root / "bad-offset.bin", worker=worker_path())
 
     def test_real_input_cannot_use_test_encoder(self):
@@ -155,6 +160,22 @@ class HybridArchiveTests(unittest.TestCase):
             prepare(FIXTURE, root / "input", synthetic=False)
             with self.assertRaisesRegex(ValueError, "synthetic"):
                 build_hybrid(root / "input", root / "archive", TestByteEncoder(), worker_path())
+
+    def test_mismatched_table_even_with_updated_integrity_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            prepare(FIXTURE, root / "input", synthetic=True)
+            build_hybrid(root / "input", root / "archive", TestByteEncoder(), worker_path())
+            table = root / "archive/vocabulary.bin"
+            data = bytearray(table.read_bytes())
+            data[-1] ^= 1
+            table.write_bytes(data)
+            manifest_path = root / "archive/manifest.json"
+            manifest = json.loads(manifest_path.read_text())
+            manifest["files"]["vocabulary.bin"]["sha256"] = checksum(table)
+            manifest_path.write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "vocabulary identity mismatch"):
+                restore(root / "archive", root / "out", worker=root / "missing-worker")
 
     def test_explicit_test_encoder_preserves_input_provenance(self):
         with tempfile.TemporaryDirectory() as tmp:

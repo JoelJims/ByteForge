@@ -18,6 +18,7 @@ from byteforge.dataset import (
 )
 from byteforge.native import NativeIntegers
 from byteforge.representation import TokenRows, leaf_blocks, pack_unsigned, unpack_unsigned
+from byteforge.sgtt import require_sgtt
 from byteforge.tokenizers import Tokenizer, encode_rows
 
 FORMAT = "byteforge-hdfs-archive-v1"
@@ -71,10 +72,84 @@ def finish(output: Path, manifest: dict) -> dict:
     return manifest
 
 
+def bounded_integer(value, name: str, maximum: int = 2**64 - 1) -> int:
+    if type(value) is not int or not 0 <= value <= maximum:
+        raise ValueError(f"Invalid {name}")
+    return value
+
+
+def validate_dataset(dataset: dict) -> None:
+    if not isinstance(dataset, dict):
+        raise ValueError("Invalid dataset metadata")
+    for name in ("rows", "payload_bytes", "canonical_file_bytes", "source_file_bytes"):
+        bounded_integer(dataset.get(name), name)
+    rows, payload = dataset["rows"], dataset["payload_bytes"]
+    final = dataset.get("final_lf")
+    if type(final) is not bool or (not rows and final):
+        raise ValueError("Invalid final newline metadata")
+    if dataset["canonical_file_bytes"] != 16 + 8 * rows + payload:
+        raise ValueError("Inconsistent canonical length")
+    if dataset["source_file_bytes"] != payload + max(0, rows - 1) + int(final):
+        raise ValueError("Inconsistent source length")
+    for name in ("canonical_sha256", "logical_sha256", "source_sha256"):
+        value = dataset.get(name)
+        if (
+            not isinstance(value, str)
+            or len(value) != 64
+            or any(c not in "0123456789abcdef" for c in value)
+        ):
+            raise ValueError(f"Invalid {name}")
+
+
+def validate_index(index: dict, data_bytes: int, dataset_rows: int) -> None:
+    """Validate the entire directory before starting native decompression."""
+    if type(index.get("version")) is not int or index["version"] != 1:
+        raise ValueError("Invalid index/version")
+    if not isinstance(index.get("windows"), list):
+        raise ValueError("Invalid windows")
+    position = rows = 0
+    for window in index["windows"]:
+        if not isinstance(window, dict):
+            raise ValueError("Invalid window")
+        count = bounded_integer(window.get("rows"), "window rows", MAX_ROWS)
+        tokens = bounded_integer(window.get("tokens"), "window tokens", MAX_PAYLOAD)
+        rows += count
+        if not count or rows > dataset_rows:
+            raise ValueError("Invalid window row count")
+        for name, total in (("ids", tokens), ("offsets", count + 1)):
+            if not isinstance(window.get(name), list):
+                raise ValueError("Invalid stream directory")
+            elements = 0
+            for leaf in window[name]:
+                if not isinstance(leaf, dict):
+                    raise ValueError("Invalid leaf")
+                n = bounded_integer(leaf.get("elements"), "leaf elements", 65536)
+                size = bounded_integer(leaf.get("bytes"), "leaf bytes", 4 << 20)
+                offset = bounded_integer(leaf.get("offset"), "leaf offset")
+                bounded_integer(leaf.get("scheme"), "scheme", 5)
+                elements += n
+                if not n or size < 32 or offset != position or elements > total:
+                    raise ValueError("Invalid leaf directory")
+                position += size
+                if position > data_bytes:
+                    raise ValueError("Truncated native data")
+            if elements != total:
+                raise ValueError("Stream element count mismatch")
+    if rows != dataset_rows or position != data_bytes:
+        raise ValueError("Index row/data length mismatch")
+
+
 def load_archive(archive: Path) -> dict:
     manifest = read_json(archive / "manifest.json")
     if manifest.get("format") != FORMAT or manifest.get("pipeline") not in ("A", "B"):
         raise ValueError("Unsupported archive format/pipeline")
+    validate_dataset(manifest.get("dataset"))
+    if manifest["pipeline"] == "B":
+        tokenizer = manifest.get("tokenizer")
+        if not isinstance(tokenizer, dict) or tokenizer.get("test_only") is not True:
+            require_sgtt()
+        if tokenizer.get("identity") != TestByteEncoder.identity:
+            raise ValueError("Unsupported test-only encoder identity")
     expected = (
         {"data.parquet"}
         if manifest["pipeline"] == "A"
@@ -188,6 +263,13 @@ def build_hybrid(
     start = time.perf_counter_ns()
     dataset = prepared_manifest(prepared)
     test_only = bool(getattr(tokenizer, "test_only", False))
+    if not test_only:
+        require_sgtt()
+    if (
+        tokenizer.identity != TestByteEncoder.identity
+        or tokenizer.vocabulary != TestByteEncoder.vocabulary
+    ):
+        raise ValueError("Unsupported test-only encoder identity/table")
     if test_only and dataset["kind"] != "synthetic" and not allow_test_encoder_on_real:
         raise ValueError("Test-only encoder is restricted to explicitly synthetic inputs")
     output.mkdir(parents=True, exist_ok=False)
@@ -257,9 +339,10 @@ def build_hybrid(
 
 def _hybrid_rows(archive: Path, manifest: dict, worker: Path, phases: dict):
     vocabulary = _read_vocabulary(archive / "vocabulary.bin")
+    if vocabulary != TestByteEncoder.vocabulary:
+        raise ValueError("Test-only vocabulary identity mismatch")
     index = read_json(archive / "index.json")
-    if index.get("version") != 1 or not isinstance(index.get("windows"), list):
-        raise ValueError("Invalid index/version")
+    validate_index(index, (archive / "data.bin").stat().st_size, manifest["dataset"]["rows"])
     position = 0
     with (
         NativeIntegers(worker, expected=manifest["native"]) as native,

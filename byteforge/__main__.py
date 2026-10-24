@@ -21,6 +21,7 @@ from byteforge.native import worker_path
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
+    commands.add_parser("sgtt-status", help="show actual SGTT qualification and permission blocker")
     check = commands.add_parser("check-dataset")
     check.add_argument("--path", type=Path)
     prep = commands.add_parser("prepare")
@@ -37,6 +38,11 @@ def main() -> int:
         help="explicitly run test-only byte symbols on the supplied input; not SGTT",
     )
     bench.add_argument("--worker", type=Path, default=worker_path())
+    bench.add_argument(
+        "--encoder",
+        choices=("sgtt", "test-byte"),
+        help="explicit encoder selection; actual SGTT fails until qualified; never falls back",
+    )
     bench.add_argument("--warmups", type=int, default=2)
     bench.add_argument("--repetitions", type=int, default=10)
     bench.add_argument("--seed", type=int, default=20261023)
@@ -50,7 +56,11 @@ def main() -> int:
     private.add_argument("spec", type=Path)
     args = parser.parse_args()
     try:
-        if args.command == "check-dataset":
+        if args.command == "sgtt-status":
+            from byteforge.sgtt import status
+
+            result = status()
+        elif args.command == "check-dataset":
             path = hdfs_path(args.path)
             require_raw(path)
             with path.open("rb"):
@@ -67,11 +77,15 @@ def main() -> int:
         elif args.command == "run":
             from byteforge.benchmark import run
 
+            if args.encoder == "sgtt":
+                from byteforge.sgtt import require_sgtt
+
+                require_sgtt()
             result = run(
                 hdfs_path(args.path),
                 args.output,
                 synthetic=args.synthetic,
-                test_encoder=args.test_encoder,
+                test_encoder=args.test_encoder or args.encoder == "test-byte",
                 worker=args.worker,
                 warmups=args.warmups,
                 repetitions=args.repetitions,

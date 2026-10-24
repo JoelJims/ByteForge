@@ -267,3 +267,29 @@ format checks and `pip check` pass. Existing Python dependencies and native work
 were reused; no new dependency installation or backend substitution. AGENTS.md,
 research files, source dataset and old results were preserved. Independent review
 is still missing; it did not block this explicitly authorized validation.
+
+## SGTT qualification and archive guards — 2026-10-24
+
+Continued from `e43b598` on `implementation/core`. Rechecked the authoritative
+PVLDB paper and its artifact link to `umbra-db/token-vldb2026`, pinned at
+`e202e36e2b33a4768d1122f96880b64416234175`. Source and patched table permission
+remain unestablished; no SGTT source/assets were copied into ByteForge or executed.
+Independent review remains missing; the user's authorization permits independent
+implementation to continue. Detailed evidence and release control measurements
+are recorded in `docs/sgtt_hdfs_2k_results.md`.
+
+Added `byteforge/sgtt.py` qualification status and explicit CLI encoder selection.
+Production encoding/decoding cannot silently accept a test tokenizer as SGTT.
+The runner records both SGTT+BtrBlocks and SGTT+Zstd as unmeasured/unsupported.
+Archive metadata arithmetic and the entire integer-block index are checked before
+native decompression; test vocabulary identity is verified independently of hashes.
+Existing original and `fsst-safety-v1` native build behavior remains unchanged.
+
+Validation: `.venv/bin/python -m unittest discover -s tests -v` passed 25 tests
+before the final vocabulary regression test was added. With
+`BYTEFORGE_BTR_WORKER=build/sgtt-controls-release/byteforge_integer_worker`, the
+final suite passed **26 tests**. Ruff check/format checks passed; `pip check`
+reported no broken requirements. CTest in the separate non-sanitized release
+build passed **5/5** probes. An initial Ruff check found import ordering and one
+long line; both were fixed before committing. These are infrastructure/control
+tests, not actual SGTT reference or reconstruction tests.

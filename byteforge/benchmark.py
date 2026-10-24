@@ -26,6 +26,8 @@ from byteforge.pipelines import (
     restore,
     storage,
 )
+from byteforge.sgtt import require_sgtt
+from byteforge.sgtt import status as sgtt_status
 
 
 def exact_files(left: Path, right: Path) -> bool:
@@ -80,7 +82,7 @@ def work(spec: dict) -> dict:
         pass
     archive, native = Path(spec["archive"]), Path(spec["worker"])
     if spec["pipeline"] not in ("A", "B-test-only"):
-        raise ValueError("Production B is blocked; no approved SGTT adapter is integrated")
+        require_sgtt()
     start = time.perf_counter_ns()
     if spec["operation"] == "encode":
         prepared = Path(spec["prepared"])
@@ -204,7 +206,10 @@ def run(
         "timestamp_utc": datetime.now(UTC).isoformat(),
         "timer_batching": "none; small-input/test-only timings are validation diagnostics",
         "tokenizer_scope": "B-test-only uses byte symbols, never the SGTT implementation",
-        "sgtt": {"status": "unsupported", "reason": "SGTT code/table reuse rights unresolved"},
+        "sgtt": sgtt_status(),
+        "warm_service_measurement": None,
+        "warm_service_reason": "Each trial uses fresh processes; warmups do not measure a "
+        "persistent initialized tokenizer/native service. OS caches are uncontrolled.",
     }
     dump_json(output / "run.json", config)
     rng = random.Random(seed)
@@ -274,7 +279,12 @@ def run(
         }
         raw.write(json.dumps(blocked) + "\n")
         observations.append(blocked)
-    failures = sum(o["status"] != "valid" for o in observations if o["pipeline"] != "B")
+        ablation = {**blocked, "pipeline": "C-sgtt-zstd"}
+        raw.write(json.dumps(ablation) + "\n")
+        observations.append(ablation)
+    failures = sum(
+        o["status"] != "valid" for o in observations if o["pipeline"] in ("A", "B-test-only")
+    )
     summary = {
         "execution_complete": True,
         "fully_qualified_primary_comparison": False,
