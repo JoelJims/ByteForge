@@ -5,11 +5,12 @@ string compression and analytical workloads. It compares Parquet+Zstd, token
 IDs+BtrBlocks, native BtrBlocks strings, and token IDs+Zstd without presuming a
 hybrid improvement.
 
-Implementation is at the dependency-qualification stage. Python representation,
-Parquet/Zstd and native BtrBlocks compatibility probes are available. The native
-probe preserves failures and offers an explicitly named corrected FSST variant.
-SGTT reuse rights remain unresolved; no LLM tokenizer or full benchmark pipeline
-is implemented. No performance improvement has been measured.
+The [raw HDFS benchmark](docs/hdfs_benchmark.md) implements a streaming lossless
+loader, standalone Parquet+Zstd archives, native BtrBlocks integer archives,
+fresh-process reconstruction, and a reproducible measurement runner. Its synthetic
+development path uses an explicitly test-only reversible encoder. Production SGTT
+integration remains blocked by code/table reuse rights. The full official dataset
+has not been downloaded or benchmarked; no performance improvement is claimed.
 
 See [qualification setup and commands](docs/qualification/README.md),
 [implementation findings](docs/implementation_log.md), and the proposed

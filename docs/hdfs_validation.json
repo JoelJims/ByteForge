@@ -1,0 +1,61 @@
+{
+  "kind": "synthetic_development_validation",
+  "code_revision": "3d106e3bd7a2c82f6cba76143e6694699f7224b2",
+  "full_hdfs_dataset_downloaded": false,
+  "sgtt_integrated": false,
+  "unittest": {
+    "tests": 18,
+    "passed": 18,
+    "skipped": 0
+  },
+  "minimal_environment_unittest": {
+    "tests": 18,
+    "passed": 9,
+    "skipped": 9
+  },
+  "recorded_run": "results/hdfs-synthetic-validation",
+  "valid_measured_trials": 20,
+  "valid_warmup_trials": 4,
+  "failed_trials": 0,
+  "production_B": {
+    "pipeline": "B",
+    "status": "unsupported",
+    "correctness": null,
+    "measurement_origin": "not_run",
+    "failure_reason": "SGTT code/table reuse rights unresolved",
+    "archive_total_bytes": null,
+    "encode": null,
+    "restore": null
+  },
+  "fixture": {
+    "rows": 6,
+    "payload_bytes": 1001,
+    "source_file_bytes": 1007,
+    "source_sha256": "0faf945ecd5d34baef15379d37d72bfaebacd56e10f3b3f4f16b542f5bd098d0"
+  },
+  "native": {
+    "backend": "btrblocks",
+    "revision": "c950c3c01c1fbf91007936b05781d431a29a60d3",
+    "protocol": 2,
+    "integer_bits": 32,
+    "endian": "little",
+    "pointer_bytes": 8,
+    "sanitized": 1,
+    "fsst_safety_v1": 1,
+    "compiler": "16.2.1 20260810",
+    "selection": "SAMPLE",
+    "sample_count": 10,
+    "sample_run_size": 64,
+    "max_depth": 3,
+    "cpu_limit_seconds": 3600,
+    "address_space_limit_bytes": null,
+    "executable_sha256": "2a5e50bb1f6d05ab62c2e31e5e0f97af664bd6bb5812fddc0f860d2c994582c5"
+  },
+  "raw_sha256": {
+    "run.json": "f5b9824d66ac979b3cc7d2027d6b1567126e9c056cbecbdfc6df696310d3d874",
+    "observations.jsonl": "f156cf05cd26245762209b0e79eabc6ee67c7bbd3a64393f6efb5fc0d612c5e7",
+    "summary.json": "cfe77e3ecae7ce4a070147be891ab98419d3619dd80bc27518ac401651efa5ed",
+    "complete.json": "097285fd52f2e1ba836c9492b75621ba03bcf4fa2152b3950bcaff85d3418c7f"
+  },
+  "performance_conclusion": null
+}

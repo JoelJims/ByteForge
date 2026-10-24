@@ -147,3 +147,72 @@ coverage, hostile-input isolation and uint32-offset limits need further tests.
 No query engine, benchmark runner, demo, dataset download or performance claim
 exists yet. Dataset rights and benchmark hardware/time/storage budgets remain
 unresolved; independent review remains outstanding.
+
+## Raw HDFS implementation milestone — 2026-10-24
+
+User authorization narrows this milestone to raw LogHub-2.0 HDFS A/B pipelines,
+with an explicitly test-only encoder where SGTT cannot legally be integrated.
+Starting checkout/HEAD verified at `d492b4b`, branch `implementation/core`,
+canonical origin unchanged. AGENTS.md, qualification documents, all four research
+documents, existing interfaces/tests, and the pinned SGTT public API were inspected.
+Research files and AGENTS.md remain untouched/untracked. Independent review is
+still missing; user authorization permits implementation despite that risk.
+
+Official evidence: LogHub-2.0 main at `ac4aad2ea86f561e5a0acbc6587fa28b487259f9`,
+Zenodo record 8275861/v1 metadata, HDFS.zip central directory and first partial raw
+member bytes. Only two 65,536-byte archive ranges and the official 2k sample were
+retrieved for reconnaissance. Primary member: `HDFS/HDFS_full.log`; structured
+and template CSVs are excluded. Published sizes/counts are source observations,
+not local full-dataset validation. No full dataset was downloaded or benchmarked.
+Source/license/citation evidence is in `datasets/hdfs-loghub-2.0.json`.
+
+`19b8e63` adds the strict LF/UTF-8 loader, bounded canonical framing, manifest and
+synthetic fixture. `3d106e3` implements genuine Parquet+Zstd archives, the persistent
+native BtrBlocks INTEGER worker, complete ID/offset/table archives, independent
+reconstruction, CLI, paired benchmark execution and failure-aware raw records.
+The existing tokenizer protocol/serialization checks are reused. No SGTT source
+or table is copied or executed, and the fixture encoder is never labeled SGTT.
+
+Validation actually performed:
+
+- `.venv/bin/cmake -S probes/btrblocks -B build/btrblocks
+  -DBTRBLOCKS_SOURCE=/tmp/byteforge-btr -DCMAKE_BUILD_TYPE=Release
+  -DBYTEFORGE_SANITIZE=ON -DBYTEFORGE_FSST_SAFETY_FIX=ON` and
+  `cmake --build ... --target byteforge_integer_worker --parallel 2`: pass.
+- `.venv/bin/python -m unittest discover -s tests -v`: **18 pass**, no skips,
+  including native int32 maximum, block/row boundaries, empty input, UTF-8/NUL/
+  CRLF preservation, standalone decode after input deletion, corruption rejection
+  and explicit unavailable-backend behavior. The new native worker uses ASan/LSan.
+- `BYTEFORGE_BTR_WORKER=/tmp/byteforge-native-not-built python3 -m unittest
+  discover -s tests -v`: **18 discovered, 9 skipped, remaining 9 pass**. This checks
+  operation without optional Arrow/native dependencies; no real dataset is needed.
+- Ruff lint and formatting checks pass. Initial authoring style errors were fixed.
+  No type checker is configured. `pip check` reports no broken requirements.
+- `pip install '.[benchmark,dev,native]' --index-url https://pypi.org/simple`:
+  wheel build/install succeeds, including packaged license assets. From `/tmp`,
+  the installed package reconstructs a B-test-only archive exactly to raw bytes.
+- `check-dataset` without a supplied dataset exits nonzero with official download
+  instructions, as intended. A one-round synthetic smoke run and `restore --raw`
+  plus `cmp` pass before the final recorded run.
+- At code revision `3d106e3`, `run --path tests/fixtures/hdfs-synthetic.log
+  --synthetic --test-encoder --output results/hdfs-synthetic-validation
+  --warmups 2 --repetitions 10`: **20 measured + 4 warmup trials valid, zero failed**.
+  Every trial verifies canonical and physical raw bytes exactly. Fixture: 6 rows,
+  1,001 logical UTF-8 bytes, 1,007 physical source bytes. Production B is a separate
+  unsupported/not-run record with a licensing reason. These are synthetic
+  development diagnostics, not HDFS or SGTT performance findings.
+
+The raw run/configuration, summaries, native identity and archives remain under
+ignored `results/hdfs-synthetic-validation/`; large/generated outputs are not
+committed. `docs/hdfs_validation.json` summarizes verification and raw-file hashes.
+Source parsing is timed separately; full reconstruction includes physical export.
+Whole-tree peak RSS remains unavailable; individual process high-water marks are
+diagnostic. Native sampling has upstream random-device entropy despite seeded
+trial order. Exact native decoder-build matching and trusted-input restrictions
+are documented. No default-branch merge, push or PR was performed.
+
+Remaining research work: obtain the exact full raw artifact, resolve SGTT code/
+table rights and implement its authorized adapter, complete independent review,
+lock all native transitive dependencies, and declare hardware/run budgets before
+real full-corpus measurements. Synthetic byte-token results cannot answer the
+primary research question. Reproduction commands: `docs/hdfs_benchmark.md`.
