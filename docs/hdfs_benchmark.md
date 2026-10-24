@@ -203,6 +203,15 @@ accidental corruption, not maliciously re-signed native bodies; native archives
 remain a trusted-input format. Large real runs retain all trial archives and
 need a declared disk/time budget before execution.
 
+## Full Thunderbird scale run
+
+The largest raw LogHub-2.0 artifact inspected in this run was the 2.516 GB
+`Thunderbird_full.log`. Full A, full B, and block B archive sizes, end-to-end
+reconstruction times, query observations, provenance, and limitations are in
+[the full Thunderbird report](query_aware_thunderbird_full_results.md). Both B
+variants use test-only byte symbols, not SGTT. The query screening run has one
+trial per case and is not a stable p50/p95 evaluation.
+
 ## Actual SGTT qualification and release controls
 
 See [SGTT/HDFS_2k report](sgtt_hdfs_2k_results.md) and the new independent

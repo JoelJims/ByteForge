@@ -13,6 +13,27 @@ class DatasetTests(unittest.TestCase):
             result = identify_input(Path("HDFS_2k.log"), digest, count, 285848)
             self.assertEqual(result[0], "hdfs_2k_candidate")
 
+    def test_explicit_source_metadata_is_preserved_without_synthetic_bypass(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "Thunderbird_full.log"
+            source.write_bytes(b"event one\nevent two\n")
+            metadata = {
+                "kind": "loghub_2_0_full_raw",
+                "provenance": {"dataset": "Thunderbird", "artifact": "Thunderbird.zip"},
+                "artifact_identity": "pinned official artifact member",
+            }
+            manifest = prepare(source, root / "input", source_metadata=metadata)
+            self.assertEqual(manifest["kind"], metadata["kind"])
+            self.assertEqual(manifest["provenance"], metadata["provenance"])
+            self.assertEqual(manifest["artifact_identity"], metadata["artifact_identity"])
+            self.assertIsNone(manifest["matches_published_full_shape"])
+            with self.assertRaises(ValueError):
+                prepare(source, root / "bad", synthetic=True, source_metadata=metadata)
+            fake_synthetic = {**metadata, "kind": "synthetic"}
+            with self.assertRaises(ValueError):
+                prepare(source, root / "bad-synthetic", source_metadata=fake_synthetic)
+
     def test_physical_and_logical_roundtrips(self):
         for data, expected in (
             (b"", ()),

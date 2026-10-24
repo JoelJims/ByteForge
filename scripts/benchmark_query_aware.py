@@ -28,6 +28,28 @@ def _rows(path: Path) -> list[str]:
     return [value.decode("utf-8", errors="strict") for value in values]
 
 
+def _iter_rows(path: Path):
+    with path.open("rb") as stream:
+        for physical in stream:
+            value = physical[:-1] if physical.endswith(b"\n") else physical
+            yield value.decode("utf-8", errors="strict")
+
+
+def _large_queries(path: Path) -> list[dict]:
+    first = next(_iter_rows(path), "")
+    fields = first.split()
+    sampled = fields[1] if len(fields) > 1 else first[:32]
+    return [
+        {"id": "common-warning", "operation": "contains", "value": "warning"},
+        {"id": "sampled-timestamp", "operation": "contains", "value": sampled},
+        {
+            "id": "absent-sentinel",
+            "operation": "contains",
+            "value": "__BYTEFORGE_QUERY_SENTINEL_9f38d7__",
+        },
+    ]
+
+
 def _queries(values: list[str]) -> list[dict]:
     frequencies = Counter()
     for row in values:
@@ -73,6 +95,25 @@ def _expected(rows: list[str], query: dict) -> list[int]:
     return [i for i, match in enumerate(matches) if match and start <= i < stop]
 
 
+def _expected_stream(path: Path, queries: list[dict]) -> dict[str, list[int]]:
+    expected = {query["id"]: [] for query in queries}
+    for row_id, row in enumerate(_iter_rows(path)):
+        for query in queries:
+            value = query["value"]
+            operation = query["operation"]
+            match = (
+                row == value
+                if operation == "equals"
+                else row.startswith(value)
+                if operation == "prefix"
+                else value in row
+            )
+            bounds = query.get("row_range", [0, 1 << 64])
+            if match and bounds[0] <= row_id < bounds[1]:
+                expected[query["id"]].append(row_id)
+    return expected
+
+
 def _digest(ids: list[int]) -> str:
     return hashlib.sha256(b"".join(struct.pack("<Q", value) for value in ids)).hexdigest()
 
@@ -99,17 +140,23 @@ def run(args) -> int:
     pa.set_cpu_count(1)
     pa.set_io_thread_count(1)
     args.output.mkdir(parents=True, exist_ok=False)
-    rows = _rows(args.source)
+    large_source = args.source.stat().st_size > (512 << 20)
+    rows = None if large_source else _rows(args.source)
     source_hash = checksum(args.source)
     archives = {
         label: Path(path).resolve() for label, path in (x.split("=", 1) for x in args.archive)
     }
     if len(archives) < 2:
         raise ValueError("Compare at least two archives")
+    source_rows = None
     for archive in archives.values():
-        if load_archive(archive)["dataset"]["source_sha256"] != source_hash:
+        dataset = load_archive(archive)["dataset"]
+        if dataset["source_sha256"] != source_hash:
             raise ValueError("Archive/source checksum mismatch")
-    queries = _queries(rows)
+        if source_rows is not None and dataset["rows"] != source_rows:
+            raise ValueError("Archive row-count mismatch")
+        source_rows = dataset["rows"]
+    queries = _large_queries(args.source) if large_source else _queries(rows)
     if args.query_ids:
         requested = set(args.query_ids)
         known = {query["id"] for query in queries}
@@ -121,14 +168,18 @@ def run(args) -> int:
             raise ValueError("No benchmark queries selected")
     # Reference answers depend only on the immutable input and query definition.
     # Compute once so a large dataset does not get rescanned for every trial.
-    expected_results = {query["id"]: _expected(rows, query) for query in queries}
+    expected_results = (
+        _expected_stream(args.source, queries)
+        if large_source
+        else {query["id"]: _expected(rows, query) for query in queries}
+    )
     configs = [(label, budget) for label in archives for budget in (0, args.cache_bytes)]
     dump_json(
         args.output / "run.json",
         {
             "environment": environment(),
             "source_sha256": source_hash,
-            "source_rows": len(rows),
+            "source_rows": source_rows,
             "source_bytes": args.source.stat().st_size,
             "native": worker_info(args.worker),
             "archives": {
@@ -140,7 +191,7 @@ def run(args) -> int:
             "warmups": args.warmups,
             "repetitions": args.repetitions,
             "warm_repetitions_per_session": args.warm_repetitions,
-            "repeated_warmups_per_session": min(2, args.warm_repetitions),
+            "repeated_warmups_per_session": args.session_warmups,
             "block_rows": {
                 label: (
                     load_archive(path).get("settings", {}).get("block_rows")
@@ -205,7 +256,7 @@ def run(args) -> int:
                         record["worker_peak_rss_bytes"] = _peak_worker_rss(native_pid)
                         out.write(json.dumps(record, ensure_ascii=False) + "\n")
                         observations.append(record)
-                        for warmup_id in range(min(2, args.warm_repetitions)):
+                        for warmup_id in range(args.session_warmups):
                             warmed = session.filter(
                                 query["operation"],
                                 query["value"],
@@ -318,6 +369,12 @@ if __name__ == "__main__":
         help="timed repeated filters per session; defaults to --repetitions",
     )
     parser.add_argument(
+        "--session-warmups",
+        type=int,
+        default=2,
+        help="untimed repeated filters before timing warm requests (default: 2)",
+    )
+    parser.add_argument(
         "--query-ids",
         nargs="+",
         help="optional subset of generated query IDs for a bounded large-data run",
@@ -327,6 +384,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.warm_repetitions is None:
         args.warm_repetitions = args.repetitions
-    if args.warm_repetitions < 1:
-        parser.error("--warm-repetitions must be at least 1")
+    if args.warm_repetitions < 1 or args.session_warmups < 0:
+        parser.error("warm repetitions must be positive and session warmups nonnegative")
     raise SystemExit(run(args))

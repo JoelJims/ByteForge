@@ -1,0 +1,19 @@
+{
+  "dataset": "LogHub-2.0 Thunderbird full raw log",
+  "release": "Zenodo record 8275861 v1, published 2023-08-23",
+  "record_url": "https://zenodo.org/records/8275861",
+  "archive_name": "Thunderbird.zip",
+  "archive_url": "https://zenodo.org/records/8275861/files/Thunderbird.zip",
+  "archive_bytes": 293018641,
+  "archive_published_md5": "a8d365d003845c3bef61661375513910",
+  "archive_verified_md5": "a8d365d003845c3bef61661375513910",
+  "raw_member": "Thunderbird/Thunderbird_full.log",
+  "raw_member_published_bytes": 2516177713,
+  "raw_file": "data/loghub-2.0/Thunderbird_full.log",
+  "raw_file_bytes": 2516177713,
+  "raw_file_sha256": "a276905e7517a7d2c1d658490a0f27919c666045c3454ba695a5e77f79e9cbfe",
+  "physical_lf_count": 16601745,
+  "ends_lf": true,
+  "source_license_url": "https://github.com/logpai/Loghub-2.0/blob/main/LICENSE",
+  "usage_notice": "Research/academic use; retain repository URL and cite LogHub and LogHub-2.0 papers."
+}

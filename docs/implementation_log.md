@@ -485,3 +485,29 @@ separate timed warm-repeat count. Raw data, archive measurements and full
 observation records are saved under `docs/measurements/query-aware-spark-200m/`;
 analysis is in `docs/query_aware_spark_200m_results.md`. No dataset/archive
 binary was staged or committed.
+
+## Full LogHub-2.0 Thunderbird benchmark — 2026-10-24
+
+Located the largest raw log member among the inspected large LogHub-2.0
+artifacts: `Thunderbird/Thunderbird_full.log` (2,516,177,713 bytes) in the
+official 293,018,641-byte ZIP. The ZIP MD5 matched Zenodo's published checksum;
+the extracted log SHA-256 is recorded in the measurement manifest. Prepared and
+ran the complete 16,601,745 rows; source remained in ignored `data/`.
+
+Built and exactly restored genuine Parquet+Zstd, full B, and block B. B continues
+to use test-only byte symbols, not SGTT. Complete archive sizes were 164,417,323,
+631,875,507, and 818,064,093 bytes. Full restore times were 219.527, 33.548, and
+47.110 seconds respectively. One-trial query screening found Block B helpful for
+selective/absent terms and slower than Parquet for common `warning` (636,710
+matches); all 36 observations matched the reference. The large Block B index
+(62,651,861 bytes) adds about 1.3 seconds of session-open cost. Results and raw
+observations: `docs/query_aware_thunderbird_full_results.md` and
+`docs/measurements/query-aware-thunderbird-full/`. Full query results are only
+screening observations, not stable p50/p95 claims.
+
+The large-file runner now streams reference rows instead of holding the complete
+source in Python memory. Dataset preparation accepts explicit non-synthetic
+provenance, and the full-B builder accepts bounded payload windows to keep
+intermediate integer buffers practical. Validation outcomes and local commit
+are recorded in the handoff; no data binaries, research files, or AGENTS.md were
+staged.

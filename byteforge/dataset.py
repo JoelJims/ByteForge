@@ -150,7 +150,23 @@ def row_windows(path: Path, *, max_rows: int = MAX_ROWS, max_payload: int = MAX_
             raise ValueError("Trailing canonical data")
 
 
-def prepare(path: Path, output: Path, *, synthetic: bool = False) -> dict:
+def prepare(
+    path: Path,
+    output: Path,
+    *,
+    synthetic: bool = False,
+    source_metadata: dict | None = None,
+) -> dict:
+    if source_metadata is not None:
+        if (
+            synthetic
+            or not isinstance(source_metadata, dict)
+            or not isinstance(source_metadata.get("kind"), str)
+            or source_metadata["kind"] in ("synthetic", "hdfs_2k_sample", "hdfs_2k_candidate")
+            or not isinstance(source_metadata.get("provenance"), dict)
+            or not isinstance(source_metadata.get("artifact_identity"), str)
+        ):
+            raise ValueError("Invalid explicit source metadata")
     require_raw(path)
     output.mkdir(parents=True, exist_ok=False)
     source_hash, logical_hash = hashlib.sha256(), hashlib.sha256()
@@ -180,11 +196,16 @@ def prepare(path: Path, output: Path, *, synthetic: bool = False) -> dict:
                 offset += len(physical)
             canonical.seek(8)
             canonical.write(U64.pack(count))
-        kind, provenance, identity = (
-            ("synthetic", {"synthetic": True}, "synthetic")
-            if synthetic
-            else identify_input(path, source_hash.hexdigest(), count, offset)
-        )
+        if synthetic:
+            kind, provenance, identity = "synthetic", {"synthetic": True}, "synthetic"
+        elif source_metadata is not None:
+            kind = source_metadata["kind"]
+            provenance = source_metadata["provenance"]
+            identity = source_metadata["artifact_identity"]
+        else:
+            kind, provenance, identity = identify_input(
+                path, source_hash.hexdigest(), count, offset
+            )
         manifest = {
             "version": 1,
             "kind": kind,
@@ -196,7 +217,7 @@ def prepare(path: Path, output: Path, *, synthetic: bool = False) -> dict:
             "rows": count,
             "payload_bytes": payload,
             "matches_published_full_shape": None
-            if synthetic or kind.startswith("hdfs_2k")
+            if synthetic or source_metadata is not None or kind.startswith("hdfs_2k")
             else count == HDFS["published_rows"] and offset == HDFS["zip_directory_raw_bytes"],
             "final_lf": last_lf,
             "logical_sha256": logical_hash.hexdigest(),

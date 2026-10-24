@@ -282,3 +282,13 @@ Raw round-trip and query observations are in
 Earlier measurements remain unchanged. These small-sample diagnostics are not a
 final query-engine benchmark and do not demonstrate SGTT or a general performance
 win over Parquet.
+
+### Full Thunderbird scale check
+
+The full 16.6-million-row LogHub-2.0 Thunderbird log confirms that block pruning
+is workload-selective. Block B was faster for a one-row timestamp and an absent
+term, but slower than Parquet for a common term matching 636,710 rows. Opening
+and checking its 62.7 MB index costs about 1.3 s even when every data block is
+pruned. This is one screening trial per case; see the [full results and query
+tables](query_aware_thunderbird_full_results.md) and raw observations under
+`measurements/query-aware-thunderbird-full/`. The B encoder remains test-only.

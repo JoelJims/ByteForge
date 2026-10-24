@@ -1,0 +1,88 @@
+{
+  "dataset": {
+    "source_bytes": 2516177713,
+    "source_sha256": "a276905e7517a7d2c1d658490a0f27919c666045c3454ba695a5e77f79e9cbfe",
+    "rows": 16601745,
+    "payload_bytes": 2499575968,
+    "canonical_bytes": 2632389944,
+    "canonical_sha256": "19eb21df372ea06090ac92496ed5bb6c727df789a2f9306378b807d619cd2066"
+  },
+  "host": {
+    "cpu": "Intel 12th Gen Core i3-1215U, 6 cores / 8 threads",
+    "os": "Linux x86-64, kernel 6.18.57",
+    "python": "3.14.8",
+    "pyarrow": "26.0.0",
+    "python_zstandard": "0.25.0",
+    "memory_gib": 7.5,
+    "cpu_affinity": "one CPU; Arrow/OMP/BLAS one thread"
+  },
+  "worker": {
+    "backend": "BtrBlocks",
+    "revision": "c950c3c01c1fbf91007936b05781d431a29a60d3",
+    "protocol": 3,
+    "build_type": "Release",
+    "sanitized": false,
+    "fsst_safety_v1": true,
+    "selection": "SAMPLE, sample_count=10, sample_run_size=64, max_depth=3",
+    "executable_sha256": "d6a1578ac6d0bef3ece823d6c96fe196d496c507d42b24048842c4b8b9ea8448"
+  },
+  "pipelines": {
+    "parquet": {
+      "archive_bytes": 164417323,
+      "data_bytes": 164414876,
+      "manifest_bytes": 2447,
+      "build_seconds": 15.354273225,
+      "restore_seconds": 219.527,
+      "settings": "Parquet 2.6; Zstd level 3; dictionary enabled; 1 MiB pages; max 65,536 rows/window"
+    },
+    "btr_full_test_byte": {
+      "archive_bytes": 631875507,
+      "data_zstd_bytes": 626368695,
+      "index_bytes": 5501075,
+      "vocabulary_bytes": 2308,
+      "manifest_bytes": 3429,
+      "native_unwrapped_bytes": 2198331992,
+      "build_seconds": 496.0187794,
+      "tokenize_and_validate_seconds": 190.243766979,
+      "integer_serialization_seconds": 137.476249324,
+      "native_ipc_seconds": 117.042016683,
+      "outer_zstd_seconds": 6.03222728,
+      "restore_seconds": 33.548,
+      "settings": "test-only-byte-symbols-v1; int32 LE IDs/offsets; 65,536-element leaves; 1 MiB payload windows; outer Zstd level 1"
+    },
+    "btr_block_test_byte": {
+      "archive_bytes": 818064093,
+      "data_bytes": 755406353,
+      "compressed_index_bytes": 62651861,
+      "vocabulary_bytes": 2308,
+      "manifest_bytes": 3571,
+      "blocks": 64851,
+      "build_seconds": 866.465690064,
+      "tokenize_seconds": 191.721985043,
+      "integer_serialization_seconds": 124.423722088,
+      "native_ipc_seconds": 136.081562326,
+      "restore_seconds": 47.110,
+      "settings": "test-only-byte-symbols-v1; 256 rows/block; int32 LE IDs/offsets; BtrBlocks leaves; per-block Zstd level 1; Zstd level 1 index; 5-hash byte-trigram Bloom filters"
+    }
+  },
+  "query_run": {
+    "status": "complete",
+    "query_count": 3,
+    "archive_count": 3,
+    "observation_count": 36,
+    "failed_observations": 0,
+    "warmups": 0,
+    "measured_repetitions": 1,
+    "warm_repetitions": 1,
+    "session_warmups": 0,
+    "cache_budgets_bytes": [0, 16777216],
+    "result_cache": false,
+    "os_cache_controlled": false,
+    "query_terms": {
+      "common-warning": "case-sensitive contains('warning'); 636,710 matching rows",
+      "sampled-timestamp": "case-sensitive contains('1131523501'); one matching row",
+      "absent-sentinel": "case-sensitive contains('__BYTEFORGE_QUERY_SENTINEL_9f38d7__'); zero matches"
+    },
+    "interpretation": "One run per case; summary p50/p95 fields equal the sole observation and are not stable estimates."
+  }
+}

@@ -418,9 +418,12 @@ def build_hybrid(
     *,
     allow_test_encoder_on_real: bool = False,
     outer_codec: str = "none",
+    max_payload_per_window: int = MAX_PAYLOAD,
 ) -> dict:
     if outer_codec not in ("none", "zstd"):
         raise ValueError("Unsupported BtrBlocks outer codec")
+    if type(max_payload_per_window) is not int or not 1 <= max_payload_per_window <= MAX_PAYLOAD:
+        raise ValueError("max_payload_per_window must be in 1..64 MiB")
     zstd_module = None
     if outer_codec == "zstd":
         import zstandard as zstd_module
@@ -442,7 +445,7 @@ def build_hybrid(
     windows = []
     token_ns = serialization_ns = 0
     with NativeIntegers(worker) as native, (output / "data.bin").open("xb") as stream:
-        for rows in row_windows(prepared / "rows.bin"):
+        for rows in row_windows(prepared / "rows.bin", max_payload=max_payload_per_window):
             phase = time.perf_counter_ns()
             encoded = encode_rows(rows, tokenizer)
             token_ns += time.perf_counter_ns() - phase
@@ -512,7 +515,7 @@ def build_hybrid(
             "settings": {
                 "leaf_elements": 65536,
                 "max_rows_per_window": MAX_ROWS,
-                "max_payload_per_window": MAX_PAYLOAD,
+                "max_payload_per_window": max_payload_per_window,
                 "selection": "upstream defaults",
             },
         },
