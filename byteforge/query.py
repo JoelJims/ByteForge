@@ -15,7 +15,7 @@ from byteforge.pipelines import (
     _read_vocabulary,
     load_archive,
 )
-from byteforge.query_index import decode_filter, may_contain_bits
+from byteforge.query_index import PreparedTrigramQuery, decode_filter
 
 
 class QuerySession:
@@ -322,6 +322,7 @@ class QuerySession:
         blocks_range_skipped = blocks_pruned = 0
         universal_match = operation in ("contains", "prefix") and not needle
         empty_equality = operation == "equals" and not needle
+        pruning = PreparedTrigramQuery(needle)
         for block_id, block in enumerate(blocks):
             begin, end = block["row_start"], block["row_start"] + block["rows"]
             if begin >= row_stop or end <= row_start:
@@ -339,7 +340,7 @@ class QuerySession:
                 if not block["empty_row_ids"]:
                     blocks_pruned += 1
                 continue
-            if len(needle) >= 3 and not may_contain_bits(*self.block_filters[block_id], needle):
+            if len(needle) >= 3 and not pruning.may_contain(*self.block_filters[block_id]):
                 blocks_pruned += 1
                 continue
             candidates.append((block_id, block))

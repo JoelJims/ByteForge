@@ -22,6 +22,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("sgtt-status", help="show actual SGTT qualification and permission blocker")
+    words = commands.add_parser("build-word-index", help="optional exact ASCII-word search index")
+    words.add_argument("--prepared", type=Path, required=True)
+    words.add_argument("--output", type=Path, required=True)
     check = commands.add_parser("check-dataset")
     check.add_argument("--path", type=Path)
     prep = commands.add_parser("prepare")
@@ -76,6 +79,7 @@ def main() -> int:
     query.add_argument("--value", required=True)
     query.add_argument("--worker", type=Path, default=worker_path())
     query.add_argument("--cache-bytes", type=int, default=0)
+    query.add_argument("--word-index", type=Path, help="optional independent word-postings bundle")
     query.add_argument("--row-start", type=int)
     query.add_argument("--row-stop", type=int)
     private = commands.add_parser("_work", help="internal isolated measurement worker")
@@ -86,6 +90,10 @@ def main() -> int:
             from byteforge.sgtt import status
 
             result = status()
+        elif args.command == "build-word-index":
+            from byteforge.word_index import build_word_index
+
+            result = build_word_index(args.prepared, args.output)
         elif args.command == "check-dataset":
             path = hdfs_path(args.path)
             require_raw(path)
@@ -149,8 +157,12 @@ def main() -> int:
                 raise ValueError("--row-start and --row-stop must be provided together")
             row_range = (args.row_start, args.row_stop) if args.row_start is not None else None
             start = time.perf_counter_ns()
-            with QuerySession(
-                args.archive, worker=args.worker, cache_bytes=args.cache_bytes
+            from byteforge.word_index import IndexedQuerySession
+
+            session_type = IndexedQuerySession if args.word_index else QuerySession
+            options = {"word_index": args.word_index} if args.word_index else {}
+            with session_type(
+                args.archive, worker=args.worker, cache_bytes=args.cache_bytes, **options
             ) as session:
                 result = session.filter(args.operation, args.value, row_range=row_range)
                 result["archive_open_ns"] = session.open_ns

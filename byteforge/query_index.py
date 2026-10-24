@@ -78,3 +78,25 @@ def may_contain_bits(bit_count: int, bits: bytes, query: bytes) -> bool:
             if not bits[bit >> 3] & (1 << (bit & 7)):
                 return False
     return True
+
+
+class PreparedTrigramQuery:
+    """Hash each query gram once per filter width, instead of once per block."""
+
+    def __init__(self, query: bytes):
+        self.grams = tuple(dict.fromkeys(query[i : i + 3] for i in range(len(query) - 2)))
+        self.positions = {}
+
+    def may_contain(self, bit_count: int, bits: bytes) -> bool:
+        positions = self.positions.get(bit_count)
+        if positions is None:
+            positions = tuple(
+                (bit >> 3, 1 << (bit & 7))
+                for gram in self.grams
+                for bit in _positions(gram, bit_count)
+            )
+            self.positions[bit_count] = positions
+        for byte, mask in positions:
+            if not bits[byte] & mask:
+                return False
+        return True

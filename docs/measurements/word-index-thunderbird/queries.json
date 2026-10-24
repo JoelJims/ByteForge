@@ -1,0 +1,17 @@
+[
+  {
+    "id": "common-warning",
+    "operation": "contains",
+    "value": "warning"
+  },
+  {
+    "id": "rare-failure",
+    "operation": "contains",
+    "value": "failure"
+  },
+  {
+    "id": "absent-word",
+    "operation": "contains",
+    "value": "ByteForgeAbsentSentinel"
+  }
+]

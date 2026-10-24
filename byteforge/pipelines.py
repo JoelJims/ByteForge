@@ -240,7 +240,12 @@ def validate_block_index(index: dict, data_bytes: int, dataset: dict) -> None:
         raise ValueError("Block directory does not cover dataset")
 
 
-def load_archive(archive: Path) -> dict:
+def load_archive(archive: Path, *, metadata_only: bool = False) -> dict:
+    """Validate a bundle; metadata_only defers payload checks until actual reading.
+
+    The latter is for an independently verified query index. It never authorizes
+    decoding: a fallback reader must call the full validator before reading data.
+    """
     manifest = read_json(archive / "manifest.json")
     archive_format = manifest.get("format")
     if archive_format not in (FORMAT, BLOCK_FORMAT) or manifest.get("pipeline") not in ("A", "B"):
@@ -300,12 +305,13 @@ def load_archive(archive: Path) -> dict:
             or not path.is_file()
             or path.stat().st_size != entry["bytes"]
             or (
-                not (archive_format == BLOCK_FORMAT and name == "data.bin")
+                not metadata_only
+                and not (archive_format == BLOCK_FORMAT and name == "data.bin")
                 and checksum(path) != entry["sha256"]
             )
         ):
             raise ValueError(f"Archive checksum/size mismatch: {name}")
-    if archive_format == BLOCK_FORMAT:
+    if archive_format == BLOCK_FORMAT and not metadata_only:
         index_path = archive / "index.json.zst"
         if index_path.stat().st_size > 64 << 20:
             raise ValueError("Compressed block index exceeds limit")

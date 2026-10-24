@@ -146,6 +146,11 @@ def run(args) -> int:
     archives = {
         label: Path(path).resolve() for label, path in (x.split("=", 1) for x in args.archive)
     }
+    word_indexes = {
+        label: Path(path).resolve() for label, path in (x.split("=", 1) for x in args.word_index)
+    }
+    if word_indexes.keys() - archives.keys():
+        raise ValueError("Word index labels must identify an archive")
     if len(archives) < 2:
         raise ValueError("Compare at least two archives")
     source_rows = None
@@ -156,7 +161,19 @@ def run(args) -> int:
         if source_rows is not None and dataset["rows"] != source_rows:
             raise ValueError("Archive row-count mismatch")
         source_rows = dataset["rows"]
-    queries = _large_queries(args.source) if large_source else _queries(rows)
+    queries = (
+        json.loads(args.queries_json.read_text())
+        if args.queries_json
+        else _large_queries(args.source)
+        if large_source
+        else _queries(rows)
+    )
+    if (
+        not isinstance(queries, list)
+        or not queries
+        or len({q["id"] for q in queries}) != len(queries)
+    ):
+        raise ValueError("Expected a nonempty query list with unique IDs")
     if args.query_ids:
         requested = set(args.query_ids)
         known = {query["id"] for query in queries}
@@ -173,7 +190,10 @@ def run(args) -> int:
         if large_source
         else {query["id"]: _expected(rows, query) for query in queries}
     )
-    configs = [(label, budget) for label in archives for budget in (0, args.cache_bytes)]
+    budgets = args.cache_budgets if args.cache_budgets is not None else [0, args.cache_bytes]
+    if not budgets or any(b < 0 for b in budgets) or len(set(budgets)) != len(budgets):
+        raise ValueError("Expected distinct nonnegative cache budgets")
+    configs = [(label, budget) for label in archives for budget in budgets]
     dump_json(
         args.output / "run.json",
         {
@@ -186,7 +206,16 @@ def run(args) -> int:
                 label: {"path": str(path), **storage(path)} for label, path in archives.items()
             },
             "queries": queries,
-            "cache_budgets": [0, args.cache_bytes],
+            "word_indexes": {
+                label: {
+                    "path": str(path),
+                    "total_bytes": sum(p.stat().st_size for p in path.iterdir()),
+                    "manifest": json.loads((path / "manifest.json").read_text()),
+                }
+                for label, path in word_indexes.items()
+            },
+            "cache_budgets": budgets,
+            "cpu_scope": "parent process only; excludes native worker CPU",
             "cache_policy": "bounded decoded Arrow blocks; LRU for archive v2; no result cache",
             "warmups": args.warmups,
             "repetitions": args.repetitions,
@@ -228,21 +257,29 @@ def run(args) -> int:
                 }
                 try:
                     request_start = time.perf_counter_ns()
-                    with QuerySession(
-                        archives[label], worker=args.worker, cache_bytes=budget
+                    cpu_start = time.process_time_ns()
+                    from byteforge.word_index import IndexedQuerySession
+
+                    session_class = IndexedQuerySession if label in word_indexes else QuerySession
+                    options = {"word_index": word_indexes[label]} if label in word_indexes else {}
+                    with session_class(
+                        archives[label], worker=args.worker, cache_bytes=budget, **options
                     ) as session:
                         first = session.filter(
                             query["operation"],
                             query["value"],
                             row_range=tuple(query["row_range"]) if query.get("row_range") else None,
                         )
+                        request_ns = time.perf_counter_ns() - request_start
+                        cpu_ns = time.process_time_ns() - cpu_start
                         native_pid = session.native.process.pid if session.native else None
                         if first["row_ids"] != expected:
                             raise AssertionError("Cold query row IDs differ from reference")
                         record = {
                             **base,
                             "track": "cold",
-                            "request_ns": time.perf_counter_ns() - request_start,
+                            "request_ns": request_ns,
+                            "parent_cpu_ns": cpu_ns,
                             "archive_open_ns": session.open_ns,
                             "result_count": first["count"],
                             "result_sha256": _digest(first["row_ids"]),
@@ -284,6 +321,7 @@ def run(args) -> int:
                             observations.append(warmup_record)
                         for _ in range(args.warm_repetitions):
                             warm_start = time.perf_counter_ns()
+                            warm_cpu = time.process_time_ns()
                             warmed = session.filter(
                                 query["operation"],
                                 query["value"],
@@ -291,12 +329,15 @@ def run(args) -> int:
                                 if query.get("row_range")
                                 else None,
                             )
+                            warm_ns = time.perf_counter_ns() - warm_start
+                            warm_cpu_ns = time.process_time_ns() - warm_cpu
                             if warmed["row_ids"] != expected:
                                 raise AssertionError("Warm query row IDs differ from reference")
                             record = {
                                 **base,
                                 "track": "warm",
-                                "request_ns": time.perf_counter_ns() - warm_start,
+                                "request_ns": warm_ns,
+                                "parent_cpu_ns": warm_cpu_ns,
                                 "result_count": warmed["count"],
                                 "result_sha256": _digest(warmed["row_ids"]),
                                 "correctness": True,
@@ -359,6 +400,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--archive", action="append", required=True, help="label=archive-path")
+    parser.add_argument("--word-index", action="append", default=[], help="label=index-directory")
+    parser.add_argument("--queries-json", type=Path, help="explicit reproducible query definitions")
+    parser.add_argument(
+        "--cache-budgets", type=int, nargs="+", help="override compared cache limits"
+    )
     parser.add_argument("--worker", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--warmups", type=int, default=2)
